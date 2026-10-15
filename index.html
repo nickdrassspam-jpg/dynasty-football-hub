@@ -1212,7 +1212,7 @@ function buildPanel(){
   // --- team windows ---
   const Bd=rivState().builds,wl=Object.entries(Bd).sort((a,b)=>b[1].idx-a[1].idx);
   const n=S.seas[0].rosters.length;
-  return`<div class="panel" style="margin-bottom:12px"><h3>Contending or rebuilding</h3><p class="pcap">Contender score from 0 (full rebuild) to 100 (all-in contender). This is each team's standing right now. Teams at the same stage get a boost to their rivalry score.</p>${valOff()}<div class="tw"><table class="sortable" data-sid="windows"><thead><tr><th>Team</th><th>Build</th><th>Contender score</th><th class="n" data-tip="Average points scored over the last ${wl[0]?.[1].n||0} completed weeks">Points per game</th><th class="n" data-tip="Average best possible lineup over the same weeks; injuries and thin rosters pull it down">Max per game</th><th class="n" data-tip="${esc(`Players in the top ${n} of FantasyCalc's dynasty values`)}">First-round players</th><th class="n">Age of top 10</th><th class="n" data-tip="Future pick value in first-round equivalents">Pick value</th></tr></thead><tbody>${wl.map(([k,b])=>`<tr><td>${mlink(k)}</td><td data-v="${b.idx}">${buildLabel(b.idx)}</td><td data-v="${b.idx}"><div class="pts"><div class="wtrack" data-tip="${esc(`${mname(k)}: contender score ${Math.round(b.idx*100)}`)}"><i style="left:${b.idx*100}%"></i></div><span>${Math.round(b.idx*100)}</span></div></td><td class="n" data-v="${b.pf??""}">${b.pf!=null?fmt(b.pf):"–"}</td><td class="n" data-v="${b.mx??""}">${b.mx!=null?fmt(b.mx):"–"}</td><td class="n" data-v="${b.tal!=null?b.top1.length:""}"${b.top1?.length?` data-tip="${esc(b.top1.map(pid=>`${pName(pid)} (${posOf(pid)}), ${ord(firstRank(pid))} in dynasty value${players[pid]?.[5]?", "+players[pid][5]:""}`).join("\n"))}"`:""}>${b.tal!=null?b.top1.length+(b.top1.some(isHurt)?` <span class="fm">(${b.top1.filter(isHurt).length} hurt)</span>`:""):"–"}</td><td class="n" data-v="${b.age??""}">${b.age!=null?fmt(b.age):"–"}</td><td class="n" data-v="${b.cap??""}">${fv(b.cap)}</td></tr>`).join("")}</tbody></table></div><ul class="adj"><li><b>What goes into it.</b> Roster talent, the sum of every player's FantasyCalc win-now value (35%), points per game over the last ${wl[0]?.[1].n||0} completed weeks (30%), the best possible lineup per game over those weeks (10%), future pick value (15%, more picks leans rebuilding) and the age of the top 10 scorers (10%, older leans contending).${FC?"":" FantasyCalc couldn't be reached, so roster talent and pick value are left out and the other inputs carry the score."}</li><li><b>Labels.</b> 60 and up is a contender, 40 and under a rebuilder, and anything between is in between. Scores are relative to the rest of the league.</li><li><b>Roster talent</b> uses win-now values, so it measures who helps this season. <b>First-round players</b> counts players in the top ${n} of FantasyCalc's dynasty values. Injured players count for less: 30% of their value if they're out, on IR, PUP or suspended, 60% if doubtful and 90% if questionable.</li></ul></div>`;
+  return`<div class="panel" style="margin-bottom:12px"><h3>Contending or rebuilding</h3><p class="pcap">Contender score from 0 (full rebuild) to 100 (all-in contender). This is each team's standing right now. </p>${valOff()}<div class="tw"><table class="sortable" data-sid="windows"><thead><tr><th>Team</th><th>Build</th><th>Contender score</th><th class="n" data-tip="Average points scored over the last ${wl[0]?.[1].n||0} completed weeks">Points per game</th><th class="n" data-tip="Average best possible lineup over the same weeks; injuries and thin rosters pull it down">Max per game</th><th class="n" data-tip="${esc(`Players in the top ${n} of FantasyCalc's dynasty values`)}">First-round players</th><th class="n">Age of top 10</th><th class="n" data-tip="Future pick value in first-round equivalents">Pick value</th></tr></thead><tbody>${wl.map(([k,b])=>`<tr><td>${mlink(k)}</td><td data-v="${b.idx}">${buildLabel(b.idx)}</td><td data-v="${b.idx}"><div class="pts"><div class="wtrack" data-tip="${esc(`${mname(k)}: contender score ${Math.round(b.idx*100)}`)}"><i style="left:${b.idx*100}%"></i></div><span>${Math.round(b.idx*100)}</span></div></td><td class="n" data-v="${b.pf??""}">${b.pf!=null?fmt(b.pf):"–"}</td><td class="n" data-v="${b.mx??""}">${b.mx!=null?fmt(b.mx):"–"}</td><td class="n" data-v="${b.tal!=null?b.top1.length:""}"${b.top1?.length?` data-tip="${esc(b.top1.map(pid=>`${pName(pid)} (${posOf(pid)}), ${ord(firstRank(pid))} in dynasty value${players[pid]?.[5]?", "+players[pid][5]:""}`).join("\n"))}"`:""}>${b.tal!=null?b.top1.length+(b.top1.some(isHurt)?` <span class="fm">(${b.top1.filter(isHurt).length} hurt)</span>`:""):"–"}</td><td class="n" data-v="${b.age??""}">${b.age!=null?fmt(b.age):"–"}</td><td class="n" data-v="${b.cap??""}">${fv(b.cap)}</td></tr>`).join("")}</tbody></table></div><ul class="adj"><li><b>What goes into it.</b> Roster talent, the sum of every player's FantasyCalc win-now value (35%), points per game over the last ${wl[0]?.[1].n||0} completed weeks (30%), the best possible lineup per game over those weeks (10%), future pick value (15%, more picks leans rebuilding) and the age of the top 10 scorers (10%, older leans contending).${FC?"":" FantasyCalc couldn't be reached, so roster talent and pick value are left out and the other inputs carry the score."}</li><li><b>Labels.</b> 60 and up is a contender, 40 and under a rebuilder, and anything between is in between. Scores are relative to the rest of the league.</li><li><b>Roster talent</b> uses win-now values, so it measures who helps this season. <b>First-round players</b> counts players in the top ${n} of FantasyCalc's dynasty values. Injured players count for less: 30% of their value if they're out, on IR, PUP or suspended, 60% if doubtful and 90% if questionable.</li></ul></div>`;
 }
 function renderPower(){
   const body=$("wbody");
@@ -1606,7 +1606,7 @@ document.addEventListener("click",e=>{
 /* ============ rivalries ============ */
 // Rivalry score: each pair of managers earns points from five ingredients, recent seasons weighted more,
 // and the total is mapped onto 0-100 with a saturating curve so it never jumps past 100.
-const RCOMP=[["fam","Familiarity","How often they've played"],["comp","Competitiveness","Close games, worth more when the series is even"],["stakes","Stakes","Playoff meetings and games between two playoff teams"],["drama","Drama","Series lead changes and games decided by under 5 points"],["win","Similar builds","Both teams at the same stage right now: contending, rebuilding or in between"]];
+const RCOMP=[["fam","Familiarity","How often they've played"],["comp","Competitiveness","Close games, worth more when the series is even"],["stakes","Stakes","Playoff meetings and games between two playoff teams"],["drama","Drama","Series lead changes and games decided by under 5 points"],["arms","Arms race","Both chasing the same prize right now: the title or the 1.01"]];
 /* Contender score: where each current team sits between rebuilding (0) and contending (1).
    A weighted blend of league z-scores, mapped to 0-1:
    roster talent from FantasyCalc win-now values 35%, recent points per game 30%, recent best-possible lineup per game 10%,
@@ -1675,15 +1675,33 @@ function contenders(si){
   const s=S.seas[si];if(s.po&&s.po.size)return new Set([...s.po].map(r=>s.own[r]));
   const po=S.league.settings.playoff_teams||6;return new Set(seasonRows(si).filter(r=>r.g>0&&r.seed<=po).map(r=>r.key));
 }
+/* Arms race: two teams chasing the same prize right now, as of the latest finished week before the cut.
+   Title side: the top 6 by power rank. 1.01 side: the first 6 picks in next draft's order if the season ended then
+   (non-playoff teams by lowest max points-for, then playoff teams from the lowest seed up). Rank 1 weighs 1, rank 6 weighs 1/6. */
+const ARMS_K=4.5,ARMS_N=6;
+function armsRace(cut){
+  const s=S.seas.find(x=>(x.done||[]).some(w=>+x.season*100+w<cut));if(!s)return{};
+  const upto=Math.max(...s.done.filter(w=>+s.season*100+w<cut)),wt=i=>i<ARMS_N?(ARMS_N-i)/ARMS_N:0,title={},pick={};
+  powerAt(s,upto).forEach(x=>{if(x.rank<=ARMS_N)title[s.own[x.rid]]=wt(x.rank-1)});
+  const t=s.rosters.map(r=>{const id=r.roster_id;let win=0,pf=0,max=0;
+    s.games.forEach(g=>{if(g.w>upto||(g.a!==id&&g.b!==id))return;const x=g.a===id?g.pa:g.pb,y=g.a===id?g.pb:g.pa;win+=x>y?1:x<y?0:.5;pf+=x});
+    s.done.forEach(w=>{if(w>upto)return;const o=optWeek(s,w,id),e=s.wk[w]?.find(y=>y.rid===id);max+=o??e?.pts??0});
+    return{id,win,pf,max}});
+  const po=S.league.settings.playoff_teams||6,seeded=[...t].sort((a,b)=>b.win-a.win||b.pf-a.pf||a.id-b.id);
+  [...seeded.slice(po).sort((a,b)=>a.max-b.max||a.pf-b.pf||a.id-b.id),...seeded.slice(0,po).reverse()].slice(0,ARMS_N).forEach((x,i)=>pick[s.own[x.id]]=wt(i));
+  return{title,pick,season:s.season,w:upto};
+}
 function rivalries(cut){
-  const cur=+S.seas[0].season,P={},cont=S.seas.map((_,si)=>contenders(si)),B=teamBuilds(cut);
+  const cur=+S.seas[0].season,P={},cont=S.seas.map((_,si)=>contenders(si)),AR=armsRace(cut),ck=[...curKeys()];
   const get=(a,b)=>{const k=pkey(a,b);return P[k]||(P[k]={k,a:a<b?a:b,b:a<b?b:a,g:[],trades:[]})};
   S.seas.forEach(s=>s.games.forEach(g=>{if(!g.ka||!g.kb||g.ka===g.kb)return;const key=+g.season*100+g.w;if(key<cut)get(g.ka,g.kb).g.push({...g,key,po:false,kind:"Regular season",tw:1})}));
   (S._pm||(S._pm=playoffMeetings())).forEach(g=>{if(!g.ka||!g.kb||g.ka===g.kb)return;const key=+g.season*100+g.w;if(key<cut)get(g.ka,g.kb).g.push({...g,key})});
+  // every pair of current teams, so two teams in an arms race have a score before they've met
+  for(let i=0;i<ck.length;i++)for(let j=i+1;j<ck.length;j++)get(ck[i],ck[j]);
   S.seas.forEach((s,si)=>(s.trades||[]).forEach(t=>{const key=+s.season*100+(+t.leg||0);if(key>=cut)return;const ks=[...new Set((t.roster_ids||[]).map(r=>s.own[r]).filter(Boolean))];for(let i=0;i<ks.length;i++)for(let j=i+1;j<ks.length;j++)get(ks[i],ks[j]).trades.push({t,si,key,when:t.status_updated||t.created})}));
   Object.values(P).forEach(p=>{
     p.g.sort((x,y)=>x.key-y.key||(x.po?1:0)-(y.po?1:0));
-    let wa=0,wb=0,tt=0,lead=0,lc=0,fam=0,comp=0,stakes=0,drama=0,win=0,close=0,nb=0,pom=0,marg=0,mn=0;
+    let wa=0,wb=0,tt=0,lead=0,lc=0,fam=0,comp=0,stakes=0,drama=0,arms=0,close=0,nb=0,pom=0,marg=0,mn=0;
     p.g.forEach(g=>{
       const r=RIV_DECAY**Math.max(0,cur-+g.season),aIs=g.ka===p.a,sa=aIs?g.pa:g.pb,sb=aIs?g.pb:g.pa;
       const res=g.po?(g.win===p.a?1:g.win===p.b?-1:0):(sa>sb?1:sa<sb?-1:0);
@@ -1697,11 +1715,11 @@ function rivalries(cut){
     const n=wa+wb+tt,bal=n?1-Math.abs(wa-wb)/n:0;
     // An even series is the heart of a rivalry: balance scales competitiveness hardest, and also tempers volume, stakes and drama
     const bf=.6+.4*bal;comp*=.4+.6*bal;drama+=1.2*lc;fam*=bf;stakes*=bf;drama*=bf;
-    // Similar builds: only for current teams that have played; full weight once they've met three times
-    const ba=B[p.a],bb=B[p.b],sim=ba&&bb?1-Math.abs(ba.idx-bb.idx):null;
-    if(sim!=null&&n)win=1.6*sim*sim*Math.min(1,n/3)*bf;
-    const raw=fam+comp+stakes+drama+win;
-    Object.assign(p,{wa,wb,tt,n,bal,lc,close,nb,pom,avgM:mn?marg/mn:null,raw,sim,score:raw?100*(1-Math.exp(-raw/RIV_K)):0,parts:{fam,comp,stakes,drama,win}});
+    // Arms race: whether or not they've met, and not tempered by series balance
+    const side=m=>(m?.[p.a]||0)*(m?.[p.b]||0),st=side(AR.title),sp=side(AR.pick);arms=ARMS_K*Math.max(st,sp);
+    p.race=!arms?null:st>=sp?{k:"title",a:AR.title[p.a],b:AR.title[p.b]}:{k:"pick",a:AR.pick[p.a],b:AR.pick[p.b]};
+    const raw=fam+comp+stakes+drama+arms;
+    Object.assign(p,{wa,wb,tt,n,bal,lc,close,nb,pom,avgM:mn?marg/mn:null,raw,score:raw?100*(1-Math.exp(-raw/RIV_K)):0,parts:{fam,comp,stakes,drama,arms}});
   });
   return P;
 }
@@ -1735,6 +1753,8 @@ const compLegend=()=>`<div class="lg">${RCOMP.map(([,l],i)=>`<span><i class="sq"
 function rivFacts(p,A){
   const B=A===p.a?p.b:p.a,NA=mname(A),NB=mname(B),wA=A===p.a?p.wa:p.wb,wB=A===p.a?p.wb:p.wa,t=p.tt?"-"+p.tt:"",f=[];
   if(p.n)f.push(`${wA>wB?`${NA} leads the series ${wA}-${wB}${t}`:wB>wA?`${NB} leads the series ${wB}-${wA}${t}`:`The series is tied ${wA}-${wB}${t}`} after ${p.n} meeting${p.n>1?"s":""}${p.lc?`, and the lead has changed hands ${p.lc} time${p.lc>1?"s":""}`:""}`);
+  if(p.race){const rk=w=>Math.round(ARMS_N*(1-w))+1,ra=rk(A===p.a?p.race.a:p.race.b),rb=rk(A===p.a?p.race.b:p.race.a);
+    f.push(p.race.k==="title"?`Both chasing the title: #${ra} and #${rb} in this week's power rankings`:`Both chasing the 1.01: picks ${ra} and ${rb} in next draft's order if the season ended today`)}
   if(p.close)f.push(`${p.close} of ${p.n} games decided by under 10 points${p.nb?`, ${p.nb} by under 5`:""}`);
   p.g.filter(g=>g.po).forEach(g=>f.push(`Met in the ${g.season} ${g.kind.toLowerCase()}, won by ${mname(g.win)}`));
   let k=0,last=null;for(let i=p.g.length-1;i>=0;i--){const r=p.g[i].res;if(!r||(last!=null&&r!==last))break;last=r;k++}
@@ -1751,13 +1771,13 @@ function renderRivals(){
   $("rvfilter").hidden=true;$("rvbody2").innerHTML="";
   if(!S.deep){body.innerHTML=wait;return}
   const {now,prev,Lk}=rivState(),pool=curKeys(),former=$("rvformer").checked;
-  const all=Object.values(now).filter(p=>p.n>0);
-  if(!all.length){body.innerHTML='<p class="note">Rivalries appear once teams have played each other.</p>';return}
+  const all=Object.values(now).filter(p=>p.raw>0);
+  if(!all.length){body.innerHTML='<p class="note">Rivalries appear once teams have played each other or are racing for the same prize.</p>';return}
   const cur=[...pool].sort((a,b)=>mname(a).localeCompare(mname(b)));
   opts($("rvteam"),[["","All teams"],...cur.map(k=>[k,mname(k)])],"");meDefault($("rvteam"));
   const nm=nextMeetings(),nextW=Object.values(nm).length?Math.min(...Object.values(nm)):null;
   const prevRival={};cur.forEach(k=>{const r=rivalOf(prev,k,pool);if(r)prevRival[k]=r.o});
-  const delta=p=>Lk?(prev[p.k]&&(prev[p.k].n||prev[p.k].trades.length)?p.score-prev[p.k].score:null):0;
+  const delta=p=>Lk?(prev[p.k]&&(prev[p.k].raw>0||prev[p.k].trades.length)?p.score-prev[p.k].score:null):0;
   // --- rivalry watch ---
   const inPool=p=>pool.has(p.a)&&pool.has(p.b),poolPairs=all.filter(inPool).sort((a,b)=>b.score-a.score);
   const vs=p=>`<div class="who">${mlink(p.a)} <span class="mu">vs</span> ${mlink(p.b)}</div>`;
@@ -1795,7 +1815,7 @@ function renderRivals(){
   // --- rankings ---
   const team=$("rvteam").value,list=all.filter(p=>(former||inPool(p))&&(!team||p.a===team||p.b===team)).sort((a,b)=>b.score-a.score);
   const dCell=p=>{const d=delta(p);if(!Lk)return'<td class="n" data-v="">–</td>';if(d==null)return`<td class="n" data-v="${p.score}"><span class="fm">New</span></td>`;return`<td class="n" data-v="${d}">${d>=.5?`<span class="up">▲ ${Math.round(d)}</span>`:d<=-.5?`<span class="dn">▼ ${Math.round(-d)}</span>`:'<span class="mu">–</span>'}</td>`};
-  h+=`<div class="panel" style="margin-bottom:12px"><h3>Rivalry rankings</h3><p class="pcap">${team?`Every rivalry involving ${esc(mname(team))}`:"Every pair of managers who have played each other"}${Lk?`. Change is since before ${esc(lkText(Lk))}.`:""}</p>${compLegend()}<div class="tw"><table class="sortable" data-sid="rivrank"><thead><tr><th class="n" data-dir="asc">#</th><th>Rivalry</th><th>Score</th><th>Level</th><th class="n">Games</th><th>Series</th><th class="n">Avg margin</th><th class="n">Within 10</th><th class="n">Playoff games</th><th class="n">Lead changes</th><th class="n" data-tip="Shown for interest; trades don't count toward the score">Trades</th><th class="n">Change</th><th></th></tr></thead><tbody>${list.map((p,i)=>`<tr><td class="n">${i+1}</td><td class="wrap">${mlink(p.a)} <span class="mu">vs</span> ${mlink(p.b)}</td><td data-v="${p.score}"><div class="pts">${stackBar(p,"130px")}<span>${Math.round(p.score)}</span></div></td><td data-v="${p.score}">${rivLabel(p.score)}</td><td class="n">${p.n}</td><td class="wrap" data-v="${p.bal}">${p.n?esc(ser(p)).replace(/(\d+-\d+(?:-\d+)?)$/,'<span class="nw">$1</span>'):'<span class="mu">Never played</span>'}</td><td class="n">${p.avgM!=null?fmt(p.avgM):"–"}</td><td class="n">${p.close}</td><td class="n">${p.pom}</td><td class="n">${p.lc}</td><td class="n">${p.trades.length}</td>${dCell(p)}<td><button type="button" class="vbtn" data-rv="${esc(p.k)}">View</button></td></tr>`).join("")}</tbody></table></div></div>`;
+  h+=`<div class="panel" style="margin-bottom:12px"><h3>Rivalry rankings</h3><p class="pcap">${team?`Every rivalry involving ${esc(mname(team))}`:"Every pair of managers who have played each other or are racing for the same prize"}${Lk?`. Change is since before ${esc(lkText(Lk))}.`:""}</p>${compLegend()}<div class="tw"><table class="sortable" data-sid="rivrank"><thead><tr><th class="n" data-dir="asc">#</th><th>Rivalry</th><th>Score</th><th>Level</th><th class="n">Games</th><th>Series</th><th class="n">Avg margin</th><th class="n">Within 10</th><th class="n">Playoff games</th><th class="n">Lead changes</th><th class="n" data-tip="Shown for interest; trades don't count toward the score">Trades</th><th class="n">Change</th><th></th></tr></thead><tbody>${list.map((p,i)=>`<tr><td class="n">${i+1}</td><td class="wrap">${mlink(p.a)} <span class="mu">vs</span> ${mlink(p.b)}</td><td data-v="${p.score}"><div class="pts">${stackBar(p,"130px")}<span>${Math.round(p.score)}</span></div></td><td data-v="${p.score}">${rivLabel(p.score)}</td><td class="n">${p.n}</td><td class="wrap" data-v="${p.bal}">${p.n?esc(ser(p)).replace(/(\d+-\d+(?:-\d+)?)$/,'<span class="nw">$1</span>'):'<span class="mu">Never played</span>'}</td><td class="n">${p.avgM!=null?fmt(p.avgM):"–"}</td><td class="n">${p.close}</td><td class="n">${p.pom}</td><td class="n">${p.lc}</td><td class="n">${p.trades.length}</td>${dCell(p)}<td><button type="button" class="vbtn" data-rv="${esc(p.k)}">View</button></td></tr>`).join("")}</tbody></table></div></div>`;
   // --- series history ---
   const selK=[...pool,...(former?Object.keys(S.mgr).filter(k=>!pool.has(k)):[])].sort((a,b)=>mname(a).localeCompare(mname(b)));
   if(!RVSEL.a||!S.mgr[RVSEL.a]||!S.mgr[RVSEL.b]||RVSEL.me!==ME){const mine=ME?rivalOf(now,ME,pool):null;RVSEL=mine?{a:ME,b:mine.o,me:ME}:{a:top.a,b:top.b,me:ME}}
@@ -1808,16 +1828,16 @@ function renderRivals(){
   renderRivalDetail();
 }
 function howPanel(now,pool){
-  const ps=Object.values(now).filter(p=>p.n&&pool.has(p.a)&&pool.has(p.b)),tot=ps.reduce((a,p)=>a+p.score,0)||1;
+  const ps=Object.values(now).filter(p=>p.raw>0&&pool.has(p.a)&&pool.has(p.b)),tot=ps.reduce((a,p)=>a+p.score,0)||1;
   const share=k=>ps.reduce((a,p)=>a+(p.raw?p.score*p.parts[k]/p.raw:0),0)/tot;
   const TXT={
     fam:"<b>How often they've played.</b> Every meeting adds to it, regular season and playoffs alike. It's the base of every rivalry: two teams can't be rivals without games to remember.",
     comp:"<b>How close their games are.</b> A one-point game counts in full, a 20-point game counts half, and a 40-point blowout counts nothing. It's worth the most when the series is even and is cut hard when one team keeps winning.",
     stakes:"<b>How much was on the line.</b> A championship meeting is worth three extra games, a semifinal or quarterfinal two, and placement games a little. Regular-season games between two playoff teams also add a bit.",
     drama:"<b>How the series has swung.</b> Every time the overall series lead changes hands adds drama, and so does every game decided by under 5 points. A series that goes back and forth scores high here.",
-    win:"<b>Whether they're in the same window right now.</b> Contenders fight contenders for titles and rebuilders fight rebuilders for the future, so similar teams score higher. It's a nudge rather than the main event: it counts fully only once they've met three times, and less when the series is lopsided. Builds come from each team's contender score: recent scoring and roster strength first, then picks and age. The full table is on the Contend or rebuild tab."};
-  return`<div class="panel" id="rvhow" style="margin-top:12px"><h3>How rivalry scores work</h3><p class="pcap">Each pair of managers who have played earns points from five ingredients. The right column shows how much of all rivalry points in your league each one supplies right now.</p><div class="how">${RCOMP.map(([k,l],i)=>`${i?"<hr>":""}<div class="hn"><i class="sq" style="background:var(--c${i+1})"></i>${l}</div><div class="ht">${TXT[k]}</div><div class="hs"><strong>${Math.round(share(k)*100)}%</strong> of rivalry points<div class="cbar"><b style="width:${share(k)*100}%;background:var(--c${i+1})"></b></div></div>`).join("")}</div>
-  <ul class="adj"><li><b>Even series matter most.</b> A lopsided series counts for less across the board. A 7-0 sweep keeps about 60% of its familiarity, stakes, drama and similar-builds points and 40% of its competitiveness, because one team dominating isn't much of a rivalry.</li><li><b>Recent seasons count more.</b> Each season back is worth 15% less, so rivals shift as the league moves on.</li><li><b>Trades don't count.</b> In dynasty, contenders and rebuilders trade with each other, so frequent trade partners usually aren't rivals. Trade counts are still shown for interest.</li><li><b>Levels.</b> Scores run from 0 to 100: 80 and up is a blood feud, 60 to 79 bitter rivals, 40 to 59 heated, 20 to 39 simmering, and under 20 friendly.</li><li><b>Tags and arrows.</b> Mutual means two teams are each other's rival. New means a team's rival changed after the latest week. Green ▲ and red ▼ show how much a score moved after that week.</li><li><b>Always current.</b> Everything is recalculated from Sleeper each time you load the page.</li></ul></div>`;
+    arms:"<b>Whether they're chasing the same prize right now.</b> The title race is the top 6 in this week's power rankings; the race for the 1.01 is the first 6 picks in next draft's order if the season ended today. Two teams in the same race score 4.5 × their two weights, where #1 weighs 1 and each spot down weighs a sixth less, so #1 vs #2 adds 3.75 and #5 vs #6 adds 0.25. It counts whether or not they've met, isn't reduced by a lopsided series, and is redone every week."};
+  return`<div class="panel" id="rvhow" style="margin-top:12px"><h3>How rivalry scores work</h3><p class="pcap">Each pair of managers earns points from five ingredients. The right column shows how much of all rivalry points in your league each one supplies right now.</p><div class="how">${RCOMP.map(([k,l],i)=>`${i?"<hr>":""}<div class="hn"><i class="sq" style="background:var(--c${i+1})"></i>${l}</div><div class="ht">${TXT[k]}</div><div class="hs"><strong>${Math.round(share(k)*100)}%</strong> of rivalry points<div class="cbar"><b style="width:${share(k)*100}%;background:var(--c${i+1})"></b></div></div>`).join("")}</div>
+  <ul class="adj"><li><b>Even series matter most.</b> A lopsided series counts for less across the board. A 7-0 sweep keeps about 60% of its familiarity, stakes and drama points and 40% of its competitiveness (the arms race isn't reduced), because one team dominating isn't much of a rivalry.</li><li><b>Recent seasons count more.</b> Each season back is worth 15% less, so rivals shift as the league moves on.</li><li><b>Trades don't count.</b> In dynasty, contenders and rebuilders trade with each other, so frequent trade partners usually aren't rivals. Trade counts are still shown for interest.</li><li><b>Levels.</b> Scores run from 0 to 100: 80 and up is a blood feud, 60 to 79 bitter rivals, 40 to 59 heated, 20 to 39 simmering, and under 20 friendly.</li><li><b>Tags and arrows.</b> Mutual means two teams are each other's rival. New means a team's rival changed after the latest week. Green ▲ and red ▼ show how much a score moved after that week.</li><li><b>Always current.</b> Everything is recalculated from Sleeper each time you load the page.</li></ul></div>`;
 }
 document.addEventListener("click",e=>{if(e.target.id==="rvhowbtn")$("rvhow")?.scrollIntoView({behavior:"smooth",block:"start"})});
 function marginChart(p,A,W){
@@ -1845,7 +1865,7 @@ function renderRivalDetail(){
   const {now}=rivState(),A=RVSEL.a,B=RVSEL.b;
   if(!A||!B||A===B){box.innerHTML='<p class="note">Pick two different teams to see their series.</p>';return}
   const p=now[pkey(A,B)];
-  if(!p||!p.n){box.innerHTML=`<p class="note">${esc(mname(A))} and ${esc(mname(B))} haven't played each other yet, so they don't have a rivalry score.</p>`;return}
+  if(!p||!p.raw){box.innerHTML=`<p class="note">${esc(mname(A))} and ${esc(mname(B))} haven't played each other and aren't racing for the same prize right now, so they don't have a rivalry score.</p>`;return}
   const NA=mname(A),NB=mname(B),cs=RCOMP.map(([k,l,d],i)=>({k,l,d,i,v:p.raw?p.score*p.parts[k]/p.raw:0})),cm=Math.max(25,...cs.map(c=>c.v));
   const cw=$("rvbody").clientWidth||900,wide=cw>=900,W=Math.round(Math.max(300,Math.min(1100,wide?cw-34-340-28:cw-34)));
   let h=`<div class="panel" style="margin-bottom:12px"><h3>${esc(NA)} vs ${esc(NB)}</h3><p class="pcap">Rivalry score and every meeting, ${p.n} game${p.n===1?"":"s"}${p.trades.length?` and ${p.trades.length} trade${p.trades.length>1?"s":""}`:""}</p><div class="rvd"><div><div class="rvhead"><b>${Math.round(p.score)}</b><span>${rivLabel(p.score)}</span></div><div class="hb">${cs.map(c=>`<span><i class="sq" style="background:var(--c${c.i+1})"></i>${c.l}</span><div class="tr" data-tip="${esc(c.d)}"><b style="width:${c.v/cm*100}%;background:var(--c${c.i+1})"></b></div><span class="v">${fmt(c.v)}</span>`).join("")}</div><ul class="facts">${rivFacts(p,A).map(f=>`<li>${esc(f)}</li>`).join("")}</ul></div>`;
@@ -3382,8 +3402,21 @@ function ppgRanks(s){
   s._ppg={n:s.done.length,r};return r;
 }
 const dlWho=r=>`${r.o.season} ${r.o.label} ${pName(r.o.pid)}`;
-function hitTip(b){const hs=b.rows.filter(r=>r.hit).sort((x,y)=>x.top.k-y.top.k),cut=b.rows[0].o.round<=2?24:36;
-  return hs.length?`${hs.length} of ${b.n} hit (top ${cut} by points per game)\n`+hs.map(r=>`${dlWho(r)}: ${posOf(r.o.pid)}${r.top.k} in ${r.top.s}`).join("\n"):`No hits yet out of ${plural(b.n,"pick")} (needs a top ${cut} season by points per game)`}
+function hitTip(b){const hs=b.rows.filter(r=>r.hit).sort((x,y)=>x.top.k-y.top.k);
+  return hs.length?`${hs.length} of ${b.n} hit their slot's target (by points per game)\n`+hs.map(r=>`${dlWho(r)}: ${posOf(r.o.pid)}${r.top.k} in ${r.top.s}, target top ${r.tgt}`).join("\n"):`No hits yet out of ${plural(b.n,"pick")} (a hit is a season at or above his slot's target by points per game)`}
+/* Draft grades: every rookie pick is judged on an absolute scale against his slot, two ways.
+   Value: his FantasyCalc dynasty value today against what a pick in that round and third of the round (early, mid, late) is worth today.
+   Production: each NFL season since the draft, his points-per-game rank at his position against his slot's target
+   (1.01 to 1.04 top 12, 1.05 through round 2 top 24, later rounds top 36; tight ends half those ranks).
+   The two blend by how many seasons the class has played, value first, production taking over. */
+const DG_TGT=o=>{const t=o.round===1&&o.inRound<=4?12:o.round<=2?24:36;return o.pos==="TE"||posOf(o.pid)==="TE"?t/2:t};
+const DG_W=y=>y<=0?1:y===1?.8:y===2?.65:y===3?.5:.3;
+const dgSeason=(k,t)=>k==null?-1:clamp((t-k)/t,-1,1);
+const letterAbs=x=>x>=.5?"A+":x>=.3?"A":x>=.1?"B+":x>=-.1?"B":x>=-.25?"B-":x>=-.45?"C":x>=-.65?"D":"F";
+function dgSlotVal(o){
+  const P=FC?.p,y=S.years[0],n=o.dr.teams||12,tier=o.inRound<=n/3?"early":o.inRound<=2*n/3?"mid":"late";
+  return P?.[y+"|"+o.round+"|"+tier]??P?.[y+"|"+o.round+"|"]??pickValFor(y,o.round,null).v??0;
+}
 function ppwTip(b){return`Points per week since the draft\n`+[...b.rows].sort((x,y)=>(y.ppw||0)-(x.ppw||0)).map(r=>`${dlWho(r)}: ${fmt(r.ppw||0)} a week, ${fmt(r.pts)} pts${r.top?`, best finish ${posOf(r.o.pid)}${r.top.k}`:""}`).join("\n")}
 // One row per rookie pick, with what the player has done in this league since
 function draftRows(){
@@ -3391,21 +3424,17 @@ function draftRows(){
   const ix=IX(),rows=[];
   ix.drafts.filter(d=>!d.startup).forEach(dr=>{
     const seas=S.seas.filter(s=>+s.season>=dr.season&&s.done&&s.done.length),weeks=sumOf(seas,s=>s.done.length);
-    dr.list.forEach(o=>{const pts=sumOf(seas,s=>s.pp?.[o.pid]||0);
-      rows.push({o,dr,pts,weeks,ppw:weeks?pts/weeks:null,hit:seas.some(s=>{const k=ppgRanks(s)[o.pid];return k!=null&&k<=(o.round<=2?24:36)}),top:seas.map(s=>({s:s.season,k:ppgRanks(s)[o.pid]})).filter(x=>x.k!=null).sort((x,y)=>x.k-y.k)[0]||null})})});
-  // what a pick at each slot usually returns: a smoothed average over nearby picks in every rookie draft,
-  // measured over the same number of weeks since the draft so a new class is compared with older classes at the same stage
-  const live=rows.filter(r=>r.ppw!=null);
-  live.forEach(r=>{const by={};(ix.flat[r.o.pid]||[]).forEach(e=>by[e.key]=(by[e.key]||0)+e.pts);let t=0;r.cum=ix.weeks.filter(w=>w.key>=r.dr.season*100).map(w=>t+=by[w.key]||0)});
-  const ppwAt=(q,W)=>{const n=Math.min(W,q.cum.length);return n?q.cum[n-1]/n:0};
-  rows.forEach(r=>{if(r.ppw==null){r.exp=r.voe=null;return}let a=0,b=0;live.forEach(q=>{const w=Math.exp(-(((q.o.pickNo-r.o.pickNo)/3)**2))*Math.min(1,q.weeks/r.weeks);a+=w*ppwAt(q,r.weeks);b+=w});r.exp=b?a/b:null;r.voe=r.exp!=null?r.ppw-r.exp:null});
-  // the same idea for trade value: what a player is worth today against picks around the same slot in the same draft.
-  // Staying inside one class keeps a new class, still priced on hope, from being measured against older ones that have already sorted out.
-  rows.forEach(r=>r.dv=dynVal(r.o.pid));
-  rows.forEach(r=>{let a=0,b=0;rows.forEach(q=>{if(q.dr!==r.dr)return;const w=Math.exp(-(((q.o.pickNo-r.o.pickNo)/3)**2));a+=w*q.dv;b+=w});r.expV=b?a/b:0;r.vov=r.dv-r.expV});
+    // NFL seasons the class has played: seasons since the draft with enough weeks in to rank players
+    const ranked=seas.filter(s=>Object.keys(ppgRanks(s)).length);
+    dr.list.forEach(o=>{const pts=sumOf(seas,s=>s.pp?.[o.pid]||0),tgt=DG_TGT(o),fin=ranked.map(s=>({s:s.season,k:ppgRanks(s)[o.pid]??null}));
+      rows.push({o,dr,pts,weeks,tgt,fin,yrs:ranked.length,ppw:weeks?pts/weeks:null,hit:fin.some(x=>x.k!=null&&x.k<=tgt),top:fin.filter(x=>x.k!=null).sort((x,y)=>x.k-y.k)[0]||null,
+        prod:ranked.length?avgOf(fin.map(x=>dgSeason(x.k,tgt))):null})})});
+  // trade value against what a pick in that slot is worth today, then the blended pick score
+  rows.forEach(r=>{r.dv=dynVal(r.o.pid);r.expV=dgSlotVal(r.o);r.vov=r.dv-r.expV;
+    r.val=FC&&r.expV>0?clamp(r.vov/r.expV,-1,1):null;const wv=DG_W(r.yrs);
+    r.sc=r.val!=null&&r.prod!=null?wv*r.val+(1-wv)*r.prod:r.val??(r.yrs?r.prod:null)});
   return S._dr=rows;
 }
-const letterZ=z=>z>=1.1?"A+":z>=.6?"A":z>=.25?"B+":z>=-.25?"B":z>=-.6?"B-":z>=-1.1?"C":z>=-1.6?"D":"F";
 function renderDlab(){
   const body=$("dlabbody");
   if(!S.deep){body.innerHTML=wait;return}
@@ -3417,23 +3446,26 @@ function renderDlab(){
   const third=Math.ceil(teams/3),bucket=o=>o.round===1?(o.inRound<=third?[0,`1.01 to 1.${String(third).padStart(2,"0")}`]:o.inRound<=2*third?[1,`1.${String(third+1).padStart(2,"0")} to 1.${String(2*third).padStart(2,"0")}`]:[2,`1.${String(2*third+1).padStart(2,"0")} to 1.${String(teams).padStart(2,"0")}`]):o.round===2?(o.inRound<=teams/2?[3,"Early 2nd"]:[4,"Late 2nd"]):[3+o.round,`${ord(o.round)} round`];
   const B={};live.forEach(r=>{const[i,l]=bucket(r.o),b=B[i]||(B[i]={i,l,n:0,hit:0,ppw:[],best:null});b.n++;(b.rows||(b.rows=[])).push(r);if(r.hit)b.hit++;b.ppw.push(r.ppw);if(!b.best||r.pts>b.best.pts)b.best=r});
   const bl=Object.values(B).sort((a,b)=>a.i-b.i),bm=Math.max(...bl.map(b=>avgOf(b.ppw)),1);
-  h+=panelX("Hit rate by draft slot",`What picks in each range have returned across ${plural(rd.length,"rookie draft")}. A hit is a top 24 season at the position by points per game for a 1st or 2nd round pick, top 36 for a 3rd or 4th. Hover a bar for the players behind it.${rd.length<3?" With this few drafts the numbers move a lot.":""}`,
+  h+=panelX("Hit rate by draft slot",`What picks in each range have returned across ${plural(rd.length,"rookie draft")}. A hit is a season at or above the slot's target by points per game at his position: top 12 for 1.01 to 1.04, top 24 through the 2nd round, top 36 after that, and half those ranks for tight ends. Hover a bar for the players behind it.${rd.length<3?" With this few drafts the numbers move a lot.":""}`,
     live.length?tblX("slots2",`<th data-dir="asc">Slot</th><th class="n" data-tip="Games with no points are left out of the per-game average, and a season needs games in at least half its weeks (six is always enough)">Hits</th><th>Hit rate</th><th>Points per week</th><th>Best pick so far</th>`,
       bl.map(b=>`<tr><td data-v="${b.i}"><b>${b.l}</b></td><td class="n" data-v="${b.hit}">${b.hit} <span class="mu">of ${b.n}</span></td><td data-v="${b.hit/b.n}"><div class="pts" data-tip="${esc(hitTip(b))}"><div class="pfbar" style="width:120px"><b style="width:${b.hit/b.n*100}%"></b></div><span>${Math.round(b.hit/b.n*100)}%</span></div></td><td data-v="${avgOf(b.ppw)}"><div class="pts" data-tip="${esc(ppwTip(b))}"><div class="minibar" style="width:120px"><b style="width:${avgOf(b.ppw)/bm*100}%"></b></div><span>${fmt(avgOf(b.ppw))}</span></div></td><td><div class="dgp">${plink(b.best.o.pid)}<em>${b.best.o.season} ${b.best.o.label} · ${fmt(b.best.pts)} pts</em></div></td></tr>`).join("")):emptyX("No rookie class has played a week yet."),"dl-slot");
-  // draft grades
-  const DG_VAL=.7,M={};rows.forEach(r=>{const k=r.o.k;if(!k)return;const m=M[k]||(M[k]={k,n:0,hit:0,voe:0,vn:0,vov:0,pts:0,best:null,worst:null});m.n++;m.pts+=r.pts;m.vov+=r.vov;if(r.hit)m.hit++;if(r.voe!=null){m.voe+=r.voe;m.vn++}if(!m.best||r.vov>m.best.vov)m.best=r;if(!m.worst||r.vov<m.worst.vov)m.worst=r});
-  const ml=Object.values(M),avgV=m=>m.vn?m.voe/m.vn:null,avgT=m=>m.vov/m.n,zs=(xs)=>{const v=xs.filter(x=>x!=null),mu=avgOf(v),sd=Math.sqrt(avgOf(v.map(x=>(x-mu)**2)))||1;return x=>x==null?null:(x-mu)/sd};
-  const zT=zs(ml.map(avgT)),zP=zs(ml.map(avgV));
-  // trade value carries 70% of the grade, points 30%; a manager whose picks have not played yet is graded on value alone
-  ml.forEach(m=>{m.zt=zT(avgT(m));m.zp=zP(avgV(m));m.z=m.zp==null?m.zt:DG_VAL*m.zt+(1-DG_VAL)*m.zp;m.g=letterZ(m.z)});ml.sort((a,b)=>b.z-a.z);
-  const tm=Math.max(.1,...ml.map(m=>Math.abs(avgT(m)))),vm=Math.max(.5,...ml.map(m=>Math.abs(avgV(m)||0)));
+  // draft grades: one per class and one all-time, each the average pick score of a manager's picks
+  const M={},gcls=[...new Set(rows.map(r=>r.dr.season))].sort((a,b)=>b-a);
+  rows.forEach(r=>{const k=r.o.k;if(!k||r.sc==null)return;const m=M[k]||(M[k]={k,rs:[],by:{}});m.rs.push(r);(m.by[r.dr.season]||(m.by[r.dr.season]=[])).push(r)});
+  const ml=Object.values(M);ml.forEach(m=>{m.sc=avgOf(m.rs.map(r=>r.sc));m.g=letterAbs(m.sc);m.hit=m.rs.filter(r=>r.hit).length;
+    m.val=m.rs.some(r=>r.val!=null)?avgOf(m.rs.filter(r=>r.val!=null).map(r=>r.vov)):null;m.prod=m.rs.some(r=>r.prod!=null)?avgOf(m.rs.filter(r=>r.prod!=null).map(r=>r.prod)):null;
+    const bv=m.rs.filter(r=>r.val!=null).sort((a,b)=>b.vov-a.vov);m.best=bv[0]||null;m.worst=bv.at(-1)||null});
+  ml.sort((a,b)=>b.sc-a.sc);
+  const yrsOf=c=>Math.max(0,...rows.filter(r=>r.dr.season===c).map(r=>r.yrs)),mixTxt=c=>{const y=yrsOf(c),w=DG_W(y);return y?`${plural(y,"NFL season")} played: ${Math.round(w*100)}% value, ${Math.round((1-w)*100)}% production`:"No NFL season played yet: value only"};
+  const gTip=(rs,c)=>`${c?c+" class. "+mixTxt(c)+"\n":""}`+rs.slice().sort((a,b)=>b.sc-a.sc).map(r=>`${r.o.season} ${r.o.label} ${pName(r.o.pid)}: ${letterAbs(r.sc)}${r.val!=null?`, worth ${fv2(r.dv)} vs ${fv2(r.expV)} for the slot`:""}${r.prod!=null?`, ${r.fin.map(x=>x.k!=null?posOf(r.o.pid)+x.k:"unranked").join(", ")} vs top ${r.tgt}`:""}`).join("\n");
+  const tm=Math.max(.1,...ml.map(m=>Math.abs(m.val||0))),pm=Math.max(.25,...ml.map(m=>Math.abs(m.prod||0)));
   const dvb=(v,mx,tip,d)=>v==null?'<span class="mu">–</span>':`<div class="pts"><div class="dv" style="width:80px" data-tip="${esc(tip)}"><b class="${v>=0?"p":"m"}" style="width:${Math.abs(v)/mx*50}%"></b></div><span>${sgn(v,d)}</span></div>`;
-  h+=panelX("Draft grades",`Every rookie pick is compared with picks around the same slot, two ways: what the player is worth today (${valSrc()}), and the points he has scored here per league week since the draft. Trade value is 70% of the grade and points 30%. Both columns are averages per pick, in firsts and in points per week. Hits shows how many of a manager's picks have hit.`,
-    ml.length?tblX("dgrades",`<th>Team</th><th>Grade</th><th class="n" data-tip="Picks with a top 24 season at their position by points per game (top 36 for rounds 3 and 4)">Hits</th><th data-tip="Average trade value today, in firsts, above or below what picks at those slots are usually worth. 70% of the grade">Value vs slot</th><th data-tip="Average points per week above or below what picks at those slots usually score. 30% of the grade">Points vs slot</th><th data-tip="The pick worth the most above its slot, in firsts">Best pick</th><th data-tip="The pick worth the least against its slot, in firsts">Biggest miss</th>`,
-      ml.map(m=>`<tr><td>${mlink(m.k)}</td><td data-v="${m.z}">${gradeChip(m.g)}</td><td class="n" data-v="${m.hit/m.n}">${m.hit} <span class="mu">of ${m.n}</span></td><td data-v="${avgT(m)}">${dvb(avgT(m),tm,sgn(avgT(m),2)+" firsts per pick against what those slots are usually worth today",2)}</td><td data-v="${avgV(m)??""}">${dvb(avgV(m),vm,avgV(m)==null?"":sgn(avgV(m),2)+" points per week against the usual return for those slots",2)}</td><td class="wrap" data-v="${m.best?.vov??""}">${m.best?`<div class="dgp">${plink(m.best.o.pid)}<em>${m.best.o.season} ${m.best.o.label} · ${sgn(m.best.vov,2)}</em></div>`:"–"}</td><td class="wrap" data-v="${m.worst?.vov??""}">${m.worst&&m.worst!==m.best?`<div class="dgp">${plink(m.worst.o.pid)}<em>${m.worst.o.season} ${m.worst.o.label} · ${sgn(m.worst.vov,2)}</em></div>`:"–"}</td></tr>`).join("")):emptyX("Grades appear once a rookie draft has been held."),"dl-grade");
+  h+=panelX("Draft grades",`Every rookie pick is graded against his slot on a fixed scale, not against the other managers: B means a class met expectation on average, A beat it, C and below fell short, and a strong year can have several A's. Two things count. <b>Value</b> is what the player is worth today (${valSrc()}) against what a pick in that round and third of the round is worth today. <b>Production</b> is his points-per-game rank at his position in each NFL season against his slot's target: top 12 for 1.01 to 1.04, top 24 through the 2nd round, top 36 after that, and half those ranks for tight ends. Value leads early and production takes over: 80/20 after one season, 65/35 after two, 50/50 after three, then 30/70. A pick counts for the manager who drafted him, wherever he plays now. Hover a grade for the picks behind it.`,
+    ml.length?tblX("dgrades",`<th>Team</th><th data-tip="Every rookie pick this manager has made">All-time</th>${gcls.map(c=>`<th data-tip="${esc(mixTxt(c))}">${c} class</th>`).join("")}<th class="n" data-tip="Picks with a season at or above their slot's target by points per game">Hits</th><th data-tip="Average trade value today, in firsts, above or below what picks at those slots are worth today">Value vs slot</th><th data-tip="Average season score against the slot's target: +1 is a top finish, 0 right on target, −1 unranked or twice the target">Production vs target</th><th data-tip="The pick worth the most above his slot, in firsts">Best pick</th><th data-tip="The pick worth the least against his slot, in firsts">Biggest miss</th>`,
+      ml.map(m=>`<tr><td>${mlink(m.k)}</td><td data-v="${m.sc}"><span data-tip="${esc(gTip(m.rs))}">${gradeChip(m.g)}</span></td>${gcls.map(c=>{const rs=m.by[c]||[];if(!rs.length)return'<td data-v=""><span class="mu">–</span></td>';const v=avgOf(rs.map(r=>r.sc));return`<td data-v="${v}"><span data-tip="${esc(gTip(rs,c))}">${gradeChip(letterAbs(v))}</span></td>`}).join("")}<td class="n" data-v="${m.hit/m.rs.length}">${m.hit} <span class="mu">of ${m.rs.length}</span></td><td data-v="${m.val??""}">${dvb(m.val,tm,m.val==null?"":sgn(m.val,2)+" firsts per pick against what those slots are worth today",2)}</td><td data-v="${m.prod??""}">${dvb(m.prod,pm,m.prod==null?"":sgn(m.prod,2)+" per season against the slot targets",2)}</td><td class="wrap" data-v="${m.best?.vov??""}">${m.best?`<div class="dgp">${plink(m.best.o.pid)}<em>${m.best.o.season} ${m.best.o.label} · ${sgn(m.best.vov,2)}</em></div>`:"–"}</td><td class="wrap" data-v="${m.worst?.vov??""}">${m.worst&&m.worst!==m.best?`<div class="dgp">${plink(m.worst.o.pid)}<em>${m.worst.o.season} ${m.worst.o.label} · ${sgn(m.worst.vov,2)}</em></div>`:"–"}</td></tr>`).join("")):emptyX("Grades appear once a rookie draft has been held."),"dl-grade");
   // every rookie pick: where he went against what he is worth now, with each class's usual value by slot
   if(rows.length>3){const curves=rd.map(d=>rows.filter(r=>r.dr===d).sort((a,b)=>a.o.pickNo-b.o.pickNo).map(r=>[r.o.pickNo,r.expV]));
-    h+=panelX("Draft slot against value today",`Every rookie pick in this league: where he was taken against what he is worth now, in firsts (${valSrc()}). The dashed line is the usual value at each slot${rd.length>1?", one line per class":""}; a dot above it has beaten his slot and a dot below it has fallen short, which is the value over slot behind the grades. Hover a dot for the player.`,
+    h+=panelX("Draft slot against value today",`Every rookie pick in this league: where he was taken against what he is worth now, in firsts (${valSrc()}). The dashed line is what a pick in that round and third of the round is worth today${rd.length>1?", one line per class":""}; a dot above it has beaten his slot and a dot below it has fallen short, which is the value half of the grades. Hover a dot for the player.`,
       `<div class="lg">${[...VPOS,"Other"].filter(p=>rows.some(r=>(VPOS.includes(r.o.pos)?r.o.pos:"Other")===p)).map(p=>`<span><i class="sq" style="background:var(--p-${p==="Other"?"x":p})"></i>${p}</span>`).join("")}</div><div style="max-width:1100px;margin:0 auto">${scatterSvg(rows.map(r=>({x:r.o.pickNo,y:r.dv,name:pName(r.o.pid),color:`var(--p-${VPOS.includes(r.o.pos)?r.o.pos:"x"})`,tip:`${pName(r.o.pid)} (${r.o.pos})\n${r.o.season} pick ${r.o.label}${r.o.k?", "+mname(r.o.k):""}\nWorth ${fv2(r.dv)} now, ${sgn(r.vov,2)} against his slot`})),
         {W:chartWidth(body,1100),labels:false,r:5,lines:curves,padX:1,xDec:0,xFloor:0,yFloor:0,xTitle:"Overall pick number",yTitle:"Value today, in firsts",label:"Rookie draft slot against value today"})}</div>`,"dl-map")}
   // tendencies
@@ -3960,14 +3992,14 @@ function renderHow(){
   // ---------- rivalry ----------
   b+=`<h3 class="hwg">Rivalries</h3>`;
   b+=add("how-rival","Rivalry score",go("rivals","Rivalries")+", "+go("recap","Weekly recap")+", "+go("profile","Team profile"),
-    `<p>Every pair of managers who have played earns raw points from five ingredients. Each meeting is weighted by how recent it is: a game from last season counts 15% less, two seasons back 28% less, and so on.</p>
+    `<p>Every pair of managers earns raw points from five ingredients. Each meeting is weighted by how recent it is: a game from last season counts 15% less, two seasons back 28% less, and so on.</p>
     <ul><li><b>Familiarity.</b> 1 point per meeting.</li>
     <li><b>Competitiveness.</b> Up to 1.5 points per meeting, scaled by how close it was: full marks for a one-point game, half for a 20-point game, nothing at 40 or more. The total is then multiplied by 0.4 + 0.6 × balance.</li>
     <li><b>Stakes.</b> A championship meeting adds 3, a semifinal or quarterfinal 2, a third-place game 0.5, and a regular-season game between two playoff teams 0.5.</li>
     <li><b>Drama.</b> 1.2 for every time the series lead changes hands and 0.7 for every game decided by under 5 points.</li>
-    <li><b>Similar builds.</b> 1.6 × (build similarity)² × min(1, games ÷ 3), where build similarity is 1 minus the gap between the two contender scores.</li></ul>
+    <li><b>Arms race.</b> Two teams chasing the same prize right now, whether or not they've met. The title race is the top 6 in the latest power rankings; the race for the 1.01 is the first 6 picks in next draft's order if the season ended after the latest week (non-playoff teams by lowest max points-for, then playoff teams from the lowest seed up). Weights run from 1 for #1 down to 1/6 for #6, and a pair in the same race adds 4.5 × weight A × weight B. Redone every week, not reduced by series balance and not weighted by season.</li></ul>
     ${fx("Balance <i>=</i> 1 <i>−</i> | wins A <i>−</i> wins B | <i>÷</i> games")}
-    <p>Familiarity, stakes, drama and similar builds are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.</p>
+    <p>Familiarity, stakes and drama are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.</p>
     ${fx(`Rivalry score <i>=</i> 100 <i>×</i> ( 1 <i>−</i> e<sup>−raw ÷ ${RIV_K}</sup> )`)}
     <p>That curve means early points move the score quickly and it never passes 100. <b>Levels:</b> 80 and up is a blood feud, 60 bitter rivals, 40 heated, 20 simmering, under 20 friendly. <b>Trades don't count</b>: in dynasty, contenders and rebuilders trade with each other, so trade partners usually aren't rivals. A manager's <b>nemesis</b> is the opponent they have the worst record against over at least two games.</p>
     ${ex(()=>{if(!S.deep)return"";const pool=curKeys(),p=Object.values(rivState().now).filter(x=>x.n&&pool.has(x.a)&&pool.has(x.b)).sort((a,x)=>x.score-a.score)[0];if(!p)return"";return`<b>${esc(mname(p.a))}</b> and <b>${esc(mname(p.b))}</b> have met ${plural(p.n,"time")} (${p.wa}-${p.wb}, balance ${fmt(p.bal,2)}). Raw points: ${RCOMP.map(([k,l])=>`${l.toLowerCase()} ${fmt(p.parts[k],2)}`).join(", ")}, a total of ${fmt(p.raw,2)}. 100 × (1 − e<sup>−${fmt(p.raw,2)} ÷ ${RIV_K}</sup>) = <b>${Math.round(p.score)}</b>, ${rivLabel(p.score).toLowerCase()}.`})}`);
@@ -3986,11 +4018,12 @@ function renderHow(){
     <li><b>FAAB overpay</b> (leagues that bid) is the winning bid minus one dollar more than the next-highest bid, or the whole bid when nobody else bid.${usesFaabSafe()?"":" Your league uses waiver priority, so the FAAB panels are hidden."}</li></ul>`);
   b+=add("how-draft","Draft numbers",go("dlab","Draft lab")+", "+go("drafts","Draft recap"),
     `<p>Draft lab looks at rookie drafts only; a startup draft (more than eight rounds) is left out. A pick's return is the points its player has scored in this league since the draft, on any roster.</p>
-    <ul><li><b>Hit.</b> The player has a season ranked in the top 24 at his position by points per game for a 1st or 2nd round pick, or in the top 36 for a 3rd or 4th round pick. Points per game leaves out weeks with no points. A season only counts once four of its weeks have been played, and the player needs games in at least half of them (never fewer than three; six is always enough). Ranks are among players rostered in this league that season, since unrostered players have no scores here.</li>
-    <li><b>Usual return for a slot.</b> A smoothed average of points per week for picks near that slot across every rookie draft here. Picks one slot away count almost fully, three slots away about a third. Every class is measured over the same stretch: a pick made 20 weeks of play ago is compared with what other classes' picks had done after their first 20 weeks, so rookies aren't marked down against second-year players.</li>
-    <li><b>Points over slot</b> is a pick's points per week minus that usual return.</li>
-    <li><b>Value over slot</b> is the same comparison on trade value: what the player is worth today, in firsts, minus the smoothed average value today of players taken around that slot in the same draft. Staying inside one class keeps a new class, still priced on hope, from being measured against older ones that have already sorted into hits and misses. <b>Draft slot against value today</b> draws every pick with that slot average as a dashed line.</li>
-    <li><b>Draft grade.</b> Each manager's average value over slot and average points over slot are each turned into a z-score against the other managers, then blended: 70% value, 30% points. A+ at +1.1 or better, A +0.6, B+ +0.25, B down to −0.25, B− −0.6, C −1.1, D −1.6, F below that. Best pick and biggest miss are by value over slot.</li>
+    <ul><li><b>Slot target.</b> What a pick should produce, by points-per-game rank at his position in a season: top 12 for 1.01 to 1.04, top 24 from 1.05 through the 2nd round, top 36 (a startable season) after that. Tight ends use half those ranks: top 6, 12 and 18. Points per game leaves out weeks with no points. A season only counts once four of its weeks have been played, and the player needs games in at least half of them (never fewer than three; six is always enough). Ranks are among players rostered in this league that season, since unrostered players have no scores here.</li>
+    <li><b>Hit.</b> A season at or above the slot target.</li>
+    <li><b>Production score</b> for one season:${fx("Season score <i>=</i> ( target <i>−</i> rank ) <i>÷</i> target, kept between <i>−</i>1 and +1")}An unranked season scores −1. A pick's production is the average over every NFL season since his draft.</li>
+    <li><b>Value score:</b> the player's dynasty value today against what a pick in that round and third of the round (early, mid or late) is worth today in FantasyCalc, using next year's picks.${fx("Value score <i>=</i> ( value <i>−</i> slot value ) <i>÷</i> slot value, kept between <i>−</i>1 and +1")}<b>Draft slot against value today</b> draws every pick with those slot values as a dashed line.</li>
+    <li><b>Pick score</b> blends the two by how many NFL seasons the class has played: value only before any, then 80% value and 20% production after one season, 65/35 after two, 50/50 after three, and 30/70 from four on. A rookie sitting behind a starter isn't docked much in year one, and a late-blooming receiver still counts.</li>
+    <li><b>Draft grade.</b> The average pick score of a manager's picks, for each class and all-time, on a fixed scale: A+ at +0.5 or better, A +0.3, B+ +0.1, B down to −0.1, B− −0.25, C −0.45, D −0.65, F below that. B means meeting expectation, and grades aren't curved, so a strong year can have several A's. A pick always counts for the manager who drafted him, on the player's real finish wherever he's rostered. Best pick and biggest miss are by value against the slot.</li>
     <li><b>Rookie class tracker</b> compares every class over the same number of weeks: however many the newest class has played.</li>
     <li><b>The draft, redone</b> (Draft recap) reorders a class by each player's trade value today. Points since the draft are shown but only split ties.</li></ul>
     <p>With only a few rookie drafts on record, slot averages and grades swing a lot. They firm up with each class.</p>`);

@@ -223,10 +223,10 @@ Each meeting is weighted by recency (each season back counts 15% less). The five
 - **Competitiveness:** closeness per game, where a 1-point game counts in full, a 20-point game counts half and a 40-point game counts nothing. It is multiplied by 0.4 + 0.6 × series balance.
 - **Stakes:** a championship adds 3 extra games' worth, a semifinal or quarterfinal adds 2, a 3rd-place game adds 0.5, and regular-season games between two playoff teams add 0.5.
 - **Drama:** each change of series lead adds 1.2, and each game decided by under 5 points adds 0.7.
-- **Similar builds:** 1.6 × (build similarity)² × min(1, games ÷ 3) × balance factor.
+- **Arms race** (replaced Similar builds): a bonus for two current teams chasing the same prize right now, whether or not they've met. Title side: the top 6 by power rank after the latest finished week. 1.01 side: the first 6 picks in next draft's order if the season ended after that week (non-playoff teams by lowest max points-for, then playoff teams from the lowest seed up). Weights: #1 = 1, then 5/6, 4/6, 3/6, 2/6, #6 = 1/6. Pair bonus = 4.5 × weight A × weight B when both are on the same side (the larger if both sides apply). Re-scored every week, not decayed and not reduced by series balance. Every pair of current teams is scored, so a pair in an arms race appears before they've met.
 
 How they combine:
-- **Series balance:** familiarity, stakes, drama and similar builds are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.
+- **Series balance:** familiarity, stakes and drama are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.
 - **Final score:** 100 × (1 − e^(−raw ÷ 8)).
 - **Levels:** 80 and up is a blood feud, 60 bitter rivals, 40 heated, 20 simmering, and under 20 friendly.
 - **Trades don't count.** The user's view is that in dynasty, contenders and rebuilders trade with each other, so trade partners aren't rivals.
@@ -246,12 +246,13 @@ How they combine:
 ## Draft lab and Draft recap
 Rookie drafts only; a draft of more than eight rounds is treated as a startup.
 
-- **Hit:** a season ranked in the top 24 at his position by points per game for a 1st or 2nd round pick, or in the top 36 for a 3rd or 4th round pick (the user's definition). Points per game leaves out weeks with no points. A season only counts once four of its weeks are played, and the player needs games in at least half of them (never fewer than three, capped at six). Ranks are among players rostered in the league that season.
-- **Usual return for a slot:** a smoothed average of points per week over nearby picks (weight e^(−(slots apart ÷ 3)²)), with every class measured over the same number of weeks since its draft.
-- **Points over slot:** points per week minus that usual return.
-- **Value over slot:** the player's trade value today, in firsts, minus the smoothed average value today of players taken around that slot in the same draft. It stays inside one class so a new class, still priced on hope, is not measured against older ones.
-- **Draft grade:** each manager's average value over slot and average points over slot become z-scores against the league, blended 70% value, 30% points (the user asked for value to weigh heavily): A+ at +1.1, A +0.6, B+ +0.25, B down to −0.25, B− −0.6, C −1.1, D −1.6, F below. Best pick and biggest miss are by value over slot.
-- **Draft slot against value today:** a scatter of every rookie pick, with each class's slot average as a dashed line.
+- **Slot target** (second grilling): judged each NFL season by points-per-game rank at the position. 1.01 to 1.04: top 12. 1.05 through the 2nd round: top 24. 3rd round on: top 36. Tight ends use half those ranks (6, 12, 18). Points per game leaves out weeks with no points. A season only counts once four of its weeks are played, and the player needs games in at least half of them (never fewer than three, capped at six). Ranks are among players rostered in the league that season.
+- **Hit:** a season at or above the slot target.
+- **Production score:** per season, (target − rank) ÷ target, clamped to −1…+1; unranked = −1. A pick's production is the average over the NFL seasons since his draft (seasons that produce ranks).
+- **Value score:** (dynasty value today − slot value) ÷ slot value, clamped to −1…+1. Slot value is FantasyCalc's price today for next year's pick in the same round and third of the round (early, mid, late by pick in round ÷ teams), falling back to the generic round price.
+- **Pick score:** value × w + production × (1 − w), where w by NFL seasons the class has played is 1 before any, 0.8 after one, 0.65 after two, 0.5 after three and 0.3 from four on. Value only when no season has ranks; production only when values are unavailable.
+- **Draft grade:** the average pick score of a manager's picks, per class and all-time, on an absolute scale with no curve: A+ ≥ +0.5, A ≥ +0.3, B+ ≥ +0.1, B ≥ −0.1, B− ≥ −0.25, C ≥ −0.45, D ≥ −0.65, F below. A pick always counts for the manager who drafted him, on the player's real finish wherever he's rostered. Best pick and biggest miss are by value against the slot. Replaces points over slot and the z-scored grade.
+- **Draft slot against value today:** a scatter of every rookie pick, with each class's slot values as a dashed line.
 - **Class tracker:** every class over the number of weeks the newest class has played.
 - **The draft, redone** (Draft recap): the class reordered by trade value today, ties by points. A position filter limits the rows shown without changing the redraft slots.
 
