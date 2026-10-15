@@ -340,14 +340,15 @@ body.hasback header{padding-top:46px}
 /* ---- your team ---- */
 .mesel{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:13px}.mesel[hidden]{display:none}.mesel select{max-width:220px}
 tr.isme>td,tr.isme>th{background:color-mix(in oklab,var(--flag) 11%,transparent)}tr.isme>:first-child{box-shadow:inset 3px 0 0 var(--flag)}
-.isme:not(tr){box-shadow:inset 0 0 0 2px color-mix(in oklab,var(--flag) 65%,transparent);border-radius:8px}.lvrow.isme{padding:8px 12px;margin:2px -12px}
+.isme:not(tr){box-shadow:inset 0 0 0 2px color-mix(in oklab,var(--flag) 65%,transparent);border-radius:8px}/* rows with no padding of their own get room inside the outline without moving their neighbours */.mrow.isme,.bkt.isme{padding:6px 10px;margin:-3px -10px}.lvrow.isme{padding:8px 12px;margin:-4px -12px}
 .picker{position:fixed;inset:0;z-index:60;background:rgba(10,12,20,.74);display:flex;align-items:flex-start;justify-content:center;padding:6vh var(--gut);overflow:auto}.picker[hidden]{display:none}
 .pickbox{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:780px;width:100%}.pickbox h2{margin:0 0 6px}.pickbox>p{color:var(--mu);margin:0 0 14px;max-width:70ch}
 .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:8px;margin-bottom:14px}
 .pickgrid button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:700}
 .pickgrid button:hover,.pickgrid button:focus-visible{border-color:var(--flag)}.pickgrid small{color:var(--mu);font-weight:400}
 /* ---- merged tabs and Home for your team ---- */
-.msec{font-size:clamp(20px,2.4vw,26px);margin:30px 0 10px;scroll-margin:12px}section>.msec:first-child{margin-top:4px}
+table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n+11):not(.isme):not(:has(.isme)),.feed.clip>:nth-child(n+11):not(.isme){display:none}.showall{display:block;margin:8px auto 4px;background:var(--pan);border:1px solid var(--line);border-radius:99px;padding:6px 16px;font:inherit;font-size:13px;color:var(--tx);cursor:pointer}.showall:hover{border-color:var(--mu)}
+.secsw{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 16px}.secsw button{background:var(--pan);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font:inherit;font-size:14px;color:var(--mu);cursor:pointer}.secsw button:hover{color:var(--tx)}.secsw button[aria-pressed="true"]{color:var(--tx);border-color:var(--flag);background:color-mix(in oklab,var(--flag) 16%,var(--pan));cursor:default}
 .hme{display:grid;gap:12px;grid-template-columns:1fr}@media(min-width:980px){.hme{grid-template-columns:repeat(2,minmax(0,1fr))}.hme>.wide{grid-column:1/-1}}
 .hme .panel{margin:0}
 .mu-big{font-size:clamp(28px,3vw,36px);font-weight:800;line-height:1.1}
@@ -360,7 +361,7 @@ tr.isme>td,tr.isme>th{background:color-mix(in oklab,var(--flag) 11%,transparent)
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 15, 2026, 12:15 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 15, 2026, 12:40 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -392,13 +393,13 @@ tr.isme>td,tr.isme>th{background:color-mix(in oklab,var(--flag) 11%,transparent)
     <div class="bar"><input type="text" id="pq" class="grow" placeholder="Search player or team…" aria-label="Search players"><select id="ptseason" aria-label="Season"></select><select id="ptpos" aria-label="Position"></select><select id="ptsort" aria-label="Sort"><option value="n">Most traded</option><option value="pts">Most points after a trade</option><option value="new">Most recent trade</option><option value="name">Player name</option></select></div>
     <div class="st" id="ptstatus"></div>
     <div id="pthl"></div>
-    <div id="ptlist"></div>
+    <div id="ptlist" data-cliplist></div>
   </section>
 
   <section id="p-hist" role="tabpanel" aria-labelledby="t-hist" hidden>
     <div class="bar"><input type="text" id="q" class="grow" placeholder="Search team or pick…" aria-label="Search"><select id="season" aria-label="Season"></select><select id="round" aria-label="Round"></select></div>
     <div class="st" id="hstatus"></div>
-    <div id="list"></div>
+    <div id="list" data-cliplist></div>
   </section>
 
   <section id="p-cap" role="tabpanel" aria-labelledby="t-cap" hidden>
@@ -575,29 +576,30 @@ const MERGE={tradehist:["tlab","ptrades","hist"],nextdraft:["board","tank","cap"
 const SECNAME={tlab:"Trade lab",ptrades:"Player trades",hist:"Pick trades",board:"Draft board",tank:"Tankathon",cap:"Pick capital",drafts:"Draft recap",dlab:"Draft lab",rosters:"Roster strength",watch:"Injuries and the age cliff",rivals:"Rivalries",h2h:"Head-to-head"};
 const kids=k=>MERGE[k]||[k],PARENT={};Object.entries(MERGE).forEach(([p,ch])=>ch.forEach(c=>PARENT[c]=p));
 const TABS=GROUPS.flatMap(g=>g[2]),groupOf=k=>GROUPS.find(g=>g[2].includes(k)),PANELS=[...new Set(TABS.flatMap(kids))];
-const tabOf=k=>TABS.includes(k)?k:PARENT[k]||null,inTab=k=>kids(tab).includes(k);
+// A tab that holds several sections shows one at a time, picked with the buttons at its top. The last one picked is remembered.
+const SEC={},curSec=p=>MERGE[p]?(MERGE[p].includes(SEC[p])?SEC[p]:MERGE[p][0]):p;
+const tabOf=k=>TABS.includes(k)?k:PARENT[k]||null,inTab=k=>curSec(tab)===k;
 const RENDER={home:renderHome,recap:renderRecap,board:renderBoard,hist:renderHist,ptrades:renderPtrades,cap:renderCap,drafts:renderDrafts,teams:renderTeams,profile:renderProfile,power:renderPower,h2h:renderH2H,rivals:renderRivals,records:renderRecords,
   live:renderLive,news:renderNews,race:renderRace,sched:renderSched,lineups:renderLineups,rosters:renderRosters,watch:renderWatch,builds:renderBuilds,tank:renderTank,dlab:renderDlab,tlab:renderTlab,tcalc:renderTcalc,waivers:renderWaivers,history:renderHistory,lookup:renderLookup,how:renderHow};
 $("nav").innerHTML=GROUPS.map(([id,name])=>`<button role="tab" id="g-${id}" aria-controls="subnav">${esc(name)}</button>`).join("");
 $("subnav").innerHTML=TABS.map(k=>`<button role="tab" id="t-${k}" aria-controls="p-${k}">${esc(TABNAME[k])}</button>`).join("");
-Object.entries(MERGE).forEach(([p,ch])=>ch.forEach((c,i)=>{const sec=$("p-"+c);sec.setAttribute("aria-labelledby","t-"+p);
-  sec.insertAdjacentHTML("afterbegin",(i?"":`<div class="jump"><span>Sections</span>${ch.map(x=>`<button type="button" class="jb" data-j="sec-${x}">${esc(SECNAME[x])}</button>`).join("")}</div>`)+`<h2 class="msec" id="sec-${c}">${esc(SECNAME[c])}</h2>`);
-  if(i)$("p-"+ch[i-1]).after(sec)}));
+Object.entries(MERGE).forEach(([p,ch])=>ch.forEach(c=>{const sec=$("p-"+c);sec.setAttribute("aria-labelledby","t-"+p);
+  sec.insertAdjacentHTML("afterbegin",`<div class="secsw" role="group" aria-label="${esc(TABNAME[p])} sections">${ch.map(x=>`<button type="button" data-sec="${x}" aria-pressed="${x===c}">${esc(SECNAME[x])}</button>`).join("")}</div>`)}));
+document.addEventListener("click",e=>{const b=e.target.closest(".secsw [data-sec]");if(!b||b.getAttribute("aria-pressed")==="true")return;
+  showTab(b.dataset.sec);const sec=$("p-"+b.dataset.sec);if(sec.getBoundingClientRect().top<0)sec.scrollIntoView({block:"start"})});
 function showTab(k,focus){
-  // an old tab that is now a section of another tab opens that tab at the section
-  const anchor=!TABS.includes(k)&&PARENT[k]?k:null;k=tabOf(k)||"home";tab=k;
+  // an old tab that is now a section of another tab opens that tab showing that section
+  const anchor=!TABS.includes(k)&&PARENT[k]?k:null;k=tabOf(k)||"home";tab=k;if(anchor)SEC[k]=anchor;
   const g=groupOf(k);
   GROUPS.forEach(([id])=>{const b=$("g-"+id),on=id===g[0];b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1});
   $("subnav").hidden=g[2].length<2;
   TABS.forEach(t=>{const b=$("t-"+t),on=t===k;b.hidden=!g[2].includes(t);b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1});
-  PANELS.forEach(p=>$("p-"+p).hidden=!kids(k).includes(p));
-  try{history.replaceState(null,"","#"+(anchor||k))}catch{}
+  PANELS.forEach(p=>$("p-"+p).hidden=p!==curSec(k));
+  try{history.replaceState(null,"","#"+(MERGE[k]&&SEC[k]?curSec(k):k))}catch{}
   if(focus)$("t-"+k).focus();
   renderTab(k);
-  if(anchor)requestAnimationFrame(()=>$("sec-"+anchor)?.scrollIntoView({block:"start"}));
-  return anchor;
 }
-function renderTab(k){if(!S)return;if(/^Couldn/.test($("status").textContent)&&S)setSt("");kids(tabOf(k)||k).forEach(c=>{try{RENDER[c]()}catch(e){console.error(e);setSt(`Couldn't draw ${SECNAME[c]||TABNAME[c]||"this tab"}: `+e.message,true)}});markMe()}
+function renderTab(k){if(!S)return;if(/^Couldn/.test($("status").textContent)&&S)setSt("");[curSec(tabOf(k)||k)].forEach(c=>{try{RENDER[c]()}catch(e){console.error(e);setSt(`Couldn't draw ${SECNAME[c]||TABNAME[c]||"this tab"}: `+e.message,true)}});markMe()}
 const lastIn={};
 GROUPS.forEach(([id,,tabs])=>$("g-"+id).addEventListener("click",()=>showTab(lastIn[id]||tabs[0])));
 TABS.forEach(k=>$("t-"+k).addEventListener("click",()=>{lastIn[groupOf(k)[0]]=k;showTab(k)}));
@@ -1908,8 +1910,21 @@ function clickSort(th){
 }
 document.addEventListener("click",e=>{const th=e.target.closest("th.srt");if(th)clickSort(th)});
 document.addEventListener("keydown",e=>{const th=e.target.closest?.("th.srt");if(th&&(e.key==="Enter"||e.key===" ")){e.preventDefault();clickSort(th)}});
+// Long tables and lists show their first 10 rows, plus your team's, until Show all is pressed. Sorting a shortened
+// table re-sorts every row, so the 10 shown are always the top of the current order.
+const CLIP_N=10,CLIP_MIN=15;
+function clipLong(){
+  const one=(host,list,n)=>{let b=host.nextElementSibling;if(!b?.classList.contains("showall"))b=null;
+    if(n>CLIP_MIN){if(!b){list.classList.add("clip");host.insertAdjacentHTML("afterend",`<button type="button" class="showall"></button>`);b=host.nextElementSibling}
+      b.dataset.n=n;const txt=list.classList.contains("clip")?`Show all ${n}`:`Show the top ${CLIP_N}`;if(b.textContent!==txt)b.textContent=txt}
+    else{list.classList.remove("clip");b?.remove()}};
+  document.querySelectorAll("main section:not([hidden]) table").forEach(t=>{if(!t.closest(".hwt"))one(t.closest(".tw")||t,t,t.tBodies[0]?.rows.length||0)});
+  document.querySelectorAll("main section:not([hidden]) .feed,main section:not([hidden]) [data-cliplist]").forEach(l=>one(l,l,l.children.length));
+}
+document.addEventListener("click",e=>{const b=e.target.closest(".showall");if(!b)return;const host=b.previousElementSibling,list=host.matches("table,.feed,[data-cliplist]")?host:host.querySelector("table");
+  const was=list.classList.toggle("clip");b.textContent=was?`Show all ${b.dataset.n}`:`Show the top ${CLIP_N}`;if(was&&host.getBoundingClientRect().top<0)host.scrollIntoView({block:"start"})});
 new MutationObserver(()=>{
-  document.querySelectorAll("table.sortable:not([data-s-init])").forEach(initSortable);markMeSoon();
+  document.querySelectorAll("table.sortable:not([data-s-init])").forEach(initSortable);markMeSoon();clipLong();
   document.querySelectorAll("main .panel:not([data-px])").forEach(p=>{p.dataset.px="1";p.insertAdjacentHTML("afterbegin",'<div class="pact"><button type="button" class="pa" data-act="copy">Copy<span class="wi"> image</span></button><button type="button" class="pa" data-act="save">Save<span class="wi"> image</span></button></div>')});
 }).observe(document.querySelector("main"),{childList:true,subtree:true});
 
@@ -3087,7 +3102,7 @@ function renderTlab(){
   h+=panelX("Trade timing","When trades happen across the calendar year"+(team?` for ${esc(mname(team))}`:""),cards+`<svg viewBox="0 0 ${CW} ${CH}" class="chart" role="img" aria-label="Trades by calendar month">${g2}</svg>`,"tl-time");
   // all trades
   const rest=[...list].sort((a,b)=>b.when-a.when);
-  h+=`<div id="tl-all"><h3 class="hgroup">Every trade${team?" involving "+esc(mname(team)):""}, newest first <span class="fm">${plural(rest.length,"trade")}</span></h3>${rest.slice(0,40).map(tradeCard).join("")||emptyX("No trades match those filters.")}${rest.length>40?emptyX(`Showing the latest 40 of ${rest.length}. Pick a team or season to narrow it down.`):""}</div>`;
+  h+=`<div id="tl-all"><h3 class="hgroup">Every trade${team?" involving "+esc(mname(team)):""}, newest first <span class="fm">${plural(rest.length,"trade")}</span></h3>${rest.length?`<div data-cliplist>${rest.slice(0,40).map(tradeCard).join("")}</div>`:emptyX("No trades match those filters.")}${rest.length>40?emptyX(`Showing the latest 40 of ${rest.length}. Pick a team or season to narrow it down.`):""}</div>`;
   body.innerHTML=h;
 }
 ["tlteam","tlseason"].forEach(id=>$(id).addEventListener("change",renderTlab));
@@ -3788,7 +3803,8 @@ function renderHow(){
     <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
     <li><b>NFL schedule.</b> Bye weeks and which games have kicked off come from Sleeper's NFL schedule${S.nfl?"":" (not available right now)"}.</li>
     <li><b>Saved in this browser.</b> Finished seasons are saved in this browser the first time they load and read from there afterwards, so the page opens faster. The season in progress and FantasyCalc's values are read fresh on every visit.</li>
-    <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next draft holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Roster strength holds the injury report and age cliff; Rivalries holds Head-to-head. Old links to any of those open the right tab and scroll to the section.</li></ul>`);
+    <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next draft holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Roster strength holds the injury report and age cliff; Rivalries holds Head-to-head. These tabs show one section at a time, switched with the buttons at the top; old links open the right tab at that section.</li>
+    <li><b>Long lists.</b> Tables and lists longer than 15 rows show their top 10, plus any rows for your team, with a Show all button. Sorting a shortened table sorts every row, so the 10 shown are always the top of the new order.</li></ul>`);
   b+=add("how-me","Your team",go("home","Home")+", and every tab",
     `<p>On the first visit the page asks which team is yours and saves the answer in this browser only. Change it any time from <b>Your team</b> in the header, or choose Just browsing.</p>
     <ul><li><b>Home</b> opens with your week, in this order: this week's matchup with its win chance (live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, league buzz (last week's awards, the game of the week and the latest trades with their grades), and a trade idea. The tool tiles follow. Without a team, Home is just the tiles.</li>

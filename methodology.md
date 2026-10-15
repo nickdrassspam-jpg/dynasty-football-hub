@@ -36,7 +36,7 @@ Tabs are grouped in two levels (22 tabs):
 | History | Record book, Franchise history |
 | How it works | How it works |
 
-Merged tabs keep each old tab as a section with its own heading and a jump bar:
+Merged tabs keep each old tab as a section and show one section at a time, switched with buttons at the top of the tab. The last section picked is remembered while the page is open:
 
 - **Trade history** = Trade lab + Player trades + Pick trades.
 - **Next draft** = Draft board + Tankathon + Pick capital.
@@ -44,7 +44,9 @@ Merged tabs keep each old tab as a section with its own heading and a jump bar:
 - **Roster strength** = Roster strength + Injuries and the age cliff (was Player watch).
 - **Rivalries** = Rivalries + Head-to-head.
 
-Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab and scroll to the section.
+Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section.
+
+**Long lists:** any table or list (trade cards, pick and player trade lists, transaction feeds) longer than 15 rows shows its top 10, plus any rows for your team, with a Show all button. Sorting a shortened table sorts every row, so the 10 shown are the top of the new order. How it works tables are never shortened.
 
 ## Data sources
 - **League, rosters, matchups, transactions, winners and losers brackets, drafts:** Sleeper API (`api.sleeper.app/v1`). Each draft is also read from `/draft/{id}` for `slot_to_roster_id`, which says who originally owned each pick.

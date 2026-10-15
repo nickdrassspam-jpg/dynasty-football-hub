@@ -31,15 +31,15 @@ await page.route("**/*", async r => {
 if (team != null) await page.addInitScript(t => { try { localStorage.setItem("hubTeamV1", JSON.stringify({ league: "1312056868817891328", key: t })) } catch {} }, team === "skip" ? "" : String(900 + +team - 1));
 await page.goto(ORIGIN);
 await page.waitForFunction(() => typeof S !== "undefined" && S && S.deep, null, { timeout: 60000 });
-const tabs = await page.evaluate(() => TABS);
+// every tab, and every section of a tab that holds several, since only one section is drawn at a time
+const tabs = await page.evaluate(() => TABS.flatMap(k => MERGE[k] || [k]));
 const report = [];
 for (const k of tabs) {
   const before = errors.length;
   await page.evaluate(k => showTab(k), k);
   await page.waitForTimeout(150);
   const st = await page.evaluate(() => document.getElementById("status").textContent);
-  // a merged tab shows several sections, so its text is added up across them
-  const empty = await page.evaluate(k => kids(k).reduce((n, c) => n + (document.getElementById("p-" + c)?.innerText.trim().length || 0), 0), k);
+  const empty = await page.evaluate(k => document.getElementById("p-" + k)?.hidden ? -1 : document.getElementById("p-" + k).innerText.trim().length, k);
   if (/Couldn't draw/.test(st)) errors.push(`${k}: ${st}`);
   report.push(`${k.padEnd(10)} ${empty < 40 ? "NEARLY EMPTY " : ""}${errors.length > before ? "ERROR" : "ok"}`);
   if (shots) { fs.mkdirSync(shots, { recursive: true }); await page.screenshot({ path: path.join(shots, `${k}.png`), fullPage: true }) }
