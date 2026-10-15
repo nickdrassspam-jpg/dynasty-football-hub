@@ -760,6 +760,7 @@ async function loadDeep(my){
     for(let w=1;w<=18;w++)b.push(async()=>{s.weeks[w]=(await g(`/league/${id}/matchups/${w}`,[]))||[]});
     b.push(async()=>{const ds=(await g(`/league/${id}/drafts`,[]))||[];s.drafts=await Promise.all(ds.filter(d=>d.status==="complete").map(async d=>{const[full,picks]=await Promise.all([g(`/draft/${d.draft_id}`,null),g(`/draft/${d.draft_id}/picks`,[])]);return{d:{...d,...(full||{})},picks:picks||[]}}))});
   });
+  b.push(()=>fillEspnGaps());
   const total=a.length+b.length;
   setProg(0,"Loading trades and playoff brackets…");
   await pool(a,10,n=>my===token&&setProg(n/total));
@@ -804,7 +805,7 @@ function buildPhaseA(){
     .sort((a,b)=>b.trades.length-a.trades.length||a.season-b.season||a.round-b.round||a.origName.localeCompare(b.origName));
   const ss=[...new Set(picks.map(p=>p.season))].sort();
   $("season").innerHTML='<option value="">All seasons</option>'+ss.map(s=>`<option>${s}</option>`).join("");
-  $("round").innerHTML='<option value="">All rounds</option>'+[1,2,3,4].map(r=>`<option value="${r}">Round ${r}</option>`).join("");
+  $("round").innerHTML='<option value="">All rounds</option>'+[...new Set(picks.map(p=>p.round))].sort((a,b)=>a-b).map(r=>`<option value="${r}">Round ${r}</option>`).join("");
 }
 
 function computeGames(s,si){
@@ -1399,17 +1400,17 @@ function homeMine(){
   const hp=(t,inner,id,half)=>`<div class="panel${half?"":" wide"}"${id?` id="${id}"`:""}><h3>${t}</h3>${inner}</div>`,recOf=r=>{const x=cur.rw[r];return x?rec(x.w,x.l,x.t):"0-0"};
   const lw=liveWeek(),rem=cur.complete?[]:remWeeks(cur),M=cur.done.length?teamModels(cur):null,out=[];
   // 1. this week's matchup: the live win chance once the week is under way, otherwise each team's expected score for the week
-  let w=null,oRid=null,pMe=null,live=null;
+  let w=null,oRid=null,pMe=null,live=null,pre=null;
   if(lw){const L=liveGames(lw),g=L.games.find(g=>g.A.rid===rid||g.B.rid===rid);
     if(g){const me=g.A.rid===rid?g.A:g.B,o=me===g.A?g.B:g.A;w=lw.w;oRid=o.rid;pMe=me===g.A?g.pA:1-g.pA;
-      if(L.stat&&[...me.st,...o.st].some(x=>x.state==="live"||x.state==="done"))live={me,o,final:g.final}}}
+      if(L.stat&&[...me.st,...o.st].some(x=>x.state==="live"||x.state==="done"))live={me,o,final:g.final};else if(L.stat)pre={me,o}}}
   if(w==null&&rem.length){const p=rem[0].pr.find(p=>p.includes(rid));w=rem[0].w;if(p){oRid=p[0]===rid?p[1]:p[0];const T=M?.T;
     if(T?.[rid]&&T[oRid])pMe=Phi((muAt(T,rid,w)-muAt(T,oRid,w))/Math.sqrt(T[rid].sd**2+T[oRid].sd**2))}}
   const sm0=rem.length?simSeason(cur):null,stk0=!!(sm0&&!sm0.live&&sm0.rows.some(x=>x.rid===rid));
   if(oRid!=null){
-    const T=M?.T,row=(r,x)=>`<div class="lvrow${live&&x.pts>(x===live.me?live.o:live.me).pts?" lead":""}"><span>${mlink(cur.own[r])} <span class="mu">${recOf(r)}</span><span class="lvsub">${live?`${x.left?plural(x.left,"starter")+" still to play":"All starters "+(x.playing?"in":"done")}. Projected ${fmt(x.proj)}`:T?.[r]?`Expected score ${fmt(muAt(T,r,w))}`:""}</span></span>${live?`<b class="sc">${fmt(x.pts,2)}</b>`:""}</div>`;
+    const T=M?.T,row=(r,x)=>`<div class="lvrow${live&&x.pts>(x===live.me?live.o:live.me).pts?" lead":""}"><span>${mlink(cur.own[r])} <span class="mu">${recOf(r)}</span><span class="lvsub">${live?`${x.left?plural(x.left,"starter")+" still to play":"All starters "+(x.playing?"in":"done")}. Projected ${fmt(x.proj)}`:pre?`Projected ${fmt((r===rid?pre.me:pre.o).proj)} from this week's starters`:T?.[r]?`Expected score ${fmt(muAt(T,r,w))}`:""}</span></span>${live?`<b class="sc">${fmt(x.pts,2)}</b>`:""}</div>`;
     const me=cur.own[rid],op=cur.own[oRid],bar=pMe==null?"":`<div class="wp" data-tip="${esc(`${mname(me)} ${pctTxt(pMe)}\n${mname(op)} ${pctTxt(1-pMe)}`)}"><b style="width:${clamp(pMe,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${esc(mname(me))} ${pctTxt(pMe)}</span><span>${pctTxt(1-pMe)} ${esc(mname(op))}</span></div>`;
-    out.push(hp(`Week ${w}: ${esc(mname(me))} vs ${esc(mname(op))}`,`<p class="pcap">${live?(live.final?"Final score":"Live score and win chance right now"):"Win chance before kickoff, from each team's expected score this week"}</p>${row(rid,live?.me)}${row(oRid,live?.o)}${bar}${lw?`<div class="btnrow" style="margin-top:10px"><button type="button" class="lnk" data-go="live">Open live scores</button></div>`:""}`,"hm-match",stk0));
+    out.push(hp(`Week ${w}: ${esc(mname(me))} vs ${esc(mname(op))}`,`<p class="pcap">${live?(live.final?"Final score":"Live score and win chance right now"):pre?"Win chance before kickoff, from each team's projected score with the starters set in Sleeper":"Win chance before kickoff, from each team's expected score this week"}</p>${row(rid,live?.me)}${row(oRid,live?.o)}${bar}${lw?`<div class="btnrow" style="margin-top:10px"><button type="button" class="lnk" data-go="live">Open live scores</button></div>`:""}`,"hm-match",stk0));
   }else if(w!=null)out.push(hp(`Week ${w}`,emptyX(`${esc(mname(ME))} has no game this week.`),"hm-match",stk0));
   // 2. the stakes: playoff odds now, if this week is won and if it is lost
   const sm=sm0,sr=sm?.rows.find(x=>x.rid===rid);
@@ -1429,7 +1430,7 @@ function homeMine(){
       const bw=x.pid&&why!=="On bye"&&!q?backWeek(x.pid):null;
       probs.push({...x,why,q,locked,avg,fill,back:bw==null?"":bw>regEnd()?", back after the regular season":`, back week ${bw}`})});
     const risk=sumOf(probs,x=>x.q?0:x.avg),saved=sumOf(probs,x=>x.fill?x.fill.avg:0),sl=x=>x.replace("SUPER_FLEX","Superflex").replace("REC_FLEX","W/T flex").replace("WRRB_FLEX","W/R flex").replace("FLEX","Flex");
-    out.push(hp("Lineup problems",`<p class="pcap">${fromSl?`Your week ${w} starters in Sleeper`:`The best lineup on paper for week ${w}`}. Points at risk are each player's usual score.${probs.some(x=>!x.q)?` ${fmt(risk)} points at risk${saved>0?`, or ${fmt(Math.max(0,risk-saved))} after the suggested swaps`:""}.`:""}</p>${probs.length?`<ul class="prob">${probs.map(x=>`<li><span>${x.pid?plink(x.pid)+" "+pchip(posOf(x.pid)):'<span class="mu">Nobody</span>'}<em>${esc(sl(x.slot))} · ${esc(x.why+x.back)}</em></span><span style="text-align:right">${x.q?"Expected to play":fmt(x.avg)+" pts at risk"}<em>${x.fill?`Start ${esc(pName(x.fill.pid))} instead (${fmt(x.fill.avg)})`:x.locked?"His game has started":x.q?"Questionable players play":"No healthy bench player for this slot"}</em></span></li>`).join("")}</ul>`:emptyX("No problems: every starter is expected to play.")}`,"hm-lineup"));
+    out.push(hp("Lineup problems",`<p class="pcap">${fromSl?`Your week ${w} starters in Sleeper`:`The best lineup on paper for week ${w}`}.${probs.length&&probs.every(x=>x.q)?" Every starter is expected to play; these are questionable, so keep an eye on them.":" Points at risk are each player's usual score."}${probs.some(x=>!x.q)?` ${fmt(risk)} points at risk${saved>0?`, or ${fmt(Math.max(0,risk-saved))} after the suggested swaps`:""}.`:""}</p>${probs.length?`<ul class="prob">${probs.map(x=>`<li><span>${x.pid?plink(x.pid)+" "+pchip(posOf(x.pid)):'<span class="mu">Nobody</span>'}<em>${esc(sl(x.slot))} · ${esc(x.why+x.back)}</em></span><span style="text-align:right">${x.q?"Expected to play":fmt(x.avg)+" pts at risk"}<em>${x.fill?`Start ${esc(pName(x.fill.pid))} instead (${fmt(x.fill.avg)})`:x.locked?"His game has started":x.q?"Questionable players play":"No healthy bench player for this slot"}</em></span></li>`).join("")}</ul>`:emptyX("No problems: every starter is expected to play.")}`,"hm-lineup"));
   }
   // 4. league buzz: last week's awards, the game of the week and the latest trades
   const cs=latestPlayed();
@@ -1979,6 +1980,22 @@ async function loadEspnInjuries(){
     const id=a.id!=null?String(a.id):((Array.isArray(a.links)?a.links:[]).map(l=>/\/id\/(\d+)/.exec(l?.href||"")?.[1]).find(Boolean)||null);
     if(id)byId[id]=ms;const nm=normName(a.displayName||a.fullName);if(nm)byName[nm]=ms}));
   return{byId,byName};
+}
+// That feed stops at each NFL team's 25 latest entries, so long-term IR players drop out of it. For rostered players with a
+// long-term tag and no date, read ESPN's player page instead, finding his ESPN id by name search when Sleeper has none.
+async function fillEspnGaps(){
+  const E=S.espn;if(!E)return;
+  const B="https://site.api.espn.com/apis/common/v3/",ros=new Set();
+  S.seas[0].rosters.forEach(r=>["players","reserve","taxi"].forEach(k=>(r[k]||[]).forEach(p=>ros.add(p))));
+  const need=[...ros].filter(pid=>{const t=players[pid]?.[5];return(LONG_TAGS.has(t)||t==="Sus")&&espnReturn(pid)==null});
+  await pool(need.map(pid=>async()=>{
+    const p=players[pid],nm=normName(p[0]);let id=p[6];
+    if(!id){const r=await fetch(B+"search?type=player&limit=10&query="+encodeURIComponent(p[0]));if(!r.ok)return;
+      const hit=((await r.json())?.items||[]).filter(x=>x?.league==="nfl"&&normName(x.displayName)===nm);if(hit.length!==1)return;id=String(hit[0].id)}
+    const r=await fetch(B+"sports/football/nfl/athletes/"+id);if(!r.ok)return;
+    const inj=(await r.json())?.athlete?.injuries,ms=Date.parse((Array.isArray(inj)?inj[0]:null)?.details?.returnDate||"");
+    if(!isNaN(ms)){E.byId[id]=ms;if(!p[6])E.byName[nm]=ms}
+  }),6);
 }
 // ESPN's projected return date for a player, in ms, or null when ESPN couldn't be read or lists none
 function espnReturn(pid){const E=S?.espn,p=players[pid];if(!E||!p)return null;return(p[6]&&E.byId[p[6]])??E.byName[normName(p[0])]??null}
@@ -3803,14 +3820,14 @@ function renderHow(){
     <ul><li><b>Scoring.</b> Points arrive from Sleeper already scored with your league's settings${S.league.scoring_settings?` (${esc(scoringSummary(S.league.scoring_settings))})`:""}. Each season uses the settings it was played under.</li>
     <li><b>Regular season only.</b> Records, luck, power, lineups and player points count regular-season weeks, and only weeks that are finished. Playoff games show up in the bracket, the Rivalries tab, titles, the franchise record book and the series record in a Tankathon matchup.</li>
     <li><b>Managers, not roster slots.</b> History follows the person. When a team changes hands, the old manager keeps their record and appears as a former manager.</li>
-    <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
+    <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report, and from ESPN's player pages for long-term injured players that report leaves out${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
     <li><b>NFL schedule.</b> Bye weeks and which games have kicked off come from Sleeper's NFL schedule${S.nfl?"":" (not available right now)"}.</li>
     <li><b>Saved in this browser.</b> Finished seasons are saved in this browser the first time they load and read from there afterwards, so the page opens faster. The season in progress and FantasyCalc's values are read fresh on every visit.</li>
     <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next drafts holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Roster strength holds the injury report and age cliff; Rivalries holds Head-to-head. These tabs show one section at a time, switched with the buttons at the top; old links open the right tab at that section.</li>
     <li><b>Long lists.</b> Tables and lists longer than 15 rows show their top 10, plus any rows for your team, with a Show all button. Sorting a shortened table sorts every row, so the 10 shown are always the top of the new order.</li></ul>`);
   b+=add("how-me","Your team",go("home","Home")+", and every tab",
     `<p>On the first visit the page asks which team is yours and saves the answer in this browser only. Change it any time from <b>Your team</b> in the header, or choose Just browsing.</p>
-    <ul><li><b>Home</b> opens with your week, in this order: this week's matchup with its win chance (live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, league buzz (last week's awards, the game of the week and the latest trades with their grades), and a trade idea. The tool tiles follow. Without a team, Home is just the tiles.</li>
+    <ul><li><b>Home</b> opens with your week, in this order: this week's matchup with its win chance (before kickoff, from each team's projected score with the starters set in Sleeper, as on Live scores; live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, league buzz (last week's awards, the game of the week and the latest trades with their grades), and a trade idea. The tool tiles follow. Without a team, Home is just the tiles.</li>
     <li><b>Lineup problems</b> checks your starters in Sleeper for the week, or the best lineup on paper when Sleeper has none set. A starter is flagged when he is on bye, expected to miss the week (the rules are under Playoff odds), questionable (he is expected to play, so nothing is at risk), or the slot is empty. Points at risk are each flagged player's usual score. The suggested swap is your best healthy bench player who fits the slot; nothing is suggested once a player's game has started.</li>
     <li><b>The trade idea</b> follows your label: a contender gets a player to buy, a rebuilder a player to sell, and a team in between one of each. When nothing fits fairly, it is left out.</li>
     <li><b>Everywhere else</b> your team's rows and cards are outlined, and your team is picked to start with in Team profile, Franchise history, Rivalries and the trade calculator.</li></ul>`);
