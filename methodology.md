@@ -31,7 +31,7 @@ Tabs are grouped in two levels (22 tabs):
 | This week | Weekly recap, Live scores, Recap export |
 | Season | Standings, Playoff race, Power & luck, Contend or rebuild, Schedule, Lineups |
 | Teams | Team profile, Roster strength, Rivalries |
-| Drafts | Next draft, Past drafts |
+| Drafts | Next drafts, Past drafts |
 | Trades & Players | Trade history, Trade calculator, Waivers, Player lookup |
 | History | Record book, Franchise history |
 | How it works | How it works |
@@ -39,7 +39,7 @@ Tabs are grouped in two levels (22 tabs):
 Merged tabs keep each old tab as a section and show one section at a time, switched with buttons at the top of the tab. The last section picked is remembered while the page is open:
 
 - **Trade history** = Trade lab + Player trades + Pick trades.
-- **Next draft** = Draft board + Tankathon + Pick capital.
+- **Next drafts** = Draft board + Tankathon + Pick capital.
 - **Past drafts** = Draft recap + Draft lab.
 - **Roster strength** = Roster strength + Injuries and the age cliff (was Player watch).
 - **Rivalries** = Rivalries + Head-to-head.
