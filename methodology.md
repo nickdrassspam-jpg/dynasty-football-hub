@@ -259,7 +259,7 @@ Rookie drafts only; a draft of more than eight rounds is treated as a startup.
 ## Tankathon
 Next year's draft, for the current season.
 
-- **First round if the season ended today:** the Draft board's order from current standings. Gap to pick above is how much more max points-for a team has than the team one slot earlier. Value is the pick's price at the slot the simulation expects.
+- **First round if the season ended today:** the Draft board's order from current standings. Gap to pick above is how much more max points-for a team has than the team one slot earlier.
 - **Max points-for race:** max PF so far and the simulation's projected regular-season finish for each team; teams in the playoffs in more than half the runs are faded.
 - **Race for the 1.01:** the share of the 5,000 runs in which each team's own pick landed in each slot, with expected pick and most likely slot.
 - **Matchup preview** (opened from Next up on the Schedule tab): win chance = Φ((team expected score − opponent expected score) ÷ √(team spread² + opponent spread²)), using each team's expected score for that week. The all-time series counts regular-season and playoff meetings.
