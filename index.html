@@ -1443,7 +1443,7 @@ function homeMine(){
     const nx=cs===cur?nextWeekGames(cs,lw2,wa.ra):null,gw=nx?`<p style="margin:12px 0 0"><b>Game of the week ${nx.nw}:</b> ${mlink(cs.own[nx.gotw[0]])} <span class="mu">#${wa.ra(nx.gotw[0])}</span> vs ${mlink(cs.own[nx.gotw[1]])} <span class="mu">#${wa.ra(nx.gotw[1])}</span></p>`:"";
     const tg=S.txReady?tradeGrades().filter(g=>g.graded).sort((a,b)=>b.when-a.when).slice(0,3):[];
     const tl=tg.length?`<h4 style="margin:14px 0 2px">Latest trades</h4>`+tg.map(g=>`<div class="tline"><time>${fmtDate(g.when)}</time><div>${g.sides.map(s=>`${mlink(s.k)} ${gradeChip(s.grade)} <span class="mu">got ${esc(s.assets.map(assetTxt).slice(0,3).join(", ")+(s.assets.length>3?" and more":"")||"nothing listed")}</span>`).join("<br>")}${fleeceTag(g)?"<br>"+fleeceTag(g):""}</div></div>`).join("")+`<div class="btnrow" style="margin-top:8px"><button type="button" class="lnk" data-go="tradehist">Every trade</button></div>`:"";
-    out.push(hp("League buzz",`<p class="pcap">Week ${lw2} awards${cs===cur?"":` from ${esc(cs.season)}`}, power ranks after week ${lw2}.</p><div class="recgrid">${cards.join("")}</div>${gw}${tl}`,"hm-buzz"));
+    out.push(hp("League buzz",`<p class="pcap">Week ${lw2} awards${cs===cur?"":` from ${esc(cs.season)}`}.</p><div class="recgrid">${cards.join("")}</div>${gw}${tl}`,"hm-buzz"));
   }
   // 5. a trade idea by your team's label: a buy for a contender, a sell for a rebuilder, one of each in between
   const ideas=ideasFor(ME),b=rivState().builds[ME];
