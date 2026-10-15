@@ -14,9 +14,9 @@ The page is league-wide: any manager can open it, and it has some attitude (lops
 - On the first visit the page asks **"Which team is yours?"** and saves the answer in that browser (`localStorage` key `hubTeamV1`, holding the league id and the manager's Sleeper user id, which carries over between seasons). **Just browsing** skips it and is remembered for that league. The choice can be changed from **Your team** in the header.
 - With a team picked, its rows, cards and bracket slots are outlined on every tab, and it is preselected in Team profile, Franchise history, Rivalries (against its rival) and the Trade calculator.
 - **Home for a selected team**, in this order, with the tool tiles below:
-  1. **This week's matchup:** opponent, records, win chance, and the live score once games start (the live win chance from Live scores; before kickoff, the expected-score win chance from the matchup preview).
+  1. **This week's matchup:** opponent, records, win chance, and the live score once games start (the win chance from Live scores: before kickoff it compares each team's projected score from the starters set in Sleeper, and Home shows those projections; when NFL game data is unavailable, the expected-score win chance from the matchup preview).
   2. **The stakes:** playoff odds now, if they win this week and if they lose, from the season simulation, plus title odds.
-  3. **Lineup problems:** the team's Sleeper starters for the week (or the best lineup on paper when none are set). A starter is flagged when on bye, expected to miss the week (rules under Season simulation), questionable (expected to play, nothing at risk), or the slot is empty. Points at risk = usual score. The suggested swap is the best healthy bench player who fits the slot; none is suggested once the player's game has started.
+  3. **Lineup problems:** the team's Sleeper starters for the week (or the best lineup on paper when none are set). A starter is flagged when on bye, expected to miss the week (rules under Season simulation), questionable (expected to play, nothing at risk), or the slot is empty. When every flagged starter is questionable, the caption says so instead of quoting points at risk. Points at risk = usual score. The suggested swap is the best healthy bench player who fits the slot; none is suggested once the player's game has started.
   4. **League buzz:** last week's top score, player of the week, upset of the week (or biggest blowout), lowest score; the game of the week; the three latest graded trades with grades and fleece tags.
   5. **Trade idea:** by label (see Trade calculator and finder). Hidden when nothing fits.
 - Without a team, Home is the tile grid.
@@ -32,7 +32,7 @@ Tabs are grouped in two levels (22 tabs):
 | Season | Standings, Playoff race, Power & luck, Contend or rebuild, Schedule, Lineups |
 | Teams | Team profile, Roster strength, Rivalries |
 | Drafts | Next drafts, Past drafts |
-| Trades & Players | Trade history, Trade calculator, Waivers, Player lookup |
+| Trades & Players | Trade history, Trade calculator, Waivers, Player lookup, Injuries & age cliff |
 | History | Record book, Franchise history |
 | How it works | How it works |
 
@@ -41,7 +41,6 @@ Merged tabs keep each old tab as a section and show one section at a time, switc
 - **Trade history** = Trade lab + Player trades + Pick trades.
 - **Next drafts** = Draft board + Tankathon + Pick capital.
 - **Past drafts** = Draft recap + Draft lab.
-- **Roster strength** = Roster strength + Injuries and the age cliff (was Player watch).
 - **Rivalries** = Rivalries + Head-to-head.
 
 Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section.
@@ -52,7 +51,7 @@ Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent t
 - **League, rosters, matchups, transactions, winners and losers brackets, drafts:** Sleeper API (`api.sleeper.app/v1`). Each draft is also read from `/draft/{id}` for `slot_to_roster_id`, which says who originally owned each pick.
 - **Scoring:** all points come from Sleeper already scored with the league's settings (half PPR, 0.5 per rushing and receiving first down). Each season uses its own settings.
 - **Trade values:** FantasyCalc (`api.fantasycalc.com/values/current`) only, for player and pick prices. Sleeper ADP is not used anywhere.
-- **Injuries:** `injury_status` from Sleeper's player database (cached in the browser for three hours). Projected return dates come from ESPN's injury feed (`site.api.espn.com/apis/site/v2/sports/football/nfl/injuries`, `details.returnDate`), matched by the ESPN id Sleeper keeps for each player, then by name. The feed is unofficial and read defensively; when it fails, the rules below fall back to their no-date versions.
+- **Injuries:** `injury_status` from Sleeper's player database (cached in the browser for three hours). Projected return dates come from ESPN's injury feed (`site.api.espn.com/apis/site/v2/sports/football/nfl/injuries`, `details.returnDate`), matched by the ESPN id Sleeper keeps for each player, then by name. That feed lists only each NFL team's 25 latest entries, so for a rostered player with a long-term tag (IR, PUP, NA, DNR, suspended) and no date there, the page reads his ESPN player page (`site.api.espn.com/apis/common/v3/sports/football/nfl/athletes/{id}`, first `injuries[].details.returnDate`), finding his ESPN id with ESPN's player search (`/apis/common/v3/search`, exact name, used only when there is a single NFL match) when Sleeper has none. The feed is unofficial and read defensively; when it fails, the rules below fall back to their no-date versions.
 - **NFL schedule:** `api.sleeper.app/schedule/nfl/regular/{season}` for bye weeks and which games have kicked off.
 - **Browser cache:** finished seasons are saved in IndexedDB (database `leagueHubHistory`) under a version key (`HIST_V`, now `v1`) that is bumped whenever the page changes what it keeps from a season. The current season and FantasyCalc are fetched fresh on every visit.
 - **Waivers:** the league uses waiver priority (`waiver_type` 0), not FAAB. FAAB panels appear only for leagues that bid.
@@ -125,8 +124,8 @@ A QB, RB, WR or TE that FantasyCalc doesn't list gets zero. K gets a flat 8 and 
 - **Matchup view:** clicking a game lines up both starting lineups slot against slot.
 - **Colours:** a player whose game is final is green if he scored at or above his usual score and red if below; a player on the field is white; a player yet to play shows his usual score in grey.
 
-## Trade values (first-round equivalents)
-Everything is priced in one unit: a generic first-round pick in the next draft is 1.00.
+## Trade values
+Every value, chart and table shows FantasyCalc's own numbers (raw `value` or `redraftValue`), because the worth of a first moves over time. Internally the page divides by FantasyCalc's value for a generic first-round pick in the next draft, so the thresholds below are written as fractions of that first ("0.35 firsts" means 0.35 × today's generic first). How it works shows each threshold converted to today's FantasyCalc number.
 
 **Primary source: FantasyCalc** (`api.fantasycalc.com/values/current`), which prices players and picks from real trades. The page asks for dynasty values matched to the league: 12 teams, superflex (`numQbs=2`), half PPR, no TE premium. FantasyCalc is the only value source. Values are fetched on every visit and the last good copy is saved in the browser (`localStorage`, `fcValsV2:` plus the request URL).
 
@@ -224,10 +223,10 @@ Each meeting is weighted by recency (each season back counts 15% less). The five
 - **Competitiveness:** closeness per game, where a 1-point game counts in full, a 20-point game counts half and a 40-point game counts nothing. It is multiplied by 0.4 + 0.6 × series balance.
 - **Stakes:** a championship adds 3 extra games' worth, a semifinal or quarterfinal adds 2, a 3rd-place game adds 0.5, and regular-season games between two playoff teams add 0.5.
 - **Drama:** each change of series lead adds 1.2, and each game decided by under 5 points adds 0.7.
-- **Similar builds:** 1.6 × (build similarity)² × min(1, games ÷ 3) × balance factor.
+- **Arms race** (replaced Similar builds): a bonus for two current teams chasing the same prize right now, whether or not they've met. Title side: the top 6 by power rank after the latest finished week. 1.01 side: the first 6 picks in next draft's order if the season ended after that week (non-playoff teams by lowest max points-for, then playoff teams from the lowest seed up). Weights: #1 = 1, then 5/6, 4/6, 3/6, 2/6, #6 = 1/6. Pair bonus = 4.5 × weight A × weight B when both are on the same side (the larger if both sides apply). Re-scored every week, not decayed and not reduced by series balance. Every pair of current teams is scored, so a pair in an arms race appears before they've met.
 
 How they combine:
-- **Series balance:** familiarity, stakes, drama and similar builds are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.
+- **Series balance:** familiarity, stakes and drama are multiplied by 0.6 + 0.4 × balance, so a lopsided series counts for less.
 - **Final score:** 100 × (1 − e^(−raw ÷ 8)).
 - **Levels:** 80 and up is a blood feud, 60 bitter rivals, 40 heated, 20 simmering, and under 20 friendly.
 - **Trades don't count.** The user's view is that in dynasty, contenders and rebuilders trade with each other, so trade partners aren't rivals.
@@ -247,19 +246,20 @@ How they combine:
 ## Draft lab and Draft recap
 Rookie drafts only; a draft of more than eight rounds is treated as a startup.
 
-- **Hit:** a season ranked in the top 24 at his position by points per game for a 1st or 2nd round pick, or in the top 36 for a 3rd or 4th round pick (the user's definition). Points per game leaves out weeks with no points. A season only counts once four of its weeks are played, and the player needs games in at least half of them (never fewer than three, capped at six). Ranks are among players rostered in the league that season.
-- **Usual return for a slot:** a smoothed average of points per week over nearby picks (weight e^(−(slots apart ÷ 3)²)), with every class measured over the same number of weeks since its draft.
-- **Points over slot:** points per week minus that usual return.
-- **Value over slot:** the player's trade value today, in firsts, minus the smoothed average value today of players taken around that slot in the same draft. It stays inside one class so a new class, still priced on hope, is not measured against older ones.
-- **Draft grade:** each manager's average value over slot and average points over slot become z-scores against the league, blended 70% value, 30% points (the user asked for value to weigh heavily): A+ at +1.1, A +0.6, B+ +0.25, B down to −0.25, B− −0.6, C −1.1, D −1.6, F below. Best pick and biggest miss are by value over slot.
-- **Draft slot against value today:** a scatter of every rookie pick, with each class's slot average as a dashed line.
+- **Slot target** (second grilling): judged each NFL season by points-per-game rank at the position. 1.01 to 1.04: top 12. 1.05 through the 2nd round: top 24. 3rd round on: top 36. Tight ends use half those ranks (6, 12, 18). Points per game leaves out weeks with no points. A season only counts once four of its weeks are played, and the player needs games in at least half of them (never fewer than three, capped at six). Ranks are among players rostered in the league that season.
+- **Hit:** a season at or above the slot target.
+- **Production score:** per season, (target − rank) ÷ target, clamped to −1…+1; unranked = −1. A pick's production is the average over the NFL seasons since his draft (seasons that produce ranks).
+- **Value score:** (dynasty value today − slot value) ÷ slot value, clamped to −1…+1. Slot value is FantasyCalc's price today for next year's pick in the same round and third of the round (early, mid, late by pick in round ÷ teams), falling back to the generic round price.
+- **Pick score:** value × w + production × (1 − w), where w by NFL seasons the class has played is 1 before any, 0.8 after one, 0.65 after two, 0.5 after three and 0.3 from four on. Value only when no season has ranks; production only when values are unavailable.
+- **Draft grade:** the average pick score of a manager's picks, per class and all-time, on an absolute scale with no curve: A+ ≥ +0.5, A ≥ +0.3, B+ ≥ +0.1, B ≥ −0.1, B− ≥ −0.25, C ≥ −0.45, D ≥ −0.65, F below. A pick always counts for the manager who drafted him, on the player's real finish wherever he's rostered. Best pick and biggest miss are by value against the slot. Replaces points over slot and the z-scored grade.
+- **Draft slot against value today:** a scatter of every rookie pick, with each class's slot values as a dashed line.
 - **Class tracker:** every class over the number of weeks the newest class has played.
 - **The draft, redone** (Draft recap): the class reordered by trade value today, ties by points. A position filter limits the rows shown without changing the redraft slots.
 
 ## Tankathon
 Next year's draft, for the current season.
 
-- **First round if the season ended today:** the Draft board's order from current standings. Gap to pick above is how much more max points-for a team has than the team one slot earlier. Value is the pick's price at the slot the simulation expects.
+- **First round if the season ended today:** the Draft board's order from current standings. Gap to pick above is how much more max points-for a team has than the team one slot earlier.
 - **Max points-for race:** max PF so far and the simulation's projected regular-season finish for each team; teams in the playoffs in more than half the runs are faded.
 - **Race for the 1.01:** the share of the 5,000 runs in which each team's own pick landed in each slot, with expected pick and most likely slot.
 - **Matchup preview** (opened from Next up on the Schedule tab): win chance = Φ((team expected score − opponent expected score) ÷ √(team spread² + opponent spread²)), using each team's expected score for that week. The all-time series counts regular-season and playoff meetings.
