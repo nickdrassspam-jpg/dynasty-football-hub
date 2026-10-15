@@ -269,7 +269,7 @@ Next year's draft, for the current season.
 - **Game of the week:** the upcoming matchup with the lowest rank A + rank B + 2 × the gap.
 - **Manager of the week:** the top score.
 - **Season:** MVP (most starter points for one team), rookie of the year, best pickup, best trade (most value netted by one team in a single deal, at today's values), fleece of the season (the season's fleece where the winner netted the most value), best lineup setter (efficiency), luckiest, worst luck, most improved (points per game against the season before), most weekly high scores.
-- **Milestones:** next multiple of 10 wins and 1,000 points. **Droughts:** finished seasons since the last playoff appearance or title. **Fleeces** and **Got fleeced:** a manager's trades on each side of a fleece, across all loaded seasons.
+- **Milestones:** next multiple of 10 wins and 1,000 points. **Droughts:** finished seasons since the last playoff appearance or title.
 
 ## Franchise record book (Team profile)
 Covers every loaded season for the selected manager, whatever the Season filter says.

@@ -361,7 +361,7 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 15, 2026, 12:40 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 15, 2026, 12:30 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -583,10 +583,13 @@ const RENDER={home:renderHome,recap:renderRecap,board:renderBoard,hist:renderHis
   live:renderLive,news:renderNews,race:renderRace,sched:renderSched,lineups:renderLineups,rosters:renderRosters,watch:renderWatch,builds:renderBuilds,tank:renderTank,dlab:renderDlab,tlab:renderTlab,tcalc:renderTcalc,waivers:renderWaivers,history:renderHistory,lookup:renderLookup,how:renderHow};
 $("nav").innerHTML=GROUPS.map(([id,name])=>`<button role="tab" id="g-${id}" aria-controls="subnav">${esc(name)}</button>`).join("");
 $("subnav").innerHTML=TABS.map(k=>`<button role="tab" id="t-${k}" aria-controls="p-${k}">${esc(TABNAME[k])}</button>`).join("");
-Object.entries(MERGE).forEach(([p,ch])=>ch.forEach(c=>{const sec=$("p-"+c);sec.setAttribute("aria-labelledby","t-"+p);
-  sec.insertAdjacentHTML("afterbegin",`<div class="secsw" role="group" aria-label="${esc(TABNAME[p])} sections">${ch.map(x=>`<button type="button" data-sec="${x}" aria-pressed="${x===c}">${esc(SECNAME[x])}</button>`).join("")}</div>`)}));
+// One bar of section buttons sits at the top of main, so it stays in the same place whatever width the section below uses
+Object.entries(MERGE).forEach(([p,ch])=>ch.forEach(c=>$("p-"+c).setAttribute("aria-labelledby","t-"+p)));
+$("status").insertAdjacentHTML("afterend",'<div class="secsw" id="secbar" role="group" hidden></div>');
+function drawSecbar(k){const b=$("secbar"),ch=MERGE[k];b.hidden=!ch;if(!ch)return;const on=curSec(k);b.setAttribute("aria-label",TABNAME[k]+" sections");
+  b.innerHTML=ch.map(x=>`<button type="button" data-sec="${x}" aria-pressed="${x===on}">${esc(SECNAME[x])}</button>`).join("")}
 document.addEventListener("click",e=>{const b=e.target.closest(".secsw [data-sec]");if(!b||b.getAttribute("aria-pressed")==="true")return;
-  showTab(b.dataset.sec);const sec=$("p-"+b.dataset.sec);if(sec.getBoundingClientRect().top<0)sec.scrollIntoView({block:"start"})});
+  showTab(b.dataset.sec);const bar=$("secbar");if(bar.getBoundingClientRect().top<0)bar.scrollIntoView({block:"start"})});
 function showTab(k,focus){
   // an old tab that is now a section of another tab opens that tab showing that section
   const anchor=!TABS.includes(k)&&PARENT[k]?k:null;k=tabOf(k)||"home";tab=k;if(anchor)SEC[k]=anchor;
@@ -594,7 +597,7 @@ function showTab(k,focus){
   GROUPS.forEach(([id])=>{const b=$("g-"+id),on=id===g[0];b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1});
   $("subnav").hidden=g[2].length<2;
   TABS.forEach(t=>{const b=$("t-"+t),on=t===k;b.hidden=!g[2].includes(t);b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1});
-  PANELS.forEach(p=>$("p-"+p).hidden=p!==curSec(k));
+  PANELS.forEach(p=>$("p-"+p).hidden=p!==curSec(k));drawSecbar(k);
   try{history.replaceState(null,"","#"+(MERGE[k]&&SEC[k]?curSec(k):k))}catch{}
   if(focus)$("t-"+k).focus();
   renderTab(k);
@@ -3512,8 +3515,8 @@ function milestoneRows(){
       if(top==null&&wk.s.wk[wk.w][0].rid===rid)top=nW-1-g;
       const gm=wk.s.games.find(x=>x.w===wk.w&&(x.a===rid||x.b===rid));if(gm){const mine=gm.a===rid?gm.pa:gm.pb,their=gm.a===rid?gm.pb:gm.pa,r=mine>their?"W":mine<their?"L":"T";seq.push(r);if(win==null&&r==="W")win=seq.length-1}}
     let st=0;for(const r of seq){if(r===seq[0])st++;else break}
-    const nextW=Math.ceil((a.w+1)/10)*10,nextP=Math.ceil((a.pf+1)/1000)*1000,fl=tradeGrades().filter(isFleece);
-    return{k,a,fw:fl.filter(g=>g.sides[0].k===k).length,fl:fl.filter(g=>g.sides.at(-1).k===k).length,seasons:m.seasons.length,nextW,toW:nextW-a.w,nextP,toP:nextP-a.pf,poGap,poEver,poRun,tGap,tEver,poLast,tLast,doneN:done.length,top,win,streak:seq.length?seq[0]+st:"–",stN:seq.length?(seq[0]==="W"?st:seq[0]==="L"?-st:0):0};
+    const nextW=Math.ceil((a.w+1)/10)*10,nextP=Math.ceil((a.pf+1)/1000)*1000;
+    return{k,a,seasons:m.seasons.length,nextW,toW:nextW-a.w,nextP,toP:nextP-a.pf,poGap,poEver,poRun,tGap,tEver,poLast,tLast,doneN:done.length,top,win,streak:seq.length?seq[0]+st:"–",stN:seq.length?(seq[0]==="W"?st:seq[0]==="L"?-st:0):0};
   });
 }
 function seasonAwards(si){
@@ -3577,9 +3580,9 @@ function renderHistory(){
   // milestones
   const ml=milestoneRows().sort((a,b)=>b.a.w-a.a.w);
   const dr=(gap,ever,n,last,what)=>!n?'<span class="mu">–</span>':gap===0?`<span class="stat ok">None</span> <span class="mu">${what} in ${esc(last)}</span>`:ever?`${plural(gap,"season")} <span class="mu">last in ${esc(last)}</span>`:`<span class="stat out">Never</span> <span class="mu">${plural(n,"season")}</span>`;
-  h+=panelX("Milestones and droughts","Career regular-season totals for current managers, the next round number each is chasing, how long it has been since the good times, and how many trades each has won or lost as a fleece",
-    tblX("miles",`<th>Team</th><th class="n">Seasons</th><th class="n">Career record</th><th>Next win milestone</th><th>Next points milestone</th><th data-dir="asc">Playoff drought</th><th data-dir="asc">Title drought</th><th class="n" data-dir="asc" data-tip="Regular-season weeks since this team last had the league's top score">Weeks since a top score</th><th class="n">Streak</th><th class="n" data-tip="Trades where this manager got 72% or more of the deal, with at least half a first of value moving">Fleeces</th><th class="n" data-tip="Trades where the other side got 72% or more of the deal">Got fleeced</th>`,
-      ml.map(r=>`<tr><td>${mlink(r.k)}</td><td class="n">${r.seasons}</td><td class="n">${rec(r.a.w,r.a.l,r.a.t)}</td><td data-v="${r.toW}">${plural(r.toW,"win")} from ${r.nextW}</td><td data-v="${r.toP}">${fmt(r.toP,0)} from ${r.nextP.toLocaleString()}</td><td data-v="${r.doneN?(r.poEver?r.poGap:99):""}">${dr(r.poGap,r.poEver,r.doneN,r.poLast,"made it")}${r.poRun>1?` <span class="mu">(${r.poRun} straight)</span>`:""}</td><td data-v="${r.doneN?(r.tEver?r.tGap:99):""}">${dr(r.tGap,r.tEver,r.doneN,r.tLast,"champion")}</td><td class="n" data-v="${r.top??999}">${r.top==null?'<span class="mu">Never</span>':r.top===0?"This week":r.top}</td><td class="n" data-v="${r.stN}"><span class="${r.stN>0?"up":r.stN<0?"dn":""}">${r.streak}</span></td><td class="n">${r.fw||'<span class="mu">0</span>'}</td><td class="n">${r.fl||'<span class="mu">0</span>'}</td></tr>`).join("")),"hi-mile");
+  h+=panelX("Milestones and droughts","Career regular-season totals for current managers, the next round number each is chasing, and how long it has been since the good times",
+    tblX("miles",`<th>Team</th><th class="n">Seasons</th><th class="n">Career record</th><th>Next win milestone</th><th>Next points milestone</th><th data-dir="asc">Playoff drought</th><th data-dir="asc">Title drought</th><th class="n" data-dir="asc" data-tip="Regular-season weeks since this team last had the league's top score">Weeks since a top score</th><th class="n">Streak</th>`,
+      ml.map(r=>`<tr><td>${mlink(r.k)}</td><td class="n">${r.seasons}</td><td class="n">${rec(r.a.w,r.a.l,r.a.t)}</td><td data-v="${r.toW}">${plural(r.toW,"win")} from ${r.nextW}</td><td data-v="${r.toP}">${fmt(r.toP,0)} from ${r.nextP.toLocaleString()}</td><td data-v="${r.doneN?(r.poEver?r.poGap:99):""}">${dr(r.poGap,r.poEver,r.doneN,r.poLast,"made it")}${r.poRun>1?` <span class="mu">(${r.poRun} straight)</span>`:""}</td><td data-v="${r.doneN?(r.tEver?r.tGap:99):""}">${dr(r.tGap,r.tEver,r.doneN,r.tLast,"champion")}</td><td class="n" data-v="${r.top??999}">${r.top==null?'<span class="mu">Never</span>':r.top===0?"This week":r.top}</td><td class="n" data-v="${r.stN}"><span class="${r.stN>0?"up":r.stN<0?"dn":""}">${r.streak}</span></td></tr>`).join("")),"hi-mile");
   // season awards
   const aw=seasonAwards(HS.aw),as=S.seas[HS.aw];
   h+=panelX(`${esc(as.season)} season awards${as.complete?"":" so far"}`,"End-of-season honors, worked out from the same numbers as the rest of the site",
@@ -3988,7 +3991,7 @@ function renderHow(){
     <li><b>Fleece of the season</b>: of that season's fleeces, the one where the winner netted the most value.</li>
     <li><b>Best lineup setter</b>: highest efficiency. <b>Luckiest</b> and <b>worst luck</b>: the extremes of luck. <b>Most improved</b>: biggest gain in points per game over the season before.</li></ul>
     <h4>Milestones and droughts</h4>
-    <p>Win milestones are the next multiple of 10, points milestones the next 1,000. Droughts count finished seasons since a manager's last playoff appearance or title, among seasons they managed. <b>Fleeces</b> and <b>Got fleeced</b> count a manager's trades on either side of a fleece, across every loaded season.</p>`);
+    <p>Win milestones are the next multiple of 10, points milestones the next 1,000. Droughts count finished seasons since a manager's last playoff appearance or title, among seasons they managed.</p>`);
   b+=add("how-book","Franchise record book",go("profile","Team profile"),
     `<p>The record book at the bottom of a Team profile covers every loaded season for that manager, whatever the Season filter is set to.</p>
     <ul><li><b>Game records</b> (most and fewest points, biggest win, worst loss, closest win, most points in a loss, fewest in a win) and <b>streaks</b> count regular-season and playoff games in the order they were played. A playoff round played over two weeks is left out, because its score covers two games.</li>
