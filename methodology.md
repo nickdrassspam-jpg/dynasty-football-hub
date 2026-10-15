@@ -124,8 +124,8 @@ A QB, RB, WR or TE that FantasyCalc doesn't list gets zero. K gets a flat 8 and 
 - **Matchup view:** clicking a game lines up both starting lineups slot against slot.
 - **Colours:** a player whose game is final is green if he scored at or above his usual score and red if below; a player on the field is white; a player yet to play shows his usual score in grey.
 
-## Trade values (first-round equivalents)
-Everything is priced in one unit: a generic first-round pick in the next draft is 1.00.
+## Trade values
+Every value, chart and table shows FantasyCalc's own numbers (raw `value` or `redraftValue`), because the worth of a first moves over time. Internally the page divides by FantasyCalc's value for a generic first-round pick in the next draft, so the thresholds below are written as fractions of that first ("0.35 firsts" means 0.35 × today's generic first). How it works shows each threshold converted to today's FantasyCalc number.
 
 **Primary source: FantasyCalc** (`api.fantasycalc.com/values/current`), which prices players and picks from real trades. The page asks for dynasty values matched to the league: 12 teams, superflex (`numQbs=2`), half PPR, no TE premium. FantasyCalc is the only value source. Values are fetched on every visit and the last good copy is saved in the browser (`localStorage`, `fcValsV2:` plus the request URL).
 
