@@ -31,7 +31,7 @@ Tabs are grouped in two levels (22 tabs):
 | This week | Weekly recap, Live scores, Recap export |
 | Season | Standings, Playoff race, Power & luck, Contend or rebuild, Schedule, Lineups |
 | Teams | Team profile, Roster strength, Rivalries |
-| Drafts | Next draft, Past drafts |
+| Drafts | Next drafts, Past drafts |
 | Trades & Players | Trade history, Trade calculator, Waivers, Player lookup |
 | History | Record book, Franchise history |
 | How it works | How it works |
@@ -39,7 +39,7 @@ Tabs are grouped in two levels (22 tabs):
 Merged tabs keep each old tab as a section and show one section at a time, switched with buttons at the top of the tab. The last section picked is remembered while the page is open:
 
 - **Trade history** = Trade lab + Player trades + Pick trades.
-- **Next draft** = Draft board + Tankathon + Pick capital.
+- **Next drafts** = Draft board + Tankathon + Pick capital.
 - **Past drafts** = Draft recap + Draft lab.
 - **Roster strength** = Roster strength + Injuries and the age cliff (was Player watch).
 - **Rivalries** = Rivalries + Head-to-head.
@@ -269,7 +269,7 @@ Next year's draft, for the current season.
 - **Game of the week:** the upcoming matchup with the lowest rank A + rank B + 2 × the gap.
 - **Manager of the week:** the top score.
 - **Season:** MVP (most starter points for one team), rookie of the year, best pickup, best trade (most value netted by one team in a single deal, at today's values), fleece of the season (the season's fleece where the winner netted the most value), best lineup setter (efficiency), luckiest, worst luck, most improved (points per game against the season before), most weekly high scores.
-- **Milestones:** next multiple of 10 wins and 1,000 points. **Droughts:** finished seasons since the last playoff appearance or title. **Fleeces** and **Got fleeced:** a manager's trades on each side of a fleece, across all loaded seasons.
+- **Milestones:** next multiple of 10 wins and 1,000 points. **Droughts:** finished seasons since the last playoff appearance or title.
 
 ## Franchise record book (Team profile)
 Covers every loaded season for the selected manager, whatever the Season filter says.
