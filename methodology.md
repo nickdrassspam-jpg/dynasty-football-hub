@@ -12,7 +12,7 @@ The page is league-wide: any manager can open it, and it has some attitude (lops
 
 ## Your team
 - On the first visit the page asks **"Which team is yours?"** and saves the answer in that browser (`localStorage` key `hubTeamV1`, holding the league id and the manager's Sleeper user id, which carries over between seasons). **Just browsing** skips it and is remembered for that league. The choice can be changed from **Your team** in the header.
-- With a team picked, its rows, cards and bracket slots are outlined on every tab, and it is preselected in Team profile, Franchise history, Rivalries (against its rival) and the Trade calculator.
+- With a team picked, its rows, cards and bracket slots are outlined on every tab, and it is preselected in Team profile, Rivalries (against its rival) and the Trade calculator.
 - **Home for a selected team**, in this order, with the tool tiles below:
   1. **This week's matchup:** opponent, records, win chance, and the live score once games start (the win chance from Live scores: before kickoff it compares each team's projected score from the starters set in Sleeper, and Home shows those projections; when NFL game data is unavailable, the expected-score win chance from the matchup preview).
   2. **The stakes:** playoff odds now, if they win this week and if they lose, from the season simulation, plus title odds.
@@ -23,7 +23,7 @@ The page is league-wide: any manager can open it, and it has some attitude (lops
 
 ## Layout
 
-Tabs are grouped in two levels (22 tabs):
+Tabs are grouped in two levels (21 tabs):
 
 | Group | Tabs |
 |---|---|
@@ -33,7 +33,7 @@ Tabs are grouped in two levels (22 tabs):
 | Teams | Team profile, Roster strength, Rivalries |
 | Drafts | Next drafts, Past drafts |
 | Trades & Players | Trade history, Trade calculator, Waivers, Player lookup, Injuries & age cliff |
-| History | Record book, Franchise history |
+| History | Record book |
 | How it works | How it works |
 
 Merged tabs keep each old tab as a section and show one section at a time, switched with buttons at the top of the tab. The last section picked is remembered while the page is open:
@@ -43,7 +43,9 @@ Merged tabs keep each old tab as a section and show one section at a time, switc
 - **Past drafts** = Draft recap + Draft lab.
 - **Rivalries** = Rivalries + Head-to-head.
 
-Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section.
+Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section. The Franchise history tab was removed: its franchise timeline is on the Team profile under Current roster, and its season awards sit under the Trophy room in the Record book, and its milestones and droughts and weekly award tally are at the bottom of the Record book. Old `#history` links open the Record book.
+
+**Images:** every panel has Copy image and Save image buttons. In the Trade lab, each card in Every trade, newest first has its own Copy image and Save image buttons that capture just that trade.
 
 **Long lists:** any table or list (trade cards, pick and player trade lists, transaction feeds) longer than 15 rows shows its top 10, plus any rows for your team, with a Show all button. Sorting a shortened table sorts every row, so the 10 shown are the top of the new order. How it works tables are never shortened.
 
@@ -178,7 +180,7 @@ On the ledger, 53% or more is a win and under 47% is a loss. FAAB is listed but 
 - **Fleece:** a graded two-way trade where one side's share is at least 72% and at least 0.5 firsts of value moved (today's value of everything on both sides). The card's verdict reads "X fleeced Y". Trades up to 60 days old are tagged **Fleece**; older ones **Aged into a fleece**, because FantasyCalc only has today's values and the deal may have been fair when made.
 
 - **Best trade pickup** (Player trades): the traded player worth the most today over his share of what the receiving team gave up, at today's values. One-sided deals (a side that received only FAAB or nothing) are left out.
-- **Franchise timeline** (Franchise history): each trade is a dot placed by that team's grade (A+ at the top, F at the bottom) and sized by the value that moved. Hovering shows what was got and sent.
+- **Franchise timeline** (Team profile, under Current roster): each trade is a dot placed by that team's grade (A+ at the top, F at the bottom) and sized by the value that moved. Hovering shows what was got and sent.
 
 ## Contender score (0 = full rebuild, 100 = all-in contender)
 Each input is converted to a z-score within the league, then the weighted blend is turned into a 0 to 100 score.
