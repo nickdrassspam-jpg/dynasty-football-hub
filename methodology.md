@@ -43,7 +43,7 @@ Merged tabs keep each old tab as a section and show one section at a time, switc
 - **Past drafts** = Draft recap + Draft lab.
 - **Rivalries** = Rivalries + Head-to-head.
 
-Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section. The Franchise history tab was removed: its franchise timeline is on the Team profile under Current roster, and its milestones and droughts, season awards and weekly award tally are at the bottom of the Record book. Old `#history` links open the Record book.
+Old links and URL hashes (`#tlab`, `#watch`, `#h2h` and so on) open the parent tab showing that section. The Franchise history tab was removed: its franchise timeline is on the Team profile under Current roster, and its season awards sit under the Trophy room in the Record book, and its milestones and droughts and weekly award tally are at the bottom of the Record book. Old `#history` links open the Record book.
 
 **Images:** every panel has Copy image and Save image buttons. In the Trade lab, each card in Every trade, newest first has its own Copy image and Save image buttons that capture just that trade.
 

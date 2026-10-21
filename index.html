@@ -361,7 +361,7 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 21, 2026, 7:00 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 21, 2026, 7:05 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -1283,6 +1283,7 @@ function renderRecords(){
     return`<tr><td><b>${esc(s.season)}</b></td><td>${S.txReady&&s.champ!=null?'<span class="stars">★</span> ':""}${champ}</td><td>${S.txReady&&s.runner!=null?mlink(s.own[s.runner]):'<span class="mu">–</span>'}</td><td>${played?mlink(top.key)+` <span class="mu">${rec(top.w,top.l,top.t)}</span>`:"–"}</td><td>${played?mlink(pl.key)+` <span class="mu">${fmt(pl.pf)}</span>`:"–"}</td><td>${played&&s.complete?mlink(last.key)+` <span class="mu">${rec(last.w,last.l,last.t)}</span>`:'<span class="mu">–</span>'}</td></tr>`}).join("");
   let h=`<div class="panel" style="margin-bottom:12px"><h3>Trophy room</h3><p class="pcap">Champions and season leaders. Seeds and last place use the regular-season standings.</p><div class="tw"><table class="sortable" data-sid="trophy"><thead><tr><th>Season</th><th>Champion</th><th>Runner-up</th><th>Top seed</th><th>Points leader</th><th>Last place</th></tr></thead><tbody>${trophy}</tbody></table></div></div>`;
   if(!S.deep){body.innerHTML=h+wait;return}
+  h+=seasonAwardsPanel();
   const G=S.seas.flatMap(s=>s.games),TW=S.seas.flatMap((s,si)=>s.done.flatMap(w=>s.wk[w].map(x=>({si,season:s.season,w,key:s.own[x.rid],pts:x.pts}))));
   if(!G.length){body.innerHTML=h+'<p class="note">No completed games yet.</p>';return}
   const R=(v,label,k,detail)=>`<div class="rc"><span>${esc(label)}</span><b>${v}</b>${k?`<div class="who">${mlink(k)}</div>`:""}<small>${detail}</small></div>`;
@@ -3620,11 +3621,22 @@ function franchiseTimeline(k,cw){
     return`<h4>${y}${se?` <span class="fm">${esc(se.rec)}, ${esc(se.fin.toLowerCase())}</span>`:""}</h4>`+(items.map(e=>e.type==="draft"?`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c3)">◆</span><div>${esc(e.txt)}: ${plink(e.pid)} ${pchip(posOf(e.pid))}</div></li>`:`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c1)">●</span><div>Traded with ${e.g.sides.filter(x=>x.k!==k).map(x=>mlink(x.k)).join(" and ")} for ${e.sd.assets.map(a=>a.kind==="player"?plink(a.pid):esc(assetTxt(a))).join(", ")||"nothing listed"} ${gradeChip(e.sd.grade)}</div></li>`).join("")||`<li><time></time><span class="ic"></span><div class="mu">No first-round picks or big trades</div></li>`)}).join("");
   return`<div class="panel" id="pf-time"><h3>${esc(mname(k))}: franchise timeline</h3><p class="pcap">Seasons, trades and top draft picks on one line. Hover any mark for details.</p><div class="lg"><span><i class="sq" style="background:var(--c1);border-radius:50%"></i>Trade: higher is a better grade, bigger is more value moved</span><span><i class="sq" style="background:var(--c3);transform:rotate(45deg)"></i>Draft pick (larger is a first-rounder)</span><span><i class="sq" style="background:var(--pan2);outline:1px solid var(--mu)"></i>Season and record</span><span><i class="sq" style="background:var(--flag)"></i>★ Title season</span></div>${timelineSvg(k,ev,W)}<ul class="tlv">${list}</ul><p class="note">The list shows first- and second-round rookie picks, the first two rounds of a startup draft, and trades that moved a first-round pick or at least 1.2 firsts' worth of value. Every trade is on the line above.</p></div>`;
 }
-// Milestones, season awards and the weekly award tally, shown at the bottom of the Record book
-function historyPanels(){
-  const played=S.seas.map((s,i)=>[i,s]).filter(([,s])=>s.done.length);
+// Milestones, season awards and the weekly award tally, shown in the Record book
+const histSel=(id,l,v)=>`<select id="${id}">${l.map(([x,t])=>`<option value="${esc(x)}"${String(x)===String(v)?" selected":""}>${esc(t)}</option>`).join("")}</select>`;
+const playedSeasons=()=>S.seas.map((s,i)=>[i,s]).filter(([,s])=>s.done.length);
+// Season awards, shown under the Trophy room
+function seasonAwardsPanel(){
+  const played=playedSeasons(),sel=histSel;
   if(HS.aw==null||!S.seas[HS.aw]||!S.seas[HS.aw].done.length)HS.aw=played.length?played[0][0]:0;
-  const sel=(id,l,v)=>`<select id="${id}">${l.map(([x,t])=>`<option value="${esc(x)}"${String(x)===String(v)?" selected":""}>${esc(t)}</option>`).join("")}</select>`;
+  let h="";
+  const aw=seasonAwards(HS.aw),as=S.seas[HS.aw];
+  h+=panelX(`${esc(as.season)} season awards${as.complete?"":" so far"}`,"End-of-season honors, worked out from the same numbers as the rest of the site",
+    (played.length?`<div class="inl"><label>Season ${sel("hsaw",played.map(([i,s])=>[i,s.season]),HS.aw)}</label></div>`:"")+(aw.length?`<div class="recgrid">${aw.join("")}</div>`:emptyX("No games played in this season yet.")),"hi-award");
+  return h;
+}
+// Milestones and the weekly award tally, shown at the bottom of the Record book
+function historyPanels(){
+  const played=playedSeasons(),sel=histSel;
   let h="";
   // milestones
   const ml=milestoneRows().sort((a,b)=>b.a.w-a.a.w);
@@ -3632,10 +3644,6 @@ function historyPanels(){
   h+=panelX("Milestones and droughts","Career regular-season totals for current managers, the next round number each is chasing, and how long it has been since the good times",
     tblX("miles",`<th>Team</th><th class="n">Seasons</th><th class="n">Career record</th><th>Next win milestone</th><th>Next points milestone</th><th data-dir="asc">Playoff drought</th><th data-dir="asc">Title drought</th><th class="n" data-dir="asc" data-tip="Regular-season weeks since this team last had the league's top score">Weeks since a top score</th><th class="n">Streak</th>`,
       ml.map(r=>`<tr><td>${mlink(r.k)}</td><td class="n">${r.seasons}</td><td class="n">${rec(r.a.w,r.a.l,r.a.t)}</td><td data-v="${r.toW}">${plural(r.toW,"win")} from ${r.nextW}</td><td data-v="${r.toP}">${fmt(r.toP,0)} from ${r.nextP.toLocaleString()}</td><td data-v="${r.doneN?(r.poEver?r.poGap:99):""}">${dr(r.poGap,r.poEver,r.doneN,r.poLast,"made it")}${r.poRun>1?` <span class="mu">(${r.poRun} straight)</span>`:""}</td><td data-v="${r.doneN?(r.tEver?r.tGap:99):""}">${dr(r.tGap,r.tEver,r.doneN,r.tLast,"champion")}</td><td class="n" data-v="${r.top??999}">${r.top==null?'<span class="mu">Never</span>':r.top===0?"This week":r.top}</td><td class="n" data-v="${r.stN}"><span class="${r.stN>0?"up":r.stN<0?"dn":""}">${r.streak}</span></td></tr>`).join("")),"hi-mile");
-  // season awards
-  const aw=seasonAwards(HS.aw),as=S.seas[HS.aw];
-  h+=panelX(`${esc(as.season)} season awards${as.complete?"":" so far"}`,"End-of-season honors, worked out from the same numbers as the rest of the site",
-    (played.length?`<div class="inl"><label>Season ${sel("hsaw",played.map(([i,s])=>[i,s.season]),HS.aw)}</label></div>`:"")+(aw.length?`<div class="recgrid">${aw.join("")}</div>`:emptyX("No games played in this season yet.")),"hi-award");
   // tally
   const tl=awardTally(HS.tally),shown=AWARDS.filter(([id])=>tl.some(t=>t[id]));
   tl.forEach(t=>{t.good=sumOf(["top","player","blowout","nail","upset","climber"],id=>t[id]||0)});tl.sort((a,b)=>b.good-a.good);
