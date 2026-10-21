@@ -195,7 +195,7 @@ th.srt[aria-sort]{color:var(--tx)}
 .subnav button{background:var(--pan);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:14px;font-weight:600;color:var(--mu);cursor:pointer;white-space:nowrap}
 .subnav button:hover{color:var(--tx)}
 .subnav button[aria-selected=true],.subnav button[aria-selected=true]:hover{background:var(--flag);border-color:var(--flag);color:#1b2a3a;font-weight:800}
-#p-race,#p-sched,#p-lineups,#p-rosters,#p-watch,#p-builds,#p-tank,#p-dlab,#p-waivers,#p-history{max-width:1500px}
+#p-race,#p-sched,#p-lineups,#p-rosters,#p-watch,#p-builds,#p-tank,#p-dlab,#p-waivers,#p-records{max-width:1500px}
 #p-tlab,#p-tcalc{max-width:1320px}#p-news,#p-lookup{max-width:1200px}#p-how{max-width:1040px}#p-live{max-width:1400px}
 /* ---- shared bits for the newer tabs ---- */
 .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;font-size:13px;color:var(--mu)}.jump>span{margin-right:4px}
@@ -244,7 +244,7 @@ th.srt[aria-sort]{color:var(--tx)}
 .lvkey{padding:0 6px;border-radius:4px;font-weight:600}.lvkey.lvup{background:color-mix(in srgb,var(--good) 25%,transparent);color:var(--good)}.lvkey.lvdn{background:color-mix(in srgb,var(--bad) 25%,transparent);color:var(--bad)}.lvkey.lvlive{background:rgba(255,255,255,.92);color:#1b1e2c}
 /* ---- trade lab and calculator ---- */
 .trd{background:var(--pan);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
-.trdh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:8px}.trdh time{color:var(--mu);font-size:13px}.trdh b{font-size:15px}
+.trdh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:8px}.trdh time{color:var(--mu);font-size:13px}.trdm{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.trdh b{font-size:15px}
 .trds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
 .tside{background:var(--bg);border-radius:8px;padding:10px 12px;min-width:0}.tside h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px;justify-content:space-between}
 .tside ul{list-style:none;margin:0;padding:0;font-size:14px}.tside li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px solid var(--line)}.tside li:last-child{border:0}
@@ -361,7 +361,7 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 15, 2026, 3:25 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 21, 2026, 7:00 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -503,10 +503,6 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
     <div id="wvbody"></div>
   </section>
 
-  <section id="p-history" role="tabpanel" aria-labelledby="t-history" hidden>
-    <div id="histbody"></div>
-  </section>
-
   <section id="p-lookup" role="tabpanel" aria-labelledby="t-lookup" hidden>
     <div class="bar"><input type="text" id="lkq" class="grow" list="lklist" placeholder="Type a player's name…" aria-label="Player name" autocomplete="off"><datalist id="lklist"></datalist></div>
     <div id="lkbody"></div>
@@ -569,8 +565,8 @@ function scoringSummary(sc){
 }
 
 /* ============ tabs ============ */
-const GROUPS=[["home","Home",["home"]],["week","This week",["recap","live","news"]],["season","Season",["teams","race","power","builds","sched","lineups"]],["teamsg","Teams",["profile","rosters","rivals"]],["draftg","Drafts",["nextdraft","pastdrafts"]],["tradeg","Trades & Players",["tradehist","tcalc","waivers","lookup","watch"]],["histg","History",["records","history"]],["howg","How it works",["how"]]];
-const TABNAME={home:"Home",recap:"Weekly recap",live:"Live scores",news:"Recap export",race:"Playoff race",power:"Power & luck",sched:"Schedule",lineups:"Lineups",teams:"Standings",profile:"Team profile",rosters:"Roster strength",builds:"Contend or rebuild",rivals:"Rivalries",nextdraft:"Next drafts",pastdrafts:"Past drafts",tradehist:"Trade history",tcalc:"Trade calculator",waivers:"Waivers",records:"Record book",history:"Franchise history",lookup:"Player lookup",watch:"Injuries & age cliff",how:"How it works"};
+const GROUPS=[["home","Home",["home"]],["week","This week",["recap","live","news"]],["season","Season",["teams","race","power","builds","sched","lineups"]],["teamsg","Teams",["profile","rosters","rivals"]],["draftg","Drafts",["nextdraft","pastdrafts"]],["tradeg","Trades & Players",["tradehist","tcalc","waivers","lookup","watch"]],["histg","History",["records"]],["howg","How it works",["how"]]];
+const TABNAME={home:"Home",recap:"Weekly recap",live:"Live scores",news:"Recap export",race:"Playoff race",power:"Power & luck",sched:"Schedule",lineups:"Lineups",teams:"Standings",profile:"Team profile",rosters:"Roster strength",builds:"Contend or rebuild",rivals:"Rivalries",nextdraft:"Next drafts",pastdrafts:"Past drafts",tradehist:"Trade history",tcalc:"Trade calculator",waivers:"Waivers",records:"Record book",lookup:"Player lookup",watch:"Injuries & age cliff",how:"How it works"};
 // Tabs that hold several sections, each still drawn by its own renderer. Old links to a section open its tab and scroll to it.
 const MERGE={tradehist:["tlab","ptrades","hist"],nextdraft:["board","tank","cap"],pastdrafts:["drafts","dlab"],rivals:["rivals","h2h"]};
 const SECNAME={tlab:"Trade lab",ptrades:"Player trades",hist:"Pick trades",board:"Draft board",tank:"Tankathon",cap:"Pick capital",drafts:"Draft recap",dlab:"Draft lab",rosters:"Roster strength",watch:"Injuries and the age cliff",rivals:"Rivalries",h2h:"Head-to-head"};
@@ -580,7 +576,7 @@ const TABS=GROUPS.flatMap(g=>g[2]),groupOf=k=>GROUPS.find(g=>g[2].includes(k)),P
 const SEC={},curSec=p=>MERGE[p]?(MERGE[p].includes(SEC[p])?SEC[p]:MERGE[p][0]):p;
 const tabOf=k=>TABS.includes(k)?k:PARENT[k]||null,inTab=k=>curSec(tab)===k;
 const RENDER={home:renderHome,recap:renderRecap,board:renderBoard,hist:renderHist,ptrades:renderPtrades,cap:renderCap,drafts:renderDrafts,teams:renderTeams,profile:renderProfile,power:renderPower,h2h:renderH2H,rivals:renderRivals,records:renderRecords,
-  live:renderLive,news:renderNews,race:renderRace,sched:renderSched,lineups:renderLineups,rosters:renderRosters,watch:renderWatch,builds:renderBuilds,tank:renderTank,dlab:renderDlab,tlab:renderTlab,tcalc:renderTcalc,waivers:renderWaivers,history:renderHistory,lookup:renderLookup,how:renderHow};
+  live:renderLive,news:renderNews,race:renderRace,sched:renderSched,lineups:renderLineups,rosters:renderRosters,watch:renderWatch,builds:renderBuilds,tank:renderTank,dlab:renderDlab,tlab:renderTlab,tcalc:renderTcalc,waivers:renderWaivers,lookup:renderLookup,how:renderHow};
 $("nav").innerHTML=GROUPS.map(([id,name])=>`<button role="tab" id="g-${id}" aria-controls="subnav">${esc(name)}</button>`).join("");
 $("subnav").innerHTML=TABS.map(k=>`<button role="tab" id="t-${k}" aria-controls="p-${k}">${esc(TABNAME[k])}</button>`).join("");
 // One bar of section buttons sits at the top of main, so it stays in the same place whatever width the section below uses
@@ -590,7 +586,10 @@ function drawSecbar(k){const b=$("secbar"),ch=MERGE[k];b.hidden=!ch;if(!ch)retur
   b.innerHTML=ch.map(x=>`<button type="button" data-sec="${x}" aria-pressed="${x===on}">${esc(SECNAME[x])}</button>`).join("")}
 document.addEventListener("click",e=>{const b=e.target.closest(".secsw [data-sec]");if(!b||b.getAttribute("aria-pressed")==="true")return;
   showTab(b.dataset.sec);const bar=$("secbar");if(bar.getBoundingClientRect().top<0)bar.scrollIntoView({block:"start"})});
+// Tabs that were removed; old links open the tab that now holds their content
+const MOVED={history:"records"};
 function showTab(k,focus){
+  k=MOVED[k]||k;
   // an old tab that is now a section of another tab opens that tab showing that section
   const anchor=!TABS.includes(k)&&PARENT[k]?k:null;k=tabOf(k)||"home";tab=k;if(anchor)SEC[k]=anchor;
   const g=groupOf(k);
@@ -645,7 +644,7 @@ function setMe(k){
   ME=k&&S.mgr[k]?.current?k:null;
   try{localStorage.setItem(ME_KEY,JSON.stringify({league:S.league.league_id,key:ME||""}))}catch{}
   $("picker").hidden=true;$("me").value=ME||"";
-  if(ME){$("pteam").value=ME;$("pseason").dataset.reset="1";pendingScope=null;HS.k=ME}
+  if(ME){$("pteam").value=ME;$("pseason").dataset.reset="1";pendingScope=null}
   renderTab(tab);
 }
 $("me").addEventListener("change",e=>setMe(e.target.value));
@@ -1194,7 +1193,7 @@ function renderProfile(){
   // season history
   const hist=m.seasons.map(si=>{const r=seasonRows(si).find(x=>x.key===key),ss=S.seas[si];return{si,r,ss}});
   const histPanel=`<div class="panel"><h3>Season history</h3><div class="tw"><table class="sortable" data-sid="phist"><thead><tr><th>Season</th><th class="n">Record</th><th class="n" data-dir="asc">Seed</th><th data-dir="asc">Finish</th><th class="n">PF</th><th class="n">PA</th><th class="n">All-play</th><th class="n">Luck</th><th class="n">Trades</th></tr></thead><tbody>${hist.map(({r,ss})=>`<tr><td>${esc(ss.season)}</td><td class="n">${rec(r.w,r.l,r.t)}</td><td class="n">${r.g?r.seed:"–"}</td><td data-v="${r.titles?1:r.runner?2:r.po?3:ss.complete?5:4}">${S.txReady?(r.titles?'<span class="stars">★ Champion</span>':r.runner?"Runner-up":r.po?"Playoffs":ss.complete?"Missed playoffs":"In progress"):"…"}</td><td class="n">${fmt(r.pf)}</td><td class="n">${fmt(r.pa)}</td><td class="n">${r.apPct!=null?pct3(r.apPct):"–"}</td><td class="n">${r.luck!=null&&r.g?sgn(r.luck):"–"}</td><td class="n">${r.trades??"…"}</td></tr>`).join("")}</tbody></table></div></div>`;
-  h+=`<div class="grid2">${chart}${posPanel}</div><div class="grid2">${topPanel}${h2hPanel}</div><div class="stack">${profileValuePanel(key)}${rosterPanel}${histPanel}</div>${franchiseBook(key)}`;
+  h+=`<div class="grid2">${chart}${posPanel}</div><div class="grid2">${topPanel}${h2hPanel}</div><div class="stack">${profileValuePanel(key)}${rosterPanel}${franchiseTimeline(key,$("pbody").clientWidth||900)}${histPanel}</div>${franchiseBook(key)}`;
   $("pbody").innerHTML=h;
 }
 
@@ -1321,7 +1320,7 @@ function renderRecords(){
       const at2={};tc.forEach(x=>at2[x.k]=(at2[x.k]||0)+x.n);const t2=Object.entries(at2).sort((a,b)=>b[1]-a[1])[0];pt+=R(t2[1],"Most trades all-time",t2[0],"Across "+S.seas.length+" season"+(S.seas.length>1?"s":""));
       const big=mx(S.seas.flatMap((s,si)=>s.trades.map(t=>({t,si}))),x=>Object.keys(x.t.adds||{}).length+(x.t.draft_picks||[]).length);const n=Object.keys(big.t.adds||{}).length+(big.t.draft_picks||[]).length;
       pt+=R(n,"Most pieces in one trade",null,`${(big.t.roster_ids||[]).map(r=>esc(rn(big.si,r))).join(" and ")}, ${fmtDate(big.t.status_updated||big.t.created)}`);}}
-  h+=`<div class="stack"><div class="panel"><h3>Single games</h3><p class="pcap">Regular-season games only</p><div class="recgrid">${games}</div></div><div class="panel"><h3>Seasons and streaks</h3><p class="pcap">Season records use completed seasons; streaks run across seasons</p>${seasons?`<div class="recgrid">${seasons}</div>`:'<p class="note">Records appear once a season is complete.</p>'}</div>${pt?`<div class="panel"><h3>Players and trades</h3><p class="pcap">Player records count starting lineups only</p><div class="recgrid">${pt}</div></div>`:""}${posRecordsPanel()}</div>`;
+  h+=`<div class="stack"><div class="panel"><h3>Single games</h3><p class="pcap">Regular-season games only</p><div class="recgrid">${games}</div></div><div class="panel"><h3>Seasons and streaks</h3><p class="pcap">Season records use completed seasons; streaks run across seasons</p>${seasons?`<div class="recgrid">${seasons}</div>`:'<p class="note">Records appear once a season is complete.</p>'}</div>${pt?`<div class="panel"><h3>Players and trades</h3><p class="pcap">Player records count starting lineups only</p><div class="recgrid">${pt}</div></div>`:""}${posRecordsPanel()}</div>`+historyPanels();
   body.innerHTML=h;
 }
 
@@ -1365,10 +1364,10 @@ const latestPlayed=()=>S.seas.find(s=>s.done&&s.done.length);
 const TOOLS=[
   ["This week",[["recap","Weekly recap","Awards, every score and next week's best matchup"],["live","Live scores","This week's games as they happen, with who is still to play"],["news","Recap export","A written recap, a manager of the week card and a one-tap image pack"]]],
   ["Season",[["teams","Standings","Standings, weekly finishes and stats for any season or all-time"],["race","Playoff race","Playoff and title odds, how they have moved week by week, clinching scenarios and the bracket"],["power","Power & luck","Power rankings for any week, how they have moved, and who has been lucky"],["builds","Contend or rebuild","Who is contending or rebuilding, each team's assets for now and later, and windows over time"],["sched","Schedule","Strength of schedule, the run-in to the playoffs and schedule swaps"],["lineups","Lineups","Bench points, start/sit misses, consistency and bye weeks"]]],
-  ["Teams",[["profile","Team profile","One team's scoring, roster, rivals, history and franchise record book"],["rosters","Roster strength","Roster value, depth, age, NFL stacks and taxi squads"],["rivals","Rivalries","Every manager's rival with a score for each rivalry, and every head-to-head record"]]],
+  ["Teams",[["profile","Team profile","One team's scoring, roster, franchise timeline, rivals, history and franchise record book"],["rosters","Roster strength","Roster value, depth, age, NFL stacks and taxi squads"],["rivals","Rivalries","Every manager's rival with a score for each rivalry, and every head-to-head record"]]],
   ["Drafts",[["nextdraft","Next drafts","The upcoming draft order, who owns each pick, the race for the 1.01 and every team's picks in the drafts after"],["pastdrafts","Past drafts","How every past pick panned out, each draft redone by today's values, hit rates, draft grades and the rookie tracker"]]],
   ["Trades and players",[["tradehist","Trade history","Every player and pick trade with hindsight grades, fleeces, the win/loss ledger and the trade network"],["tcalc","Trade calculator","Value any deal and find trades that fit both teams"],["waivers","Waivers","Best pickups, drop regrets, claims and the transaction feed"],["lookup","Player lookup","Every team a player has been on and what he scored for each"],["watch","Injuries & age cliff","Who is hurt, when ESPN expects him back and the points each team stands to lose, plus players near the age cliff"]]],
-  ["History",[["records","Record book","Champions and the league's all-time records"],["history","Franchise history","Timelines, milestones, droughts, season awards and the award tally"]]],
+  ["History",[["records","Record book","Champions, the league's all-time records, milestones, droughts, season awards and the award tally"]]],
   ["Reference",[["how","How it works","How every score on this site is calculated"]]]];
 function teaser(k){
   try{
@@ -1591,7 +1590,7 @@ function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTime
 function savePng(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 document.addEventListener("click",e=>{
   const b=e.target.closest(".pa");if(!b||!S)return;
-  const el=b.dataset.shot?document.querySelector(b.dataset.shot):b.closest(".panel");if(!el)return;
+  const el=b.dataset.shot?document.querySelector(b.dataset.shot):b.closest(".trd,.panel");if(!el)return;
   const head=b.dataset.shot==="#scroll"?`${$("year").value} draft board`:(el.dataset.name||el.querySelector("h3")?.textContent||"").trim();
   const caption=[head,S.league.name,new Date().toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})].filter(Boolean).join("  |  ");
   const name=(head+" "+S.league.name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".png";
@@ -1954,7 +1953,7 @@ new MutationObserver(()=>{
 }).observe(document.querySelector("main"),{childList:true,subtree:true});
 
 /* ============ shared engine for the newer tabs ============ */
-const WIDTH_TABS=["tank","builds","rosters","watch","tlab","history","race","sched"];
+const WIDTH_TABS=["tank","builds","rosters","watch","tlab","race","sched"];
 const avgOf=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
 const sdOf=a=>{if(a.length<2)return 0;const m=avgOf(a);return Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/(a.length-1))};
 const sumOf=(a,f)=>a.reduce((x,y)=>x+(f?f(y):y),0);
@@ -2281,7 +2280,6 @@ function teaserExt(k,cs,lw){
     case"tlab":{if(!S.deep)return"Loading…";const g=tradeGrades();if(!g.length)return"No trades yet";const b=g.filter(x=>x.graded&&x.twoWay).sort((a,x)=>x.margin-a.margin)[0];return b?`Most lopsided trade: won by ${mname(b.sides[0].k)}`:`${plural(g.length,"trade")} to grade`}
     case"tcalc":return"Build a deal and see who wins it";
     case"waivers":{if(!S.deep)return"Loading…";const p=pickups().sort((a,b)=>b.sp-a.sp)[0];return p&&p.sp>0?`Best pickup: ${pName(p.pid)}, ${fmt(p.sp)} points`:"No pickups have scored yet"}
-    case"history":return`${plural(Object.keys(S.mgr).length,"manager")} across ${plural(S.seas.length,"season")}`;
     case"lookup":return"Search any player the league has rostered";
     case"how":return"Luck, power, rivalry, trade value and more";
   }
@@ -3082,7 +3080,8 @@ function tradeGrades(){
   });
   return S._tg=out;
 }
-function tradeCard(g){
+// shot adds Copy and Save image buttons that capture just this card
+function tradeCard(g,shot){
   const asset=a=>{
     if(a.kind==="player")return`<li><span>${plink(a.pid)} ${pchip(posOf(a.pid))}<em>${a.gs?`${plural(a.gs,"start")} for them since`:"No starts for them since"}</em></span><span>${fmt(a.pts)} pts<em>worth ${fv2(a.val)} now</em></span></li>`;
     if(a.kind==="faab")return`<li><span>$${a.amount} FAAB</span><span class="mu">not valued</span></li>`;
@@ -3090,7 +3089,8 @@ function tradeCard(g){
     if(a.became)return`<li><span>${nm}<em>Became ${plink(a.became.pid)} at ${a.became.label}${a.kept?"":", after the pick was moved again"}</em></span><span>${a.kept?fmt(a.pts)+" pts":'<span class="mu">0 pts</span>'}<em>worth ${fv2(a.val)} now</em></span></li>`;
     return`<li><span>${nm}<em>${a.future?"Still to be used":"Draft result unavailable"}</em></span><span><span class="mu">0 pts</span><em>worth ${fv2(a.val)}</em></span></li>`};
   const w=g.sides[0],verdict=!g.graded?"Nothing to grade yet":isFleece(g)?`${esc(mname(w.k))} fleeced ${esc(mname(g.sides.at(-1).k))}`:g.margin<.06?"About even so far":`${esc(mname(w.k))} ${g.margin>=.4?"is well ahead":g.margin>=.16?"is ahead":"has a slight edge"}${g.wP?"":" on value"}`,how=g.wP?`points count for ${Math.round(g.wP*100)}% of the grade`:g.hasPts?"graded on value alone: the deal's value sits in picks that cannot score yet":"graded on value, with no starter points on either side yet";
-  return`<div class="trd"><div class="trdh"><b>${verdict}${fleeceTag(g)}</b><time>${fmtDate(g.when)} · ${how}</time></div><div class="trds">${g.sides.map(s=>`<div class="tside"><h4><span>${mlink(s.k)} <span class="fm">received</span></span>${gradeChip(s.grade)}</h4><ul>${s.assets.map(asset).join("")||"<li><span class=\"mu\">Nothing listed</span></li>"}</ul><div class="tot"><span>Starter points <b>${fmt(s.pts)}</b></span><span>Value now <b>${fv2(s.val)}</b></span></div></div>`).join("")}</div></div>`;
+  const name=shot?`Trade: ${andList(g.sides.map(s=>mname(s.k)))}, ${fmtDate(g.when)}`:"";
+  return`<div class="trd"${shot?` data-name="${esc(name)}" data-w="760"`:""}><div class="trdh"><b>${verdict}${fleeceTag(g)}</b><span class="trdm"><time>${fmtDate(g.when)} · ${how}</time>${shot?'<span class="pact inline"><button type="button" class="pa" data-act="copy">Copy<span class="wi"> image</span></button><button type="button" class="pa" data-act="save">Save<span class="wi"> image</span></button></span>':""}</span></div><div class="trds">${g.sides.map(s=>`<div class="tside"><h4><span>${mlink(s.k)} <span class="fm">received</span></span>${gradeChip(s.grade)}</h4><ul>${s.assets.map(asset).join("")||"<li><span class=\"mu\">Nothing listed</span></li>"}</ul><div class="tot"><span>Starter points <b>${fmt(s.pts)}</b></span><span>Value now <b>${fv2(s.val)}</b></span></div></div>`).join("")}</div></div>`;
 }
 function tradeNetwork(list,W){
   const cnt={},tot={};list.forEach(g=>{const ks=[...new Set(g.sides.map(s=>s.k))];ks.forEach(k=>tot[k]=(tot[k]||0)+1);for(let i=0;i<ks.length;i++)for(let j=i+1;j<ks.length;j++){const id=pkey(ks[i],ks[j]);cnt[id]=(cnt[id]||0)+1}});
@@ -3124,7 +3124,7 @@ function renderTlab(){
         return`<tr><td>${mlink(o.k)}</td><td data-v="${sh??""}">${gradeChip(sh!=null?gradeOf(sh):null)}</td><td data-v="${o.n?o.w/o.n:0}"><div class="pts"><div class="sbar" style="flex:1;min-width:120px;max-width:260px;background:none">${seg(o.w,"var(--pos)","won")}${seg(o.e,"var(--avg)","even")}${seg(o.l,"var(--neg)","lost")}</div><span style="min-width:74px">${o.w}-${o.e}-${o.l}</span></div></td><td data-v="${o.val}">${dvc(o.val,vm,fvs(o.val),fvs(o.val)+" in value, in minus out")}</td><td data-v="${o.pts}">${dvc(o.pts,pm,sgn(o.pts),sgn(o.pts)+" starter points, in minus out")}</td></tr>`}).join(""))})(),"tl-ledger");
   // lopsided
   const big=list.filter(g=>g.graded&&g.twoWay).sort((a,b)=>b.margin-a.margin).slice(0,3);
-  h+=`<div id="tl-big">${big.length?`<h3 class="hgroup" style="margin-top:6px">Most lopsided trades so far</h3>${big.map(tradeCard).join("")}`:""}</div>`;
+  h+=`<div id="tl-big">${big.length?`<h3 class="hgroup" style="margin-top:6px">Most lopsided trades so far</h3>${big.map(g=>tradeCard(g)).join("")}`:""}</div>`;
   // network
   const cw=body.clientWidth||900,W=Math.round(clamp(cw-34,320,900));
   const net=tradeNetwork(list,W);
@@ -3143,7 +3143,7 @@ function renderTlab(){
   h+=panelX("Trade timing","When trades happen across the calendar year"+(team?` for ${esc(mname(team))}`:""),cards+`<svg viewBox="0 0 ${CW} ${CH}" class="chart" role="img" aria-label="Trades by calendar month">${g2}</svg>`,"tl-time");
   // all trades
   const rest=[...list].sort((a,b)=>b.when-a.when);
-  h+=`<div id="tl-all"><h3 class="hgroup">Every trade${team?" involving "+esc(mname(team)):""}, newest first <span class="fm">${plural(rest.length,"trade")}</span></h3>${rest.length?`<div data-cliplist>${rest.slice(0,40).map(tradeCard).join("")}</div>`:emptyX("No trades match those filters.")}${rest.length>40?emptyX(`Showing the latest 40 of ${rest.length}. Pick a team or season to narrow it down.`):""}</div>`;
+  h+=`<div id="tl-all"><h3 class="hgroup">Every trade${team?" involving "+esc(mname(team)):""}, newest first <span class="fm">${plural(rest.length,"trade")}</span></h3>${rest.length?`<div data-cliplist>${rest.slice(0,40).map(g=>tradeCard(g,true)).join("")}</div>`:emptyX("No trades match those filters.")}${rest.length>40?emptyX(`Showing the latest 40 of ${rest.length}. Pick a team or season to narrow it down.`):""}</div>`;
   body.innerHTML=h;
 }
 ["tlteam","tlseason"].forEach(id=>$(id).addEventListener("change",renderTlab));
@@ -3507,8 +3507,8 @@ function redraftPanel(D,rows,teams,pos){
       return`<tr><td class="n" data-v="${i+1}"><b>${lab(i+1)}</b></td><td>${plink(r.p.player_id)}</td><td>${pchip(r.pos)}</td><td class="n" data-v="${r.p.pick_no}">${r.p.round}.${String(r.slot).padStart(2,"0")}</td><td class="n" data-v="${d}">${d>0?`<span class="up">▲ ${d}</span>`:d<0?`<span class="dn">▼ ${-d}</span>`:'<span class="mu">–</span>'}</td><td>${r.key?mlink(r.key):'<span class="mu">Unknown</span>'}</td><td data-v="${r.dv}"><div class="pts"><div class="pfbar" style="width:120px"><b style="width:${r.dv/pm*100}%"></b></div><span>${fv2(r.dv)}</span></div></td><td class="n" data-v="${r.pts}">${fmt(r.pts)}</td></tr>`}).join("")}</tbody></table></div></details></div>`;
 }
 
-/* ============ franchise history ============ */
-const HS={k:null,aw:null,tally:"all"};
+/* ============ franchise timeline (Team profile) and history panels (Record book) ============ */
+const HS={aw:null,tally:"all"};
 const ridOf=(s,k)=>{const r=Object.keys(s.own).find(x=>s.own[x]===k);return r==null?null:+r};
 function franchiseEvents(k){
   const m=S.mgr[k],ix=IX(),ev=[];
@@ -3612,21 +3612,20 @@ function posRecordsPanel(){
     return recCard(fmt(wk.pts),`Best ${p} week`,wk.key,`${plink(wk.pid)}, ${S.seas[wk.si].season} week ${wk.w}`)+recCard(fmt(se.tot),`Best ${p} season`,se.key,`${plink(se.pid)}, ${S.seas[se.si].season}, ${plural(se.gs,"start")}`)}).join("");
   return`<div class="panel"><h3>Positional records</h3><p class="pcap">The best single week and the best season at each position, counting starting lineups in the regular season</p><div class="recgrid">${cards}</div></div>`;
 }
-function renderHistory(){
-  const body=$("histbody");
-  if(!S.deep){body.innerHTML=wait;return}
-  const ks=mgrKeys(true);if(!HS.k||!S.mgr[HS.k])HS.k=ME||mgrKeys(false)[0];
-  const played=S.seas.map((s,i)=>[i,s]).filter(([,s])=>s.done.length);
-  if(HS.aw==null||!S.seas[HS.aw]||!S.seas[HS.aw].done.length)HS.aw=played.length?played[0][0]:0;
-  let h=jumpX([["hi-time","Timeline"],["hi-mile","Milestones and droughts"],["hi-award","Season awards"],["hi-tally","Weekly award tally"]]);
-  // timeline
-  const ev=franchiseEvents(HS.k),cw=body.clientWidth||900,W=Math.round(clamp(cw-34,320,1400)),m=S.mgr[HS.k];
+// Franchise timeline, shown on the Team profile under Current roster
+function franchiseTimeline(k,cw){
+  const ev=franchiseEvents(k),W=Math.round(clamp(cw-34,320,1400));
   const bySeason={};ev.forEach(e=>(bySeason[e.season]||(bySeason[e.season]=[])).push(e));
   const list=Object.keys(bySeason).sort((a,b)=>b-a).map(y=>{const l=bySeason[y],se=l.find(e=>e.type==="season"),items=l.filter(e=>e.type!=="season"&&(e.type==="draft"||e.big)).sort((a,b)=>b.when-a.when);
-    return`<h4>${y}${se?` <span class="fm">${esc(se.rec)}, ${esc(se.fin.toLowerCase())}</span>`:""}</h4>`+(items.map(e=>e.type==="draft"?`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c3)">◆</span><div>${esc(e.txt)}: ${plink(e.pid)} ${pchip(posOf(e.pid))}</div></li>`:`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c1)">●</span><div>Traded with ${e.g.sides.filter(x=>x.k!==HS.k).map(x=>mlink(x.k)).join(" and ")} for ${e.sd.assets.map(a=>a.kind==="player"?plink(a.pid):esc(assetTxt(a))).join(", ")||"nothing listed"} ${gradeChip(e.sd.grade)}</div></li>`).join("")||`<li><time></time><span class="ic"></span><div class="mu">No first-round picks or big trades</div></li>`)}).join("");
+    return`<h4>${y}${se?` <span class="fm">${esc(se.rec)}, ${esc(se.fin.toLowerCase())}</span>`:""}</h4>`+(items.map(e=>e.type==="draft"?`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c3)">◆</span><div>${esc(e.txt)}: ${plink(e.pid)} ${pchip(posOf(e.pid))}</div></li>`:`<li><time>${fmtDate(e.when)}</time><span class="ic" style="color:var(--c1)">●</span><div>Traded with ${e.g.sides.filter(x=>x.k!==k).map(x=>mlink(x.k)).join(" and ")} for ${e.sd.assets.map(a=>a.kind==="player"?plink(a.pid):esc(assetTxt(a))).join(", ")||"nothing listed"} ${gradeChip(e.sd.grade)}</div></li>`).join("")||`<li><time></time><span class="ic"></span><div class="mu">No first-round picks or big trades</div></li>`)}).join("");
+  return`<div class="panel" id="pf-time"><h3>${esc(mname(k))}: franchise timeline</h3><p class="pcap">Seasons, trades and top draft picks on one line. Hover any mark for details.</p><div class="lg"><span><i class="sq" style="background:var(--c1);border-radius:50%"></i>Trade: higher is a better grade, bigger is more value moved</span><span><i class="sq" style="background:var(--c3);transform:rotate(45deg)"></i>Draft pick (larger is a first-rounder)</span><span><i class="sq" style="background:var(--pan2);outline:1px solid var(--mu)"></i>Season and record</span><span><i class="sq" style="background:var(--flag)"></i>★ Title season</span></div>${timelineSvg(k,ev,W)}<ul class="tlv">${list}</ul><p class="note">The list shows first- and second-round rookie picks, the first two rounds of a startup draft, and trades that moved a first-round pick or at least 1.2 firsts' worth of value. Every trade is on the line above.</p></div>`;
+}
+// Milestones, season awards and the weekly award tally, shown at the bottom of the Record book
+function historyPanels(){
+  const played=S.seas.map((s,i)=>[i,s]).filter(([,s])=>s.done.length);
+  if(HS.aw==null||!S.seas[HS.aw]||!S.seas[HS.aw].done.length)HS.aw=played.length?played[0][0]:0;
   const sel=(id,l,v)=>`<select id="${id}">${l.map(([x,t])=>`<option value="${esc(x)}"${String(x)===String(v)?" selected":""}>${esc(t)}</option>`).join("")}</select>`;
-  h+=panelX(`${esc(m.name)}: franchise timeline`,"Seasons, trades and top draft picks on one line. Hover any mark for details.",
-    `<div class="inl"><label>Team ${sel("hsteam",ks.map(k=>[k,mname(k)+(S.mgr[k].current?"":" (former)")]),HS.k)}</label></div><div class="lg"><span><i class="sq" style="background:var(--c1);border-radius:50%"></i>Trade: higher is a better grade, bigger is more value moved</span><span><i class="sq" style="background:var(--c3);transform:rotate(45deg)"></i>Draft pick (larger is a first-rounder)</span><span><i class="sq" style="background:var(--pan2);outline:1px solid var(--mu)"></i>Season and record</span><span><i class="sq" style="background:var(--flag)"></i>★ Title season</span></div>${timelineSvg(HS.k,ev,W)}<ul class="tlv">${list}</ul><p class="note">The list shows first- and second-round rookie picks, the first two rounds of a startup draft, and trades that moved a first-round pick or at least 1.2 firsts' worth of value. Every trade is on the line above.</p>`,"hi-time");
+  let h="";
   // milestones
   const ml=milestoneRows().sort((a,b)=>b.a.w-a.a.w);
   const dr=(gap,ever,n,last,what)=>!n?'<span class="mu">–</span>':gap===0?`<span class="stat ok">None</span> <span class="mu">${what} in ${esc(last)}</span>`:ever?`${plural(gap,"season")} <span class="mu">last in ${esc(last)}</span>`:`<span class="stat out">Never</span> <span class="mu">${plural(n,"season")}</span>`;
@@ -3643,11 +3642,11 @@ function renderHistory(){
   const cm={};shown.forEach(([id])=>cm[id]=Math.max(...tl.map(t=>t[id]||0),1));
   h+=panelX("Weekly award tally","How many times each manager has taken each weekly award from the Weekly recap. Blue columns are worth bragging about; red columns are the ones nobody wants.",
     `<div class="inl"><label>Range ${sel("hstally",[["all","All-time"],...played.map(([i,s])=>[String(i),s.season])],HS.tally)}</label></div>`+(tl.length?`<div class="tw"><table class="mx fill sortable" data-sid="tally"><thead><tr><th>Team</th>${shown.map(([,l,sh])=>`<th class="n" data-tip="${esc(l)}">${esc(sh)}</th>`).join("")}</tr></thead><tbody>${tl.map(t=>`<tr><th>${mlink(t.k)}</th>${shown.map(([id,l])=>{const v=t[id]||0,bad=["bench","tough","dud","low"].includes(id);return`<td class="c" data-v="${v}" style="background:${v?heat(v/cm[id]*.9,bad?"--neg":"--seq"):"var(--pan2)"}" data-tip="${esc(`${mname(t.k)}: ${l}, ${plural(v,"time")}`)}">${v||""}</td>`}).join("")}</tr>`).join("")}</tbody></table></div>`:emptyX("No weeks played in this range.")),"hi-tally");
-  body.innerHTML=h;
+  return h;
 }
-$("histbody").addEventListener("change",e=>{
-  const id=e.target.id,map={hsteam:["k","hi-time"],hsaw:["aw","hi-award"],hstally:["tally","hi-tally"]}[id];if(!map)return;
-  HS[map[0]]=id==="hsaw"?+e.target.value:e.target.value;renderHistory();$(map[1])?.scrollIntoView({block:"start"});
+$("rbody").addEventListener("change",e=>{
+  const id=e.target.id,map={hsaw:["aw","hi-award"],hstally:["tally","hi-tally"]}[id];if(!map)return;
+  HS[map[0]]=id==="hsaw"?+e.target.value:e.target.value;renderRecords();$(map[1])?.scrollIntoView({block:"start"});
 });
 
 /* ============ player lookup ============ */
@@ -3863,7 +3862,7 @@ function renderHow(){
     <ul><li><b>Home</b> opens with your week, in this order: this week's matchup with its win chance (before kickoff, from each team's projected score with the starters set in Sleeper, as on Live scores; live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, league buzz (last week's awards, the game of the week and the latest trades with their grades), and a trade idea. The tool tiles follow. Without a team, Home is just the tiles.</li>
     <li><b>Lineup problems</b> checks your starters in Sleeper for the week, or the best lineup on paper when Sleeper has none set. A starter is flagged when he is on bye, expected to miss the week (the rules are under Playoff odds), questionable (he is expected to play, so nothing is at risk), or the slot is empty. Points at risk are each flagged player's usual score. The suggested swap is your best healthy bench player who fits the slot; nothing is suggested once a player's game has started.</li>
     <li><b>The trade idea</b> follows your label: a contender gets a player to buy, a rebuilder a player to sell, and a team in between one of each. When nothing fits fairly, it is left out.</li>
-    <li><b>Everywhere else</b> your team's rows and cards are outlined, and your team is picked to start with in Team profile, Franchise history, Rivalries and the trade calculator.</li></ul>`);
+    <li><b>Everywhere else</b> your team's rows and cards are outlined, and your team is picked to start with in Team profile, Rivalries and the trade calculator.</li></ul>`);
   b+=add("how-max","Max points, efficiency and bench points",go("teams","Standings")+", "+go("lineups","Lineups")+", "+go("board","Draft board"),
     `<p><b>Max points</b> is the best lineup a team could have set in a week, using the points its players actually scored. The page fills the most restrictive slots first (QB before flex, flex before superflex) with the highest scorers who fit.</p>
     ${fx("Efficiency <i>=</i> points scored <i>÷</i> max points")}${fx("Left on the bench <i>=</i> max points <i>−</i> points scored")}
@@ -3954,7 +3953,7 @@ function renderHow(){
     <li><b>The price</b> is the cheapest combination of up to three of the buyer's own picks worth at least 90% of the player's dynasty value. Ideas that would cost more than 160% are dropped.</li>
     <li><b>Fit</b> is the player's win-now gain over the buyer's last starter, times how far down the league the buyer ranks at the position. The league-wide list shows the 12 best fits, no more than two per buyer.</li>
     <li><b>Your team's ideas</b> follow its label: a contender gets its best buy, a rebuilder its best sell, a team in between one of each. When nothing fits, the slot is left out.</li></ul>`);
-  b+=add("how-grade","Trade grades in hindsight",go("tlab","Trade lab")+", "+go("history","Franchise history"),
+  b+=add("how-grade","Trade grades in hindsight",go("tlab","Trade lab")+", "+go("profile","Team profile"),
     `<p>Each side of a trade is scored on two things, then blended.</p>
     <ul><li><b>Starter points.</b> Points the players received have scored in that team's starting lineup since the deal, until they were traded again. For a pick, it is the starter points of the player drafted with it, as long as the receiving team made the pick itself. A pick that was moved on again scores no points here; its value shows up in the later trade.</li>
     <li><b>Value now.</b> Today's trade value of everything received: the players, the players the picks became, or the pick's current price for picks not used yet (tiered early, mid or late if it is in the next draft). This counts wherever the player is now, since it measures what the asset turned out to be worth.</li></ul>
@@ -4028,7 +4027,7 @@ function renderHow(){
     <li><b>Rookie class tracker</b> compares every class over the same number of weeks: however many the newest class has played.</li>
     <li><b>The draft, redone</b> (Draft recap) reorders a class by each player's trade value today. Points since the draft are shown but only split ties.</li></ul>
     <p>With only a few rookie drafts on record, slot averages and grades swing a lot. They firm up with each class.</p>`);
-  b+=add("how-awards","Weekly and season awards",go("recap","Weekly recap")+", "+go("news","Recap export")+", "+go("history","Franchise history"),
+  b+=add("how-awards","Weekly and season awards",go("recap","Weekly recap")+", "+go("news","Recap export")+", "+go("records","Record book"),
     `<ul><li><b>Top and lowest score</b>: the week's highest and lowest team totals.</li><li><b>Biggest blowout</b> and <b>nail-biter</b>: the widest and narrowest margins.</li>
     <li><b>Upset of the week</b>: the win by the team ranked furthest below its opponent in the power rankings before that week.</li>
     <li><b>Luckiest win</b>: the lowest winning score, when it was under the week's median. <b>Toughest loss</b>: the highest losing score.</li>
