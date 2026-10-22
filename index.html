@@ -4,16 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>League Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--bg:#1f2232;--pan:#272b3d;--pan2:#30354a;--line:#3a3f57;--tx:#ece8f2;--mu:#a7a6c2;--flag:#f2b84b;--mark:#f2b84b;--avg:#9d9cb8;
---pos:#4a86da;--neg:#e06a60;--seq:#4a86da;--good:#84d9ac;--bad:#ff9d8e;
+:root{color-scheme:dark;--bg:#1b2d4e;--pan:#0f1b31;--pan2:#172744;--line:#2a3f66;--tx:#eef3fb;--mu:#98a9c6;--flag:#ff6b73;--me:#ffc93c;--mark:#b9c8e2;--avg:#7f91b0;
+--pos:#4f9dff;--neg:#ff7b72;--seq:#3d7fe0;--good:#4ade80;--bad:#ff7b72;
+--ink:#03070f;--sh:#03070f;--mast:#0a1222;--mast-tx:#eef3fb;--mast-mu:#98a9c6;--mastline:#ff4d58;--h1:#ffffff;--h1sh:#ff4d58;--sun:#ff4d58;--onsun:#fff;--acc2:#ff4d58;--onacc2:#fff;
+--chip:#0f1b31;--chip-tx:#eef3fb;--field:#0f1b31;--field-tx:#eef3fb;--pill:#eef3fb;--pill-tx:#0a1222;--hl:84%;
 --r1:#2e8b66;--r2:#3a78b5;--r3:#b5773a;--r4:#8a62b5;
 --p-QB:#3987e5;--p-RB:#d95926;--p-WR:#199e70;--p-TE:#c98500;--p-K:#d55181;--p-DEF:#9085e9;--p-x:#7c7f99;
 --c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181}
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--bg);color:var(--tx);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
+body{background:var(--bg);color:var(--tx);font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
 :root{--gut:clamp(16px,2.2vw,44px)}
 header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px var(--gut) 0}
 h1{margin:0;font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-.02em}
@@ -69,7 +71,7 @@ h3{margin:0;font-size:17px;font-weight:800}
 .ev{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.ev:last-child{border:0}
 .ev time{color:var(--mu);font-size:13px;padding-top:2px}.arrow{color:var(--good);font-weight:600}
 .deal{margin-top:6px;display:grid;gap:6px}.side{background:var(--bg);border-radius:6px;padding:7px 10px;font-size:14px}.side ul{margin:3px 0 0;padding-left:18px}
-.side li.me .pos{color:#1b2a3a;opacity:.8}.side li.me{background:var(--flag);color:#1b2a3a;border-radius:4px;padding:0 6px;list-style-position:inside;margin-left:-18px;font-weight:600}
+.side li.me .pos{color:#1b2a3a;opacity:.8}.side li.me{background:var(--me);color:#1b2a3a;border-radius:4px;padding:0 6px;list-style-position:inside;margin-left:-18px;font-weight:600}
 .pos{color:var(--mu);font-size:12px}.origin{color:var(--mu);font-size:14px;padding:8px 0 2px}
 /* tables */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px}
@@ -339,8 +341,8 @@ body.hasback header{padding-top:46px}
 .tkm.tkm-s{padding:2px 8px;margin:1px 4px 1px 0;font-size:12px}
 /* ---- your team ---- */
 .mesel{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:13px}.mesel[hidden]{display:none}.mesel select{max-width:220px}
-tr.isme>td,tr.isme>th{background:color-mix(in oklab,var(--flag) 11%,transparent)}tr.isme>:first-child{box-shadow:inset 3px 0 0 var(--flag)}
-.isme:not(tr){box-shadow:inset 0 0 0 2px color-mix(in oklab,var(--flag) 65%,transparent);border-radius:8px}/* rows with no padding of their own get room inside the outline without moving their neighbours */.mrow.isme,.bkt.isme{padding:6px 10px;margin:-3px -10px}.lvrow.isme{padding:8px 12px;margin:-4px -12px}
+tr.isme>td,tr.isme>th{background:color-mix(in oklab,var(--me) 11%,transparent)}tr.isme>:first-child{box-shadow:inset 3px 0 0 var(--me)}
+.isme:not(tr){box-shadow:inset 0 0 0 2px color-mix(in oklab,var(--me) 65%,transparent);border-radius:8px}/* rows with no padding of their own get room inside the outline without moving their neighbours */.mrow.isme,.bkt.isme{padding:6px 10px;margin:-3px -10px}.lvrow.isme{padding:8px 12px;margin:-4px -12px}
 .picker{position:fixed;inset:0;z-index:60;background:rgba(10,12,20,.74);display:flex;align-items:flex-start;justify-content:center;padding:6vh var(--gut);overflow:auto}.picker[hidden]{display:none}
 .pickbox{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:780px;width:100%}.pickbox h2{margin:0 0 6px}.pickbox>p{color:var(--mu);margin:0 0 14px;max-width:70ch}
 .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:8px;margin-bottom:14px}
@@ -357,11 +359,55 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
 .tline{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.tline:last-child{border-bottom:0}.tline time{color:var(--mu);font-size:12px}
 .fleece{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:var(--neg);color:#fff;vertical-align:middle}.fleece.aged{background:transparent;color:var(--neg);border:1px solid var(--neg)}
 .itag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line);color:var(--mu);vertical-align:middle}
+/* ============ theme: Night Red ============
+   Trading-card look: dark navy cards with black outlines and offset shadows on a lighter navy table, red accents, silver bars.
+   --flag is the general accent; --me is kept for "your team" only, so your highlight never blends with the rest of the page. */
+body{font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif}
+body :is(h1,h2,h3,.htile .hn,.tile b,.rc>b,.card .tl){font-weight:900;letter-spacing:-.01em}
+body header{background:var(--mast);color:var(--mast-tx);padding-bottom:16px}
+body header :is(#sub,#scoring,.mu,.mesel){color:var(--mast-mu)}
+body header #scoring b{color:var(--mast-tx)}
+body h1{color:var(--h1);font-size:clamp(28px,4.4vw,44px);text-shadow:3px 3px 0 var(--h1sh)}
+body header :is(input,select){background:var(--field);color:var(--field-tx);border:2px solid var(--ink);border-radius:8px}
+body :is(.go,.btn){background:var(--sun);color:var(--onsun);border:2px solid var(--ink);border-radius:8px;box-shadow:3px 3px 0 var(--sh)}
+body nav{margin:0;background:var(--mast);border-bottom:4px solid var(--mastline);padding-bottom:10px;gap:6px}
+body nav button{color:var(--mast-mu);border:2px solid transparent;border-radius:999px;padding:6px 14px;font-weight:700}
+body nav button[aria-selected=true]{background:var(--sun);color:var(--onsun);border-color:var(--ink);font-weight:800}
+body .subnav{padding-top:16px;gap:8px}
+body .subnav button{background:var(--chip);border:2px solid var(--ink);color:var(--chip-tx);font-weight:700}
+body .subnav button[aria-selected=true],body .subnav button[aria-selected=true]:hover{background:var(--acc2);border-color:var(--ink);color:var(--onacc2);box-shadow:3px 3px 0 var(--sh)}
+body main{padding-top:18px}
+body :is(.panel,.htile,.tw){border:2px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--sh)}
+body .panel .tw{border:0;box-shadow:none;border-radius:0}
+body .tile{border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--sh)}
+body :is(.grid2,.tiles,.htiles){gap:16px}
+body .grid2{margin-bottom:18px}
+body .stack>*+*{margin-top:18px}
+body .panel>h3{font-size:19px;display:inline-block;max-width:calc(100% - 200px);padding:0 2px;background:linear-gradient(transparent var(--hl),var(--sun) var(--hl) 92%,transparent 92%)}
+body .panel>h3+*{margin-top:8px}
+body :is(.rc,.mcard,.panel .card){background:var(--pan2);border:2px solid var(--line);border-radius:10px}
+body .tile b{font-size:26px}
+body .tile span{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.08em}
+body .htile{transition:transform .12s,box-shadow .12s}
+body .htile:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--sh);border-color:var(--ink)}
+body .htile .hn{font-size:20px}
+body .htile .ht{color:var(--acc2);font-weight:700}
+body .hgroup{display:inline-block;background:var(--pill);color:var(--pill-tx);padding:3px 12px;border-radius:999px;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+body h2{font-size:clamp(26px,3.6vw,40px)}
+body th{text-transform:uppercase;font-size:11px;letter-spacing:.06em;font-weight:800;color:var(--tx)}
+body .pa{border:2px solid var(--ink);border-radius:999px;color:var(--tx);font-weight:700}
+body .av{border:3px solid var(--ink);box-shadow:3px 3px 0 var(--sh)}
+body tr.isme>:is(td,th){background:color-mix(in oklab,var(--me) 20%,transparent)}
+body tr.isme>:first-child{box-shadow:inset 4px 0 0 var(--me)}
+body .isme:not(tr){box-shadow:inset 0 0 0 2px var(--me)}
+body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
+@media(max-width:600px){body .panel>h3{max-width:calc(100% - 120px)}}
+@media(prefers-reduced-motion:reduce){body .htile{transition:none}}
 </style>
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 21, 2026, 7:05 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 21, 2026, 7:20 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -386,7 +432,7 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
   <section id="p-board" role="tabpanel" aria-labelledby="t-board" hidden>
     <div class="bar"><label>Draft year <select id="year"></select></label><span class="mu" id="updated"></span><span class="pact inline"><button type="button" class="pa" data-act="copy" data-shot="#scroll">Copy<span class="wi"> image</span></button><button type="button" class="pa" data-act="save" data-shot="#scroll">Save<span class="wi"> image</span></button></span></div>
     <div id="scroll"><div id="board" class="board"></div></div>
-    <p class="note">Order: non-playoff teams by lowest max points-for first, then playoff teams from the lowest seed to the top seed. Seeds are ranked by record, then points-for. Gold outlines mark traded picks, which also show the team that originally owned them; the fill color is the current owner.</p>
+    <p class="note">Order: non-playoff teams by lowest max points-for first, then playoff teams from the lowest seed to the top seed. Seeds are ranked by record, then points-for. White outlines mark traded picks, which also show the team that originally owned them; the fill color is the current owner.</p>
   </section>
 
   <section id="p-ptrades" role="tabpanel" aria-labelledby="t-ptrades" hidden>
@@ -1579,7 +1625,7 @@ async function renderPng(el,caption){
     clone.querySelectorAll(".pact,img,.vbtn,.lnk").forEach(n=>n.remove());
     clone.style.margin="0";
     const css=getComputedStyle(document.documentElement),bg=getComputedStyle(document.body).backgroundColor,mu=css.getPropertyValue("--mu").trim(),bare=!!el.dataset.bare,pad=bare?0:22,foot=bare?0:30,W=w+pad*2,H=hgt+pad*2+foot;
-    const html=`<div xmlns="http://www.w3.org/1999/xhtml" style="width:${W}px;height:${H}px;box-sizing:border-box;padding:${pad}px;background:${bg};font-family:'Bricolage Grotesque',system-ui,sans-serif"><style>${fonts}${rules.join("")}</style>${new XMLSerializer().serializeToString(clone)}${bare?"":`<div style="margin-top:12px;color:${mu};font-size:13px;font-family:'Bricolage Grotesque',system-ui,sans-serif">${esc(caption)}</div>`}</div>`;
+    const html=`<div xmlns="http://www.w3.org/1999/xhtml" style="width:${W}px;height:${H}px;box-sizing:border-box;padding:${pad}px;background:${bg};font-family:'Archivo',system-ui,sans-serif"><style>${fonts}${rules.join("")}</style>${new XMLSerializer().serializeToString(clone)}${bare?"":`<div style="margin-top:12px;color:${mu};font-size:13px;font-family:'Archivo',system-ui,sans-serif">${esc(caption)}</div>`}</div>`;
     const svgTxt=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><foreignObject x="0" y="0" width="${W}" height="${H}">${html}</foreignObject></svg>`;
     const img=new Image();img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgTxt);await img.decode();
     const k=2,c=document.createElement("canvas");c.width=W*k;c.height=H*k;const ctx=c.getContext("2d");ctx.scale(k,k);ctx.drawImage(img,0,0);
