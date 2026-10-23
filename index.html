@@ -141,9 +141,53 @@ th.srt[aria-sort]{color:var(--tx)}
 /* home */
 .hlead{margin:6px 0 4px}.hlead h2{font-size:clamp(26px,3.4vw,38px)}.hlead p{margin:6px 0 0;color:var(--mu);font-size:15px;max-width:80ch}.hlead p b{color:var(--tx)}
 .hgroup{margin:26px 0 10px;font-size:15px;font-weight:700;color:var(--mu)}
-.htiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
-.htile{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--pan);border:1px solid var(--line);border-radius:10px;padding:16px 18px;cursor:pointer;color:var(--tx);min-height:136px;transition:border-color .15s}
-.htile:hover{border-color:var(--flag)}.htile .hn{font-size:19px;font-weight:800}.htile .hd{color:var(--mu);font-size:14px}.htile .ht{margin-top:auto;color:var(--flag);font-weight:600;font-size:14px}
+/* ---- Home: score bug, headline ticker, your week and a binder of flip cards ---- */
+#homebody{display:grid;gap:18px}#homebody .hme,#homebody .hlead{margin:0}
+.hav.xl{width:72px;height:72px;font-size:28px;border-width:3px;box-shadow:4px 4px 0 var(--sh)}
+.hbug{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px) minmax(0,1fr);align-items:center;gap:16px;background:var(--mast);border:2px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--sh);padding:18px 20px;overflow:hidden;background-image:linear-gradient(115deg,transparent 0 46%,color-mix(in oklab,var(--sun) 22%,transparent) 46% 54%,transparent 54%)}
+.hbt{display:flex;align-items:center;gap:14px;min-width:0}.hbt>div{display:flex;flex-direction:column;min-width:0}.hbt span{color:var(--mast-mu);font-size:12px}
+.hbt.op{flex-direction:row-reverse;text-align:right}
+.hbn{font-size:clamp(16px,1.8vw,22px);font-weight:900;line-height:1.1;overflow-wrap:anywhere}.hbn .tl{font-weight:900}.hbt.me .hbn .tl{color:var(--me)}
+.hbsc{font-size:clamp(34px,4.4vw,58px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1;margin-left:auto}.hbt.op .hbsc{margin:0 auto 0 0}.hbt.me .hbsc{color:#fff;text-shadow:3px 3px 0 var(--h1sh)}
+.hbmid{display:flex;flex-direction:column;align-items:stretch;gap:4px;text-align:center}.hbmid .lnk{align-self:center;margin-top:4px;font-size:13px}
+.hlive{align-self:center;background:var(--pan2);color:#fff;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;padding:4px 12px;border-radius:999px;border:2px solid var(--ink)}
+.hlive.on{background:var(--sun)}.hlive.on::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;margin-right:7px;vertical-align:1px;animation:hblink 1.4s infinite}
+@keyframes hblink{50%{opacity:.25}}
+.wp.hwp{height:14px;border-radius:7px;border:2px solid var(--ink)}.hbmid .wpl{font-weight:800;font-size:14px;color:var(--tx)}
+.htick{overflow:hidden;background:var(--pan);border:2px solid var(--ink);border-radius:999px;box-shadow:4px 4px 0 var(--sh)}
+.htk{display:flex;width:max-content;animation:htick 70s linear infinite}.htick:hover .htk{animation-play-state:paused}
+.htk span{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;padding:9px 22px;font-size:14px;font-weight:600}.htk em{font-style:normal;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:.1em;color:var(--acc2)}.htk .dup{padding:0}
+@keyframes htick{to{transform:translateX(-50%)}}
+.hbwk{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}.hbwk.three{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.4fr)}.hbwk .panel{margin:0;min-width:0}
+.hbhd{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}.hbhd h2{text-transform:uppercase}
+.hflipall{background:var(--chip);color:var(--tx);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--sh)}
+.hbinder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.hfc{perspective:1400px;min-width:0;display:grid}
+.hfc-in{display:grid;min-height:330px;transition:transform .55s cubic-bezier(.3,.7,.3,1.2);transform-style:preserve-3d}
+.hfc.on .hfc-in{transform:rotateY(180deg)}
+.hface{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;background:var(--pan);border:3px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 var(--sh);overflow:hidden;min-width:0;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.hface:hover{border-color:var(--sun);box-shadow:0 0 0 3px var(--sun)}.hface.front:focus-visible{outline:3px solid var(--tx);outline-offset:3px}
+.hface.back{transform:rotateY(180deg)}
+.hfband{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--sun);color:#fff;padding:8px 14px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:13px;border-bottom:3px solid var(--ink)}.hfband i{font-style:normal;opacity:.75}
+.hfbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 14px;text-align:center;background:radial-gradient(circle at 50% 0%,color-mix(in oklab,var(--sun) 18%,transparent),transparent 65%)}
+.hfs{font-size:44px;font-weight:900;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:#fff;text-shadow:3px 3px 0 var(--h1sh)}.hfs.sm{font-size:28px}
+.hfcap{color:var(--mu);font-size:13px;font-weight:600;max-width:24ch}
+.hfic{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:var(--pan2);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--sh);color:var(--acc2)}
+.hffoot{display:flex;justify-content:space-between;gap:8px;padding:9px 14px;border-top:2px dashed var(--line);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--mu)}
+.hffoot i{font-style:normal;color:var(--acc2);display:inline-block;transition:transform .3s}.hface.front:hover .hffoot i{transform:rotate(180deg)}
+.hflipx{background:rgba(0,0,0,.18);border:0;border-radius:999px;color:#fff;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:3px 9px;line-height:1.4}.hflipx:hover{background:rgba(0,0,0,.35)}
+.hsl{display:flex;flex-direction:column;padding:8px 10px 12px;gap:4px;flex:1}
+.hslh{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:2px 8px 4px;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);border-bottom:2px solid var(--ink)}
+.hsline{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center;text-align:left;background:none;border:0;border-radius:8px;padding:7px 8px;color:var(--tx);cursor:pointer}
+.hsline:nth-child(odd){background:color-mix(in oklab,var(--pan2) 80%,transparent)}
+.hsline>b{font-size:19px;font-weight:900;color:var(--acc2);font-variant-numeric:tabular-nums;line-height:1.1;overflow-wrap:anywhere}
+.hsline em{display:block;font-style:normal;font-weight:800;font-size:15px}.hsline small{display:block;color:var(--mu);font-size:12px;line-height:1.3}
+.hsline:hover{background:var(--sun)}.hsline:hover>b,.hsline:hover small{color:#fff}
+@media(max-width:1100px){.hbinder{grid-template-columns:repeat(2,minmax(0,1fr))}.hbwk.three{grid-template-columns:repeat(2,minmax(0,1fr))}.hbwk.three>:last-child{grid-column:1/-1}}
+@media(max-width:700px){.hbug{grid-template-columns:minmax(0,1fr);gap:12px;padding:14px}.hbt.op{flex-direction:row;text-align:left}.hbt.op .hbsc{margin:0 0 0 auto}.hbmid{order:3}.hbwk.three{grid-template-columns:minmax(0,1fr)}.hav.xl{width:56px;height:56px}}
+@media(max-width:560px){.hbinder{grid-template-columns:minmax(0,1fr)}.hfc-in{min-height:250px}.hbhd{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.hfc-in,.hffoot i,.hface{transition:none}.htk{animation:none;flex-wrap:wrap;width:auto}.htk .dup{display:none}.htick{border-radius:14px}.hlive.on::before{animation:none}}
+.capturing .hbug{background-image:none}
 /* weekly recap */
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:10px}
 .mcard{background:var(--bg);border-radius:8px;padding:10px 12px}
@@ -364,7 +408,7 @@ table.clip>tbody>tr:nth-child(n+11):not(.isme),.clip[data-cliplist]>:nth-child(n
    Trading-card look: dark navy cards with black outlines and offset shadows on a lighter navy table, red accents, silver bars.
    --flag is the general accent; --me is kept for "your team" only, so your highlight never blends with the rest of the page. */
 body{font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif}
-body :is(h1,h2,h3,.htile .hn,.tile b,.rc>b,.card .tl){font-weight:900;letter-spacing:-.01em}
+body :is(h1,h2,h3,.tile b,.rc>b,.card .tl){font-weight:900;letter-spacing:-.01em}
 body header{background:var(--mast);color:var(--mast-tx);padding-bottom:16px}
 body header :is(#sub,#scoring,.mu,.mesel){color:var(--mast-mu)}
 body header #scoring b{color:var(--mast-tx)}
@@ -378,10 +422,10 @@ body .subnav{padding-top:16px;gap:8px}
 body .subnav button{background:var(--chip);border:2px solid var(--ink);color:var(--chip-tx);font-weight:700}
 body .subnav button[aria-selected=true],body .subnav button[aria-selected=true]:hover{background:var(--acc2);border-color:var(--ink);color:var(--onacc2);box-shadow:3px 3px 0 var(--sh)}
 body main{padding-top:18px}
-body :is(.panel,.htile,.tw){border:2px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--sh)}
+body :is(.panel,.tw){border:2px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--sh)}
 body .panel .tw{border:0;box-shadow:none;border-radius:0}
 body .tile{border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--sh)}
-body :is(.grid2,.tiles,.htiles){gap:16px}
+body :is(.grid2,.tiles){gap:16px}
 body .grid2{margin-bottom:18px}
 body .stack>*+*{margin-top:18px}
 body .panel>h3{font-size:19px;display:inline-block;max-width:calc(100% - 200px);padding:0 2px;background:linear-gradient(transparent var(--hl),var(--sun) var(--hl) 92%,transparent 92%)}
@@ -389,10 +433,6 @@ body .panel>h3+*{margin-top:8px}
 body :is(.rc,.mcard,.panel .card){background:var(--pan2);border:2px solid var(--line);border-radius:10px}
 body .tile b{font-size:26px}
 body .tile span{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.08em}
-body .htile{transition:transform .12s,box-shadow .12s}
-body .htile:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--sh);border-color:var(--ink)}
-body .htile .hn{font-size:20px}
-body .htile .ht{color:var(--acc2);font-weight:700}
 body .hgroup{display:inline-block;background:var(--pill);color:var(--pill-tx);padding:3px 12px;border-radius:999px;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
 body h2{font-size:clamp(26px,3.6vw,40px)}
 body th{text-transform:uppercase;font-size:11px;letter-spacing:.06em;font-weight:800;color:var(--tx)}
@@ -403,12 +443,11 @@ body tr.isme>:first-child{box-shadow:inset 4px 0 0 var(--me)}
 body .isme:not(tr){box-shadow:inset 0 0 0 2px var(--me)}
 body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
 @media(max-width:600px){body .panel>h3{max-width:calc(100% - 120px)}}
-@media(prefers-reduced-motion:reduce){body .htile{transition:none}}
 </style>
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 22, 2026, 7:05 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 23, 2026, 6:20 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -1444,8 +1483,9 @@ function teaser(k){
 /* ---- Home for your team: this week's matchup, the stakes, lineup problems, league buzz and a trade idea ---- */
 const TAGTXT={Out:"Out",Doubtful:"Doubtful",COV:"Covid list",IR:"On IR",PUP:"On PUP",NA:"Not active",DNR:"Did not report",Sus:"Suspended",Questionable:"Questionable"};
 function homeMine(){
+  HM={p:{},bug:null};
   const cur=S.seas[0],rid=myRid();if(rid==null||!S.deep)return"";
-  const hp=(t,inner,id,half)=>`<div class="panel${half?"":" wide"}"${id?` id="${id}"`:""}><h3>${t}</h3>${inner}</div>`,recOf=r=>{const x=cur.rw[r];return x?rec(x.w,x.l,x.t):"0-0"};
+  const hp=(t,inner,id,half)=>HM.p[id]=`<div class="panel${half?"":" wide"}"${id?` id="${id}"`:""}><h3>${t}</h3>${inner}</div>`,recOf=r=>{const x=cur.rw[r];return x?rec(x.w,x.l,x.t):"0-0"};
   const lw=liveWeek(),rem=cur.complete?[]:remWeeks(cur),M=cur.done.length?teamModels(cur):null,out=[];
   // 1. this week's matchup: the live win chance once the week is under way, otherwise each team's expected score for the week
   let w=null,oRid=null,pMe=null,live=null,pre=null;
@@ -1459,6 +1499,9 @@ function homeMine(){
     const T=M?.T,row=(r,x)=>`<div class="lvrow${live&&x.pts>(x===live.me?live.o:live.me).pts?" lead":""}"><span>${mlink(cur.own[r])} <span class="mu">${recOf(r)}</span><span class="lvsub">${live?`${x.left?plural(x.left,"starter")+" still to play":"All starters "+(x.playing?"in":"done")}. Projected ${fmt(x.proj)}`:pre?`Projected ${fmt((r===rid?pre.me:pre.o).proj)} from this week's starters`:T?.[r]?`Expected score ${fmt(muAt(T,r,w))}`:""}</span></span>${live?`<b class="sc">${fmt(x.pts,2)}</b>`:""}</div>`;
     const me=cur.own[rid],op=cur.own[oRid],bar=pMe==null?"":`<div class="wp" data-tip="${esc(`${mname(me)} ${pctTxt(pMe)}\n${mname(op)} ${pctTxt(1-pMe)}`)}"><b style="width:${clamp(pMe,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${esc(mname(me))} ${pctTxt(pMe)}</span><span>${pctTxt(1-pMe)} ${esc(mname(op))}</span></div>`;
     out.push(hp(`Week ${w}: ${esc(mname(me))} vs ${esc(mname(op))}`,`<p class="pcap">${live?(live.final?"Final score":"Live score and win chance right now"):pre?"Win chance before kickoff, from each team's projected score with the starters set in Sleeper":"Win chance before kickoff, from each team's expected score this week"}</p>${row(rid,live?.me)}${row(oRid,live?.o)}${bar}${lw?`<div class="btnrow" style="margin-top:10px"><button type="button" class="lnk" data-go="live">Open live scores</button></div>`:""}`,"hm-match",stk0));
+    const sd=(r,x)=>{const pj=pre?(r===rid?pre.me:pre.o).proj:null,mu=T?.[r]?muAt(T,r,w):null;
+      return{k:cur.own[r],rec:recOf(r),sub:live?`${x.left?plural(x.left,"starter")+" still to play":"All starters "+(x.playing?"in":"done")}. Projected ${fmt(x.proj)}`:pre?"Projected from this week's starters":mu!=null?"Expected score this week":"",sc:live?fmt(x.pts,2):pj!=null?fmt(pj):mu!=null?fmt(mu):"–"}};
+    HM.bug={w,pMe,state:live?(live.final?"Final":"Live"):"Up next",a:sd(rid,live?.me),b:sd(oRid,live?.o)};
   }else if(w!=null)out.push(hp(`Week ${w}`,emptyX(`${esc(mname(ME))} has no game this week.`),"hm-match",stk0));
   // 2. the stakes: playoff odds now, if this week is won and if it is lost
   const sm=sm0,sr=sm?.rows.find(x=>x.rid===rid);
@@ -1510,13 +1553,89 @@ function renderHome(){
   if(S.deep&&lw)bits.push(`${cur.done.length} week${cur.done.length>1?"s":""} played`);
   if(champS)bits.push(`Defending champion: <b>${esc(mname(champS.own[champS.champ]))}</b>`);
   if(ME)bits.unshift(`Your team: <b>${esc(mname(ME))}</b>`);
-  const mine=ME?homeMine():"";
-  let h=`<div class="hlead"><h2>${esc(lead)}</h2><p>${bits.join(". ")}${bits.length?". ":""}${mine?"Your week first, then every tool below.":"Pick a tool to dig in."} Every panel has Copy image and Save image buttons for your newsletter, and How it works explains every number.</p></div>`;
-  if(mine)h+=mine+`<h2 style="margin:28px 0 0;font-size:20px">All tools</h2>`;
-  TOOLS.forEach(([g,list])=>{h+=`<h3 class="hgroup">${g}</h3><div class="htiles">${list.map(([k,n,d])=>`<button type="button" class="htile" data-go="${k}"><span class="hn">${n}</span><span class="hd">${d}</span><span class="ht">${esc(teaser(k))}</span></button>`).join("")}</div>`});
+  const mine=ME?homeMine():"",B=mine&&HM.bug;
+  let h=B?homeBug(B):`<div class="hlead"><h2>${esc(lead)}</h2><p>${bits.join(". ")}${bits.length?". ":""}${ME?"":"Pick a section card below to dig in. "}Every panel has Copy image and Save image buttons for your newsletter, and How it works explains every number.</p></div>`;
+  h+=homeTicker();
+  if(mine){const P=HM.p,wk=["hm-stakes","hm-lineup","hm-idea"].filter(id=>P[id]);
+    if(!B&&P["hm-match"])h+=`<div class="hme">${P["hm-match"]}</div>`;
+    if(wk.length)h+=`<div class="hbwk${wk.length===3&&P["hm-idea"]?" three":""}">${wk.map(id=>P[id]).join("")}</div>`;
+    if(P["hm-buzz"])h+=`<div class="hme">${P["hm-buzz"]}</div>`}
+  h+=homeBinder();
   $("homebody").innerHTML=h;
 }
-$("homebody").addEventListener("click",e=>{const t=e.target.closest(".htile");if(t){if(!showTab(t.dataset.go))window.scrollTo({top:0})}});
+/* ---- Home layout: a broadcast score bug, a headline ticker and a binder of flip cards, one per section ---- */
+let HM={p:{},bug:null};const HFLIP=new Set();
+const hav=(k,c="")=>{const m=S.mgr[k];return m?`<span class="av hav ${c}" aria-hidden="true">${esc((m.name.match(/[A-Za-z0-9]/)||["?"])[0].toUpperCase())}${m.avatar?`<img src="${esc(m.avatar)}" alt="" onerror="this.remove()">`:""}</span>`:""};
+function homeBug(B){
+  const side=(x,cls)=>`<div class="hbt ${cls}">${hav(x.k,"xl")}<div><b class="hbn">${mlink(x.k)}</b><span>${esc(x.rec)}${x.sub?" · "+esc(x.sub):""}</span></div><b class="hbsc">${esc(x.sc)}</b></div>`;
+  const p=B.pMe;
+  return `<section class="hbug" aria-label="Your week ${B.w} matchup">${side(B.a,"me")}<div class="hbmid"><span class="hlive${B.state==="Live"?" on":""}">Week ${B.w} · ${B.state}</span>${p==null?"":`<div class="wp hwp"><b style="width:${clamp(p,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${pctTxt(p)}</span><span>${pctTxt(1-p)}</span></div>`}<span class="mu">${B.state==="Final"?"Final score":p==null?"":B.state==="Live"?"Win chance right now":"Win chance before kickoff"}</span>${liveWeek()?`<button type="button" class="lnk" data-go="live">Open live scores</button>`:""}</div>${side(B.b,"op")}</section>`;
+}
+function homeTicker(){
+  const items=TOOLS.flatMap(([,l])=>l).map(([k,n])=>[n,teaser(k)]).filter(([,t])=>t&&!/^(Loading|Build a deal|Search any|Luck, power)/.test(t)).map(([n,t])=>`<span><em>${esc(n)}</em>${esc(t)}</span>`).join("");
+  return items?`<div class="htick" aria-label="League headlines"><div class="htk">${items}<span class="dup" aria-hidden="true">${items}</span></div></div>`:"";
+}
+// The key stat on the back of each card is read from the tool's teaser line
+const HKEY={
+  recap:t=>{const m=t.match(/top score: (.*), (\S+)$/);return m&&[m[2],`Top score · ${m[1]}`]},
+  live:t=>/in progress/.test(t)?["LIVE",t]:["–",t],
+  news:t=>{const m=t.match(/^Week (\d+) recap/);return m&&[`Wk ${m[1]}`,"recap ready to copy"]},
+  teams:t=>{const m=t.match(/^(.*) leads at (\S+)$/);return m&&[m[2],`${m[1]} leads`]},
+  race:t=>{const m=t.match(/favorite: (.*), (\S+)$/);return m&&[m[2],`Title favorite · ${m[1]}`]},
+  power:t=>{const m=t.match(/^#1 after week \d+: (.*)$/);return m&&["#1",m[1]]},
+  builds:t=>{const m=t.match(/all-in: (.*), contender score (\d+)/);return m&&[m[2],`Most all-in · ${m[1]}`]},
+  sched:t=>{const m=t.match(/schedule: (.*), (\S+) wins/);return m&&[m[2],`Kindest schedule · ${m[1]}`]},
+  lineups:t=>{const m=t.match(/bench: (.*), (\S+)$/);return m&&[m[2],`Left on the bench · ${m[1]}`]},
+  profile:t=>{const m=t.match(/(\d+) teams, (\d+) seasons?/);return m&&[m[1],`teams, ${m[2]} season${m[2]==="1"?"":"s"} of history`]},
+  rosters:t=>{const m=t.match(/roster: (.*), (\S+) with picks/);return m&&[m[2],`Most valuable · ${m[1]}`]},
+  rivals:t=>{const m=t.match(/Fiercest: (.*), (\d+)$/);return m&&[m[2],`Fiercest · ${m[1]}`]},
+  nextdraft:t=>{const m=t.match(/^(.*) leads .* at (\S+)$/);return m&&[m[2],`${m[1]} for the 1.01`]},
+  pastdrafts:t=>{const m=t.match(/^(\d+) draft/);return m&&[m[1],"draft and earlier, pick by pick"]},
+  tradehist:t=>{const m=t.match(/(\d+) trades? graded(?:, (\d+) fleece)?/);return m&&[m[1],`graded${m[2]?` · ${plural(+m[2],"fleece")}`:""}`]},
+  tcalc:()=>["⇄","Build a deal, see who wins"],
+  waivers:t=>{const m=t.match(/pickup: (.*), (\S+) points/);return m&&[m[2],`Best pickup · ${m[1]}`]},
+  lookup:()=>["Find","any player the league has rostered"],
+  watch:t=>{const m=t.match(/^(\d+) rostered/);return m&&[m[1],"rostered players hurt"]},
+  records:t=>{const m=t.match(/ever: (\S+) by (.*)$/);return m&&[m[1],`Highest score · ${m[2]}`]},
+  how:()=>["?","Luck, power, rivalry, trade value"]};
+const hkey=k=>{const t=teaser(k);return(HKEY[k]&&t&&HKEY[k](t))||["…",t||"Loading…"]};
+function homeSections(){
+  const cur=S.seas[0],rid=myRid(),tl=Object.fromEntries(TOOLS.flatMap(([,l])=>l).map(x=>[x[0],x])),G=g=>(TOOLS.find(x=>x[0]===g)?.[1]||[]).map(x=>x[0]);
+  const cs=S.deep?latestPlayed():null,lw=cs?.done.at(-1),rows=seasonRows(0),meRow=rid!=null?rows.find(r=>r.rid===rid):null;
+  const sm=S.deep?simSeason(cur):null,po=sm&&meRow?sm.rows.find(x=>x.rid===rid)?.po:null,fav=sm?[...sm.rows].sort((a,b)=>b.title-a.title)[0]:null;
+  const pw=cs&&cs===cur?powerAt(cs,lw):null,myPw=pw&&rid!=null?pw.find(x=>x.rid===rid):null;
+  const B=HM.bug&&ME?HM.bug:null,rx=(k,re)=>(teaser(k).match(re)||[]);
+  const top=rows.find(x=>x.seed===1),champS=S.txReady?S.seas.find(s=>s.complete&&s.champ!=null):null;
+  const tank=rx("nextdraft",/^(.*) leads the race for the 1\.01 at (\S+)$/),tr=rx("tradehist",/(\d+) trades? graded(?:, (\d+) fleece)?/),inj=rx("watch",/^(\d+)/),rv=rx("rosters",/roster: (.*), (\S+) with/);
+  const keyOf=n=>Object.keys(S.mgr).find(k=>mname(k)===n);
+  return[
+    {n:"This week",tools:G("This week"),...(B&&B.pMe!=null?{stat:pctTxt(B.pMe),cap:`win chance vs ${esc(mname(B.b.k))}`,k:ME}:cs?{stat:fmt(cs.wk[lw][0].pts),cap:`week ${lw} top score, ${esc(mname(cs.own[cs.wk[lw][0].rid]))}`,k:cs.own[cs.wk[lw][0].rid]}:{stat:"–",cap:"fills in after week 1",ic:"▶"})},
+    {n:"Season",tools:G("Season"),...(meRow&&meRow.g?{stat:ord(meRow.seed),cap:`seed${po!=null?`, ${pctTxt(po)} playoff odds`:""}`,k:fav?cur.own[fav.rid]:ME}:top&&top.g?{stat:rec(top.w,top.l,top.t),cap:`${esc(mname(top.key))} leads`,k:top.key}:{stat:"–",cap:`the ${esc(cur.season)} season hasn't started`,ic:"▦"})},
+    {n:"Teams",tools:G("Teams"),...(myPw?{stat:`#${myPw.rank}`,cap:"in the power rankings",k:ME}:rv[2]?{stat:rv[2],cap:`most valuable roster, ${esc(rv[1])}`,k:keyOf(rv[1])}:{stat:String(cur.rosters.length),cap:"teams",ic:"◆"})},
+    {n:"Drafts",tools:G("Drafts"),...(tank[2]?{stat:tank[2],cap:`${esc(tank[1])} for the 1.01`,k:keyOf(tank[1])}:{stat:String(S.years[0]),cap:"next draft",ic:"▤"})},
+    {n:"Trades",tools:["tradehist","tcalc"],stat:tr[1]||"–",cap:tr[1]?`trades graded${tr[2]?`, ${plural(+tr[2],"fleece")}`:""}`:"trade history loading",ic:"⇄"},
+    {n:"Players",tools:["waivers","lookup","watch"],stat:inj[1]||"–",cap:"rostered players carrying an injury tag",ic:"✚"},
+    {n:"History",tools:G("History"),...(champS?{stat:esc(mname(champS.own[champS.champ])),cap:`${esc(champS.season)} champion`,k:champS.own[champS.champ],small:true}:{stat:String(S.seas.length),cap:`season${S.seas.length>1?"s":""} of history`,ic:"★"})},
+    {n:"How it works",tools:G("Reference"),stat:String(TOOLS.reduce((a,x)=>a+x[1].length,0)),cap:"tools, every number explained",ic:"?"}].map(x=>({...x,tools:x.tools.filter(k=>tl[k]).map(k=>tl[k])}));
+}
+function homeBinder(){
+  const X=homeSections();
+  const cards=X.map((x,i)=>{const on=HFLIP.has(x.n),n=x.tools.length,tw=plural(n,"tool");
+    return `<div class="hfc${on?" on":""}" data-fc="${esc(x.n)}"><div class="hfc-in">
+<div class="hface front" role="button" tabindex="0" aria-label="${esc(x.n)}: flip to see its ${tw}"${on?" inert":""}><div class="hfband"><span>${esc(x.n)}</span><i>${String(i+1).padStart(2,"0")}</i></div><div class="hfbody">${x.k?hav(x.k,"xl"):`<span class="hfic" aria-hidden="true">${x.ic}</span>`}<b class="hfs${x.small?" sm":""}">${x.stat}</b><span class="hfcap">${x.cap}</span></div><div class="hffoot"><span>${tw}</span><span>Tap to flip <i aria-hidden="true">↻</i></span></div></div>
+<div class="hface back"${on?"":" inert"}><div class="hfband"><span>${esc(x.n)}</span><button type="button" class="hflipx" aria-label="Flip ${esc(x.n)} back">↺ Flip back</button></div><div class="hsl"><div class="hslh" aria-hidden="true"><span>Key stat</span><span>Tool</span></div>${x.tools.map(([k,nm,d])=>{const[v,l]=hkey(k);return `<button type="button" class="hsline" data-go="${k}" title="${esc(d)}"><b>${esc(v)}</b><span><em>${esc(nm)}</em><small>${esc(l)}</small></span></button>`}).join("")}</div></div>
+</div></div>`}).join("");
+  return `<div class="hbhd"><h2>Every section</h2><button type="button" class="hflipall">${HFLIP.size===X.length?"Flip all back":"Flip all cards"}</button></div><div class="hbinder">${cards}</div>`;
+}
+function hSetFlip(c,on){c.classList.toggle("on",on);c.querySelector(".front").inert=on;c.querySelector(".back").inert=!on;on?HFLIP.add(c.dataset.fc):HFLIP.delete(c.dataset.fc)}
+$("homebody").addEventListener("click",e=>{
+  const t=e.target.closest(".hsline");if(t){if(!showTab(t.dataset.go))window.scrollTo({top:0});return}
+  const all=e.target.closest(".hflipall");if(all){const cs=[...$("homebody").querySelectorAll(".hfc")],on=HFLIP.size<cs.length;cs.forEach(c=>hSetFlip(c,on));all.textContent=on?"Flip all back":"Flip all cards";return}
+  const c=e.target.closest(".hfc");if(!c)return;
+  const on=!c.classList.contains("on");hSetFlip(c,on);c.querySelector(on?".back .hflipx":".front").focus({preventScroll:true});
+  const fa=$("homebody").querySelector(".hflipall");if(fa)fa.textContent=HFLIP.size===$("homebody").querySelectorAll(".hfc").length?"Flip all back":"Flip all cards";
+});
+$("homebody").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".hface.front")){e.preventDefault();e.target.click()}});
 document.addEventListener("click",e=>{const t=e.target.closest(".lnk[data-go]");if(t){const sec=showTab(t.dataset.go);const a=t.dataset.anchor&&document.getElementById(t.dataset.anchor);if(a)a.scrollIntoView({block:"start"});else if(!sec)window.scrollTo({top:0})}});
 
 /* ============ weekly recap ============ */

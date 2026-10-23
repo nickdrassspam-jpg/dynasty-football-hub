@@ -13,13 +13,15 @@ The page is league-wide: any manager can open it, and it has some attitude (lops
 ## Your team
 - On the first visit the page asks **"Which team is yours?"** and saves the answer in that browser (`localStorage` key `hubTeamV1`, holding the league id and the manager's Sleeper user id, which carries over between seasons). **Just browsing** skips it and is remembered for that league. The choice can be changed from **Your team** in the header.
 - With a team picked, its rows, cards and bracket slots are outlined on every tab, and it is preselected in Team profile, Rivalries (against its rival) and the Trade calculator.
-- **Home for a selected team**, in this order, with the tool tiles below:
-  1. **This week's matchup:** opponent, records, win chance, and the live score once games start (the win chance from Live scores: before kickoff it compares each team's projected score from the starters set in Sleeper, and Home shows those projections; when NFL game data is unavailable, the expected-score win chance from the matchup preview).
+- **Home for a selected team**, in this order, with the section cards below:
+  1. **This week's matchup**, shown as a score bug across the top: opponent, records, win chance, and the live score once games start; before kickoff the big numbers are each team's projected score (or expected score) (the win chance from Live scores: before kickoff it compares each team's projected score from the starters set in Sleeper, and Home shows those projections; when NFL game data is unavailable, the expected-score win chance from the matchup preview).
   2. **The stakes:** playoff odds now, if they win this week and if they lose, from the season simulation, plus title odds.
   3. **Lineup problems:** the team's Sleeper starters for the week (or the best lineup on paper when none are set). A starter is flagged when on bye, expected to miss the week (rules under Season simulation), questionable (expected to play, nothing at risk), or the slot is empty. When every flagged starter is questionable, the caption says so instead of quoting points at risk. Points at risk = usual score. The suggested swap is the best healthy bench player who fits the slot; none is suggested once the player's game has started.
-  4. **League buzz:** last week's top score, player of the week, upset of the week (or biggest blowout), lowest score; the game of the week; the three latest graded trades with grades and fleece tags.
-  5. **Trade idea:** by label (see Trade calculator and finder). Hidden when nothing fits.
-- Without a team, Home is the tile grid.
+  4. **Trade idea:** by label (see Trade calculator and finder). Hidden when nothing fits.
+  5. **League buzz:** last week's top score, player of the week, upset of the week (or biggest blowout), lowest score; the game of the week; the three latest graded trades with grades and fleece tags.
+- Under the score bug, a headline ticker scrolls each tool's one-line teaser (paused on hover, and shown as a static list for anyone who prefers reduced motion).
+- Home ends with **Every section**: one flip card per section (This week, Season, Teams, Drafts, Trades, Players, History, How it works; the Trades & Players tab is split into two cards). The front shows one headline number: your win chance this week, your seed and playoff odds, your power rank, the 1.01 favorite's odds, trades graded, rostered players with an injury tag, the defending champion and the tool count. Without a team, or before the numbers exist, the front falls back to a league-wide number (last week's top score, the standings leader, the most valuable roster). Clicking a card flips it; the back lists the section's tools, each with a key stat read from its teaser, and opens that tool.
+- Without a team, Home is the lead, the ticker and the section cards.
 
 ## Layout
 
