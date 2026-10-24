@@ -12,4 +12,8 @@ League Hub for Swag League Dynasty: a single page (`index.html`) that reads the 
 NODE_PATH=$(npm root -g) node tests/smoke.mjs [--team <roster number>|skip] [--no-fc] [--long-names] [--width 390] [--shots <dir>]
 ```
 
-`--team` picks "your team" as if chosen on a first visit, `--no-fc` makes FantasyCalc unreachable, `--long-names` swaps in long team names to check narrow screens, and `--shots` saves a full-page screenshot of each tab. The deploy publishes only `index.html` (plus `CNAME`); the `tests` folder is never served.
+`--team` picks "your team" as if chosen on a first visit, `--no-fc` makes FantasyCalc unreachable, `--long-names` swaps in long team names to check narrow screens, and `--shots` saves a full-page screenshot of each tab. The deploy publishes only `index.html`, `CNAME` and `data/`; the `tests` folder is never served.
+
+## Value history
+
+FantasyCalc only publishes today's values, so `.github/workflows/fc-snapshot.yml` runs `scripts/fc-snapshot.mjs` once a day. It adds the day's dynasty values to `data/fc/<format>.json`, commits it and redeploys. Edit `LEAGUES` in that workflow to save another league's format. Run it by hand from the Actions tab (Save FantasyCalc values, Run workflow) or locally with `node scripts/fc-snapshot.mjs <league id>`.

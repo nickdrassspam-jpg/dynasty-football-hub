@@ -153,6 +153,14 @@ Pick prices come straight from FantasyCalc. Nothing is floored or re-scaled, at 
 - **Net value** on Pick capital compares each team with the league-average holding.
 - The contender score's future pick input uses these totals.
 
+### Value history
+FantasyCalc only publishes today's values, so the site keeps its own history. `scripts/fc-snapshot.mjs`, run once a day by `.github/workflows/fc-snapshot.yml`, saves FantasyCalc's dynasty values for the league's format into `data/fc/<format>.json` (players by Sleeper id, picks by FantasyCalc's name), which is published with the page.
+
+- **First day:** the first run also writes an estimate for 30 days earlier: today's value minus FantasyCalc's 30-day trend. It is marked as an estimate wherever it is shown.
+- **Value over time** in Player lookup plots every saved day plus today's live value.
+- **Value then** on trade cards: what each side received was worth on the closest saved day within four days of the trade. Picks use FantasyCalc's generic price for their year and round that day. Raw FantasyCalc numbers, not rescaled. Grades still use today's values only.
+- **Aged into a fleece** says what share each side had on the day of the trade when the history reaches back that far.
+
 ## Trade calculator and finder
 - **Fair deal:** sides within 10% of the bigger side or within 0.08 firsts, whichever is larger. Each side gets a roster-spot adjustment like FantasyCalc's: its best asset counts in full and every other asset counts 0.05 firsts less (a waiver pickup), floored at zero. The raw total is shown under the adjusted one when they differ, and the "to even it out" suggestions use what each asset adds after the adjustment.
 - **One set of cutoffs:** the contender-score labels (contender ≥ 60, rebuilder ≤ 40). The old 55/45 finder thresholds are gone.
