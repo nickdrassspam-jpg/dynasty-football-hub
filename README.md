@@ -4,6 +4,10 @@ League Hub for Swag League Dynasty: a single page (`index.html`) that reads the 
 
 `methodology.md` is the single source for how every number is calculated. Any change to `index.html` that changes a formula, threshold, data source or tab updates `methodology.md` and the page's How it works tab in the same change.
 
+## Page version
+
+The "Page version" line under the title is stamped by the deploy with the time it ran (Eastern time), so it always matches what is live. Don't edit it by hand.
+
 ## Testing
 
 `tests/smoke.mjs` opens the page against a made-up league (`tests/fixture.mjs`), visits every tab and reports any script error. It needs Playwright:
@@ -20,4 +24,4 @@ FantasyCalc only publishes today's values, so `.github/workflows/fc-snapshot.yml
 
 ## Newsletter
 
-The home page reads the newest post from the Substack feed (`NEWS_FEED` in `index.html`) through rss2json.com, since Substack blocks both direct reads from a web page and requests from GitHub's servers, and shows it as a card.
+The home page reads the newest post from the Substack feed (`NEWS_HOME` in `index.html`) through rss2json.com, falling back to Substack's own API and two public relays, since Substack blocks direct feed reads from a web page and all requests from GitHub's servers. The card always shows; until a post loads it links to the newsletter.

@@ -1626,24 +1626,37 @@ function homeBug(B){
   const p=B.pMe;
   return `<section class="hbug" aria-label="Your week ${B.w} matchup">${side(B.a,"me")}<div class="hbmid"><span class="hlive${B.state==="Live"?" on":""}">Week ${B.w} · ${B.state}</span>${p==null?"":`<div class="wp hwp"><b style="width:${clamp(p,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${pctTxt(p)}</span><span>${pctTxt(1-p)}</span></div>`}<span class="mu">${B.state==="Final"?"Final score":p==null?"":B.state==="Live"?"Win chance right now":"Win chance before kickoff"}</span>${liveWeek()?`<button type="button" class="lnk" data-go="live">Open live scores</button>`:""}</div>${side(B.b,"op")}</section>`;
 }
-// The newest post in the league newsletter. Substack's feed can't be read by a web page directly (and turns away
-// GitHub's servers), so it is read through rss2json.com and kept in this browser for an hour. Nothing shows if it fails.
-const NEWS_FEED="https://piratenck.substack.com/feed",NEWS_KEY="newsV1";
+// The newest post in the league newsletter. Substack's feed can't be read by a web page directly, so it is read
+// through the first of these that answers, and kept in this browser for an hour. Until a post loads (or if none do)
+// the card still shows, linking to the newsletter's home page; a post read earlier stands in when every source fails.
+const NEWS_HOME="https://piratenck.substack.com",NEWS_FEED=NEWS_HOME+"/feed",NEWS_KEY="newsV2";
+const newsTxt=s=>new DOMParser().parseFromString(String(s||""),"text/html").body.textContent.trim();
+const newsXml=x=>{const d=new DOMParser().parseFromString(x,"text/xml"),it=d.querySelector("item"),g=(e,t)=>e?.getElementsByTagName(t)[0]?.textContent||"",en=it?.getElementsByTagName("enclosure")[0];
+  if(!it)throw new Error("no posts in the feed");const dt=new Date(g(it,"pubDate"));
+  return{publication:newsTxt(g(d.querySelector("channel"),"title")),title:newsTxt(g(it,"title")),subtitle:newsTxt(g(it,"description")),link:g(it,"link").trim(),date:isNaN(dt)?null:dt.toISOString().slice(0,10),image:/^image\//.test(en?.getAttribute("type")||"")?en.getAttribute("url"):null}};
+const NEWS_SOURCES=[
+  ["rss2json","https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(NEWS_FEED),async r=>{const d=await r.json(),it=d.status==="ok"&&d.items?.[0];if(!it)throw new Error(d.message||"no posts");const en=it.enclosure||{};
+    return{publication:newsTxt(d.feed?.title),title:newsTxt(it.title),subtitle:newsTxt(it.description),link:it.link,date:(it.pubDate||"").slice(0,10)||null,image:(/^image\//.test(en.type||"")?en.link:it.thumbnail)||null}}],
+  ["Substack",NEWS_HOME+"/api/v1/posts?limit=1",async r=>{const p=(await r.json())?.[0];if(!p)throw new Error("no posts");
+    return{publication:"",title:p.title,subtitle:p.subtitle||p.description||"",link:p.canonical_url,date:(p.post_date||"").slice(0,10)||null,image:p.cover_image||null}}],
+  ["allorigins","https://api.allorigins.win/get?url="+encodeURIComponent(NEWS_FEED),async r=>newsXml((await r.json()).contents||"")],
+  ["corsproxy","https://corsproxy.io/?url="+encodeURIComponent(NEWS_FEED),async r=>newsXml(await r.text())]];
 let NEWS=null;
 (async()=>{
-  try{const c=JSON.parse(localStorage.getItem(NEWS_KEY)||"null");if(c&&c.feed===NEWS_FEED&&Date.now()-c.ts<36e5){NEWS=c.post;return}}catch{}
-  try{
-    const r=await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(NEWS_FEED));if(!r.ok)return;
-    const d=await r.json(),it=d&&d.status==="ok"&&d.items&&d.items[0];if(!it||!it.title||!/^https:\/\//.test(it.link||""))return;
-    const txt=s=>new DOMParser().parseFromString(String(s||""),"text/html").body.textContent.trim(),sub=txt(it.description);
-    const enc=it.enclosure||{},img=/^image\//.test(enc.type||"")?enc.link:it.thumbnail;
-    NEWS={publication:txt(d.feed?.title),title:txt(it.title),subtitle:sub.length<300?sub:"",link:it.link,date:(it.pubDate||"").slice(0,10)||null,image:img||null};
-    try{localStorage.setItem(NEWS_KEY,JSON.stringify({feed:NEWS_FEED,ts:Date.now(),post:NEWS}))}catch{}
-    if(S&&tab==="home")renderTab("home");
-  }catch{}
+  let c=null;try{c=JSON.parse(localStorage.getItem(NEWS_KEY)||"null")}catch{}
+  if(c&&c.post){NEWS=c.post;if(Date.now()-c.ts<36e5)return}
+  for(const[name,url,read]of NEWS_SOURCES){
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(8000)});if(!r.ok)throw new Error("HTTP "+r.status);
+      const p=await read(r);if(!p.title||!/^https:\/\//.test(p.link||""))throw new Error("post has no title or link");
+      if(p.subtitle.length>300)p.subtitle="";
+      NEWS=p;try{localStorage.setItem(NEWS_KEY,JSON.stringify({ts:Date.now(),post:p}))}catch{}
+      if(S&&tab==="home")renderTab("home");return;
+    }catch(e){console.warn(`Newsletter: ${name} didn't answer (${e.message})`)}
+  }
 })();
 function homeNews(){
-  const n=NEWS;if(!n)return"";
+  const n=NEWS||{title:"Read the latest issue on Substack",link:NEWS_HOME,subtitle:"",publication:"Swag League Newsletter"};
   const img=/^https:\/\//.test(n.image||"")?`<img src="${esc(n.image)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:"";
   const d=n.date?new Date(n.date+"T12:00:00").toLocaleDateString(undefined,{month:"long",day:"numeric"}):"";
   return `<a class="hnews${img?"":" noimg"}" href="${esc(n.link)}" target="_blank" rel="noopener">${img}<div><span class="hnk">Latest newsletter${n.publication?" · "+esc(n.publication):""}${d?" · "+esc(d):""}</span><b>${esc(n.title)}</b>${n.subtitle?`<p>${esc(n.subtitle)}</p>`:""}<span class="hnr">Read it on Substack ↗</span></div></a>`;
@@ -4176,7 +4189,7 @@ function renderHow(){
     <li><b>Regular season only.</b> Records, luck, power, lineups and player points count regular-season weeks, and only weeks that are finished. Playoff games show up in the bracket, the Rivalries tab, titles, the franchise record book and the series record in a Tankathon matchup.</li>
     <li><b>Managers, not roster slots.</b> History follows the person. When a team changes hands, the old manager keeps their record and appears as a former manager.</li>
     <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report, and from ESPN's player pages for long-term injured players that report leaves out${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
-    <li><b>Newsletter.</b> The card on Home shows the newest post from the league newsletter on Substack. The page reads the newsletter's feed through rss2json.com and keeps it in this browser for an hour, so a new post shows up within about an hour of publishing.</li>
+    <li><b>Newsletter.</b> The card on Home shows the newest post from the league newsletter on Substack. The page reads the newsletter's feed through rss2json.com (or, if that doesn't answer, Substack itself or a public relay) and keeps the post in this browser for an hour, so a new post shows up within about an hour of publishing. Until a post loads, the card links to the newsletter's home page.</li>
     <li><b>NFL schedule.</b> Bye weeks and which games have kicked off come from Sleeper's NFL schedule${S.nfl?"":" (not available right now)"}.</li>
     <li><b>Saved in this browser.</b> Finished seasons are saved in this browser the first time they load and read from there afterwards, so the page opens faster. The season in progress and FantasyCalc's values are read fresh on every visit.</li>
     <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next drafts holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Rivalries holds Head-to-head. These tabs show one section at a time, switched with the buttons at the top; old links open the right tab at that section.</li>
