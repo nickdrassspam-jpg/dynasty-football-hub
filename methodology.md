@@ -154,12 +154,12 @@ Pick prices come straight from FantasyCalc. Nothing is floored or re-scaled, at 
 - The contender score's future pick input uses these totals.
 
 ## Trade calculator and finder
-- **Fair deal:** sides within 10% of the bigger side or within 0.08 firsts, whichever is larger. Values add straight, with no bonus for the best single asset.
+- **Fair deal:** sides within 10% of the bigger side or within 0.08 firsts, whichever is larger. Each side gets a roster-spot adjustment like FantasyCalc's: its best asset counts in full and every other asset counts 0.05 firsts less (a waiver pickup), floored at zero. The raw total is shown under the adjusted one when they differ, and the "to even it out" suggestions use what each asset adds after the adjustment.
 - **One set of cutoffs:** the contender-score labels (contender ≥ 60, rebuilder ≤ 40). The old 55/45 finder thresholds are gone.
 - **Finder buyers:** contenders and in-between teams (score over 40), ranking outside the top third at a position for win-now value (two weakest positions).
 - **Finder sellers:** rebuilders and in-between teams (score under 60). A team never trades with itself.
 - **Player:** healthy (not out, IR, PUP or suspended), worth at least 0.35 firsts now and at least 0.06 in dynasty value, at least 15% better than the buyer's last starter there (QB2, RB3, WR4, TE1), and either a veteran (within two years of the position's cliff age or past it) or sell-high. Up to three candidates per need.
-- **Price:** the cheapest set of up to three of the buyer's picks worth at least 90% of the player's dynasty value; ideas costing over 160% are dropped.
+- **Price:** the cheapest set of up to three of the buyer's picks worth at least 90% of the player's dynasty value after the roster-spot adjustment, with at most two picks from round 3 or later; ideas costing over 160% (raw) are dropped. This stops offers like three late picks for a starter.
 - **Fit** = win-now gain over the buyer's last starter × (buyer's rank at the position ÷ teams). The league-wide list is the 12 best fits, at most two per buyer.
 - **Ideas for your team:** a contender gets its best buy, a rebuilder its best sell, an in-between team one of each. Hidden when there is no fair match.
 

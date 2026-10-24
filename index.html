@@ -3365,19 +3365,20 @@ const tcName=a=>a.kind==="player"?pName(a.pid):`${a.season} ${ord(a.round)}${a.o
 function tcSummary(){
   const box=$("tcsum");if(!box)return;
   const cur=S.seas[0],A=tcAssets(TC.a),B=tcAssets(TC.b),allA=[...A.ks,...A.ps],allB=[...B.ks,...B.ps],gA=allA.filter(x=>TC.sel.has(x.id)),gB=allB.filter(x=>TC.sel.has(x.id));
-  const vA=sumOf(gB,x=>x.v),vB=sumOf(gA,x=>x.v),nA=sumOf(gB,x=>x.now)-sumOf(gA,x=>x.now),kA=cur.own[TC.a],kB=cur.own[TC.b],Bd=S.deep?rivState().builds:{};
-  const boxOf=(k,got,v,nowSwing)=>`<div class="tcbox"><span>${esc(mname(k))} receives${Bd[k]?` · ${buildLabel(Bd[k].idx)}, contender score ${Math.round(Bd[k].idx*100)}`:""}</span><b>${fv2(v)}</b><small>FantasyCalc value${got.length?`, win-now value ${fvs(nowSwing)}`:""}</small>${got.length?`<ul>${got.map(x=>`<li>${esc(tcName(x))} <span class="mu">${fv2(x.v)}</span></li>`).join("")}</ul>`:'<small style="margin-top:6px">Nothing yet. Tick assets in the other team\'s list.</small>'}</div>`;
+  const vA=pkgVal(gB.map(x=>x.v)),vB=pkgVal(gA.map(x=>x.v)),nA=sumOf(gB,x=>x.now)-sumOf(gA,x=>x.now),kA=cur.own[TC.a],kB=cur.own[TC.b],Bd=S.deep?rivState().builds:{};
+  const boxOf=(k,got,v,nowSwing)=>{const raw=sumOf(got,x=>x.v);return`<div class="tcbox"><span>${esc(mname(k))} receives${Bd[k]?` · ${buildLabel(Bd[k].idx)}, contender score ${Math.round(Bd[k].idx*100)}`:""}</span><b>${fv2(v)}</b><small>FantasyCalc value${raw-v>.005?`, ${fv2(raw)} before the roster-spot adjustment`:""}${got.length?`, win-now value ${fvs(nowSwing)}`:""}</small>${got.length?`<ul>${got.map(x=>`<li>${esc(tcName(x))} <span class="mu">${fv2(x.v)}</span></li>`).join("")}</ul>`:'<small style="margin-top:6px">Nothing yet. Tick assets in the other team\'s list.</small>'}</div>`};
   let verdict;
   if(!gA.length&&!gB.length)verdict=`<b>Pick assets from each side.</b><p>Tick players and picks in the two lists below. Values are raw FantasyCalc values.</p>`;
   else{
     const big=Math.max(vA,vB),d=Math.abs(vA-vB),tol=Math.max(.08,big*.1),win=vA>vB?kA:kB,lose=vA>vB?kB:kA;
-    if(d<=tol)verdict=`<b>Fair deal.</b> The two sides are within ${fv2(d)} of a first of each other.`;
+    if(d<=tol)verdict=`<b>Fair deal.</b> The two sides are within ${fv2(d)} of each other.`;
     else{
-      const pool=(vA>vB?allA:allB).filter(x=>!TC.sel.has(x.id)&&x.v>0).map(x=>({x,g:Math.abs(x.v-d)})).sort((p,q)=>p.g-q.g).slice(0,3).filter(p=>p.g<=Math.max(.1,d*.5));
-      verdict=`<b>${esc(mname(win))} wins this by ${fv2(d)}</b> (${Math.round(d/big*100)}% of the bigger side).${pool.length?`<p>To even it out, ${esc(mname(win))} could add ${pool.map(p=>`${esc(tcName(p.x))} (${fv2(p.x.v)})`).join(", or ")}.</p>`:`<p>${esc(mname(lose))} would need about ${fv2(d)} more in value.</p>`}`;
+      // what each extra asset would really add to the losing side once the roster-spot adjustment is applied
+    const gl=vA>vB?gA:gB,pool=(vA>vB?allA:allB).filter(x=>!TC.sel.has(x.id)&&x.v>0).map(x=>({x,a:pkgVal([...gl,x].map(y=>y.v))-pkgVal(gl.map(y=>y.v))})).filter(p=>p.a>0).map(p=>({...p,g:Math.abs(p.a-d)})).sort((p,q)=>p.g-q.g).slice(0,3).filter(p=>p.g<=Math.max(.1,d*.5));
+      verdict=`<b>${esc(mname(win))} wins this by ${fv2(d)}</b> (${Math.round(d/big*100)}% of the bigger side).${pool.length?`<p>To even it out, ${esc(mname(win))} could add ${pool.map(p=>`${esc(tcName(p.x))} (${fv2(p.x.v)}${p.a<p.x.v-.005?`, adds ${fv2(p.a)}`:""})`).join(", or ")}.</p>`:`<p>${esc(mname(lose))} would need about ${fv2(d)} more in value.</p>`}`;
     }
     const top=[...gA,...gB].sort((p,q)=>q.v-p.v)[0],getsTop=gB.includes(top)?kA:kB;
-    if(top&&gA.length+gB.length>2)verdict+=`<p>${esc(mname(getsTop))} gets the best single asset, ${esc(tcName(top))}. Values are added up as they are, so a side that turns several small pieces into one star is usually getting a bit more than the totals show.</p>`;
+    if(top&&gA.length!==gB.length)verdict+=`<p>${esc(mname(getsTop))} gets the best single asset, ${esc(tcName(top))}. Each side's best asset counts in full and every other asset counts ${fv2(SPOT)} less, about what a waiver pickup is worth, so a pile of small pieces adds up to less than one good player.</p>`;
     if(Math.abs(nA)>=.15)verdict+=`<p>${esc(mname(nA>0?kA:kB))} gets better right now (win-now value ${sgn(Math.abs(nA),2)}), which suits a contender more than a rebuilder.</p>`;
   }
   box.innerHTML=`<div class="tcsum">${boxOf(kA,gB,vA,nA)}${boxOf(kB,gA,vB,-nA)}</div><div class="verdict">${verdict}</div>`;
@@ -3392,6 +3393,9 @@ function tcList(rid){
 // A buyer's two weakest positions by win-now value are matched with a seller's healthy veteran near the age cliff, or a
 // sell-high player of any age, priced in the buyer's own picks.
 const sellHigh=pid=>nowVal(pid)>=.35&&nowVal(pid)>=1.25*dynVal(pid);
+// Roster-spot adjustment, like FantasyCalc's: a side's best asset counts in full and every other asset loses SPOT (about a
+// waiver pickup, in firsts) down to zero, so a pile of late picks can't add up to one good player.
+const SPOT=.05,pkgVal=vs=>[...vs].sort((a,b)=>b-a).reduce((t,v,i)=>t+(i?Math.max(0,v-SPOT):v),0);
 function tradeIdeas(){
   if(S._ideas)return S._ideas;
   if(!FC||!S.deep)return S._ideas=[];
@@ -3409,11 +3413,13 @@ function tradeIdeas(){
         if(posOf(pid)!==need.p||isHurt(pid))return;const age=players[pid]?.[3],nv=nowVal(pid),dv=dynVal(pid),hi=sellHigh(pid),vet=!!age&&age>=CLIFF[need.p]-2;
         if(!(vet||hi)||nv<.35||nv<=bar*1.15||dv<.06)return;cands.push({pid,ks,age,nv,dv,up:nv-bar,why:hi?"sell":"vet"})})});
       cands.sort((a,b)=>b.up-a.up).slice(0,3).forEach(c=>{
-        // the cheapest set of up to three of the buyer's picks worth at least 90% of the player's dynasty value
-        let best=null;const P=myPicks;
-        for(let i=0;i<P.length;i++){const s1=P[i].v;if(s1>=c.dv*.9&&(!best||s1<best.v))best={v:s1,set:[P[i]]}
-          for(let j=i+1;j<P.length;j++){const s2=s1+P[j].v;if(s2>=c.dv*.9&&(!best||s2<best.v))best={v:s2,set:[P[i],P[j]]}
-            for(let l=j+1;l<P.length&&P.length<=14;l++){const s3=s2+P[l].v;if(s3>=c.dv*.9&&(!best||s3<best.v))best={v:s3,set:[P[i],P[j],P[l]]}}}}
+        // the cheapest set of up to three of the buyer's picks, no more than two of them third-rounders or later, worth at least
+        // 90% of the player's dynasty value after the roster-spot adjustment
+        let best=null;const P=myPicks,try_=set=>{if(set.filter(p=>p.round>=3).length>2)return;const v=sumOf(set,p=>p.v);
+          if((!best||v<best.v)&&pkgVal(set.map(p=>p.v))>=c.dv*.9)best={v,set}};
+        for(let i=0;i<P.length;i++){try_([P[i]]);
+          for(let j=i+1;j<P.length;j++){try_([P[i],P[j]]);
+            for(let l=j+1;l<P.length&&P.length<=14;l++)try_([P[i],P[j],P[l]])}}
         if(!best||best.v>c.dv*1.6)return;
         ideas.push({kb,ks:c.ks,pid:c.pid,pos:need.p,rank:need.r,n,age:c.age,dv:c.dv,nv:c.nv,up:c.up,why:c.why,picks:best.set,pv:best.v,ridB:bb.rid,ridS:Bd[c.ks].rid,fit:c.up*(need.r/n)})})})});
   return S._ideas=ideas.sort((a,b)=>b.fit-a.fit);
@@ -3441,7 +3447,7 @@ function renderTcalc(){
   // finder
   if(S.deep){
     const ideas=topIdeas(),mine=ME?ideasFor(ME):[],Bd=rivState().builds;
-    h+=panelX("Trade finder",`Deals that fit both teams. Buyers are contenders and in-between teams that are thin at a position; sellers are rebuilders and in-between teams holding a healthy veteran there, or a player whose win-now value is well above his dynasty value. The price is the cheapest set of the buyer's own picks that covers the player's value. <button type="button" class="lnk" data-go="how" data-anchor="how-calc" style="font-size:13px">How the finder works</button>`,
+    h+=panelX("Trade finder",`Deals that fit both teams. Buyers are contenders and in-between teams that are thin at a position; sellers are rebuilders and in-between teams holding a healthy veteran there, or a player whose win-now value is well above his dynasty value. The price is the cheapest set of the buyer's own picks that covers the player's value, with no more than two late picks. <button type="button" class="lnk" data-go="how" data-anchor="how-calc" style="font-size:13px">How the finder works</button>`,
       valOff()+(ME&&Bd[ME]?`<h3 style="font-size:15px;margin:4px 0 8px">For ${esc(mname(ME))} <span class="fm">${buildLabel(Bd[ME].idx).toLowerCase()}, so ${buildLabel(Bd[ME].idx)==="Contender"?"a buy":buildLabel(Bd[ME].idx)==="Rebuilder"?"a sell":"one buy and one sell"}</span></h3>${mine.length?`<div class="rvcards" style="margin-bottom:14px">${mine.map(d=>ideaCard(d,ME)).join("")}</div>`:emptyX("No fair match for your team right now.")}<h3 style="font-size:15px;margin:4px 0 8px">Across the league</h3>`:"")+
       (ideas.length?`<div class="rvcards">${ideas.map(d=>ideaCard(d)).join("")}</div>`:emptyX(FC?"No clear fits right now. Ideas appear when a buyer is thin at a position and a seller has a healthy veteran or a sell-high player there.":"")),"tc-find");
   }else h+=wait;
@@ -4145,16 +4151,16 @@ function renderHow(){
     <li><b>Sell-high players</b> have a win-now value at least 25% above their dynasty value and worth at least 0.35 of a first, at any age.</li></ul>
     ${ex(()=>{if(!FC)return"";const hold=holders(),top=Object.keys(hold).filter(p=>dynVal(p)>0).sort((a,x)=>dynVal(x)-dynVal(a))[0];if(!top)return"";return`<b>${esc(pName(top))}</b> (${esc(mname(cur.own[hold[top]]))}): FantasyCalc has him at ${Math.round(dynVal(top)*FC.unit).toLocaleString()} and a generic ${uy} first at ${Math.round(FC.unit).toLocaleString()}, which makes him worth <b>${fmt(dynVal(top),2)}</b> of a first for the thresholds below. His redraft value is ${fv(nowVal(top))}.`})}`);
   b+=add("how-calc","Trade calculator and trade finder",go("tcalc","Trade calculator"),
-    `<p>The calculator adds up player values and pick values on each side, both from FantasyCalc when it is available.</p>
+    `<p>The calculator adds up player values and pick values on each side, both from FantasyCalc when it is available, with a roster-spot adjustment like FantasyCalc's.</p>
     <ul><li><b>Fair deal</b>: the two sides are within 10% of the bigger side, or within 0.08 of a first, whichever is larger.</li>
     <li><b>Otherwise</b> it names the winner and suggests up to three assets from the winning side that would close the gap.</li>
     <li><b>Win-now swing</b> is the change in win-now value, flagged when it is 0.15 or more.</li>
-    <li>Values are added up as they are. There is no bonus for getting the best single player, so two-for-one deals look a little better for the side receiving two than they really are.</li></ul>
+    <li><b>Roster-spot adjustment</b>: each side's best asset counts in full, and every other asset counts 0.05 of a first less (about what a waiver pickup is worth), down to zero. A pile of late picks or bench players adds up to less than one good player, so three thirds and a fourth no longer "equal" a starter. The raw total is shown under the adjusted one when they differ.</li></ul>
     <h4>Trade finder</h4>
     <ul><li><b>Buyers</b> are contenders and in-between teams (a contender score over 40). A buyer <b>needs</b> a position when it ranks outside the top third of the league there for win-now value; the two weakest are used.</li>
     <li><b>Sellers</b> are rebuilders and in-between teams (a contender score under 60). A team never trades with itself.</li>
     <li><b>The player</b> must be healthy, worth at least 0.35 of a first right now and at least 0.06 in dynasty value, at least 15% better than the buyer's last starter at the position (second QB, third RB, fourth WR, first TE), and either a <b>veteran</b> (within two years of his position's cliff age or past it) or a <b>sell-high</b> player (see Player trade value).</li>
-    <li><b>The price</b> is the cheapest combination of up to three of the buyer's own picks worth at least 90% of the player's dynasty value. Ideas that would cost more than 160% are dropped.</li>
+    <li><b>The price</b> is the cheapest combination of up to three of the buyer's own picks worth at least 90% of the player's dynasty value after the roster-spot adjustment, with no more than two picks from the third round or later. Ideas that would cost more than 160% are dropped.</li>
     <li><b>Fit</b> is the player's win-now gain over the buyer's last starter, times how far down the league the buyer ranks at the position. The league-wide list shows the 12 best fits, no more than two per buyer.</li>
     <li><b>Your team's ideas</b> follow its label: a contender gets its best buy, a rebuilder its best sell, a team in between one of each. When nothing fits, the slot is left out.</li></ul>`);
   b+=add("how-grade","Trade grades in hindsight",go("tlab","Trade lab")+", "+go("profile","Team profile"),
