@@ -501,7 +501,7 @@ body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 12:00 PM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 12:05 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -1626,9 +1626,22 @@ function homeBug(B){
   const p=B.pMe;
   return `<section class="hbug" aria-label="Your week ${B.w} matchup">${side(B.a,"me")}<div class="hbmid"><span class="hlive${B.state==="Live"?" on":""}">Week ${B.w} · ${B.state}</span>${p==null?"":`<div class="wp hwp"><b style="width:${clamp(p,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${pctTxt(p)}</span><span>${pctTxt(1-p)}</span></div>`}<span class="mu">${B.state==="Final"?"Final score":p==null?"":B.state==="Live"?"Win chance right now":"Win chance before kickoff"}</span>${liveWeek()?`<button type="button" class="lnk" data-go="live">Open live scores</button>`:""}</div>${side(B.b,"op")}</section>`;
 }
-// The newest newsletter post, saved to data/newsletter.json by .github/workflows/newsletter.yml. Nothing shows if it's missing.
+// The newest post in the league newsletter. Substack's feed can't be read by a web page directly (and turns away
+// GitHub's servers), so it is read through rss2json.com and kept in this browser for an hour. Nothing shows if it fails.
+const NEWS_FEED="https://piratenck.substack.com/feed",NEWS_KEY="newsV1";
 let NEWS=null;
-fetch("data/newsletter.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(n=>{if(n&&n.title&&/^https:\/\//.test(n.link)){NEWS=n;if(S&&tab==="home")renderTab("home")}}).catch(()=>{});
+(async()=>{
+  try{const c=JSON.parse(localStorage.getItem(NEWS_KEY)||"null");if(c&&c.feed===NEWS_FEED&&Date.now()-c.ts<36e5){NEWS=c.post;return}}catch{}
+  try{
+    const r=await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(NEWS_FEED));if(!r.ok)return;
+    const d=await r.json(),it=d&&d.status==="ok"&&d.items&&d.items[0];if(!it||!it.title||!/^https:\/\//.test(it.link||""))return;
+    const txt=s=>new DOMParser().parseFromString(String(s||""),"text/html").body.textContent.trim(),sub=txt(it.description);
+    const enc=it.enclosure||{},img=/^image\//.test(enc.type||"")?enc.link:it.thumbnail;
+    NEWS={publication:txt(d.feed?.title),title:txt(it.title),subtitle:sub.length<300?sub:"",link:it.link,date:(it.pubDate||"").slice(0,10)||null,image:img||null};
+    try{localStorage.setItem(NEWS_KEY,JSON.stringify({feed:NEWS_FEED,ts:Date.now(),post:NEWS}))}catch{}
+    if(S&&tab==="home")renderTab("home");
+  }catch{}
+})();
 function homeNews(){
   const n=NEWS;if(!n)return"";
   const img=/^https:\/\//.test(n.image||"")?`<img src="${esc(n.image)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:"";
@@ -4163,7 +4176,7 @@ function renderHow(){
     <li><b>Regular season only.</b> Records, luck, power, lineups and player points count regular-season weeks, and only weeks that are finished. Playoff games show up in the bracket, the Rivalries tab, titles, the franchise record book and the series record in a Tankathon matchup.</li>
     <li><b>Managers, not roster slots.</b> History follows the person. When a team changes hands, the old manager keeps their record and appears as a former manager.</li>
     <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report, and from ESPN's player pages for long-term injured players that report leaves out${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
-    <li><b>Newsletter.</b> The card on Home shows the newest post from the league newsletter on Substack. The site checks the newsletter every two hours, so a new post appears within about two hours of publishing.</li>
+    <li><b>Newsletter.</b> The card on Home shows the newest post from the league newsletter on Substack. The page reads the newsletter's feed through rss2json.com and keeps it in this browser for an hour, so a new post shows up within about an hour of publishing.</li>
     <li><b>NFL schedule.</b> Bye weeks and which games have kicked off come from Sleeper's NFL schedule${S.nfl?"":" (not available right now)"}.</li>
     <li><b>Saved in this browser.</b> Finished seasons are saved in this browser the first time they load and read from there afterwards, so the page opens faster. The season in progress and FantasyCalc's values are read fresh on every visit.</li>
     <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next drafts holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Rivalries holds Head-to-head. These tabs show one section at a time, switched with the buttons at the top; old links open the right tab at that section.</li>
