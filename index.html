@@ -159,6 +159,16 @@ th.srt[aria-sort]{color:var(--tx)}
 .htk span{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;padding:9px 22px;font-size:14px;font-weight:600}.htk em{font-style:normal;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:.1em;color:var(--acc2)}.htk .dup{padding:0}
 @keyframes htick{to{transform:translateX(-50%)}}
 .hbwk{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}.hbwk.three{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.4fr)}.hbwk .panel{margin:0;min-width:0}
+.hnews{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);background:var(--pan);border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--sh);overflow:hidden;color:var(--tx);text-decoration:none;transition:box-shadow .15s,border-color .15s}
+.hnews:hover{border-color:var(--sun);box-shadow:0 0 0 3px var(--sun)}.hnews:focus-visible{outline:3px solid var(--tx);outline-offset:3px}
+.hnews img{width:100%;height:100%;min-height:140px;max-height:200px;object-fit:cover;display:block;border-right:3px solid var(--ink)}
+.hnews>div{display:flex;flex-direction:column;gap:6px;padding:14px 18px;min-width:0}
+.hnews .hnk{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--acc2)}
+.hnews b{font-size:clamp(19px,2vw,26px);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
+.hnews p{margin:0;color:var(--mu);font-size:15px;max-width:80ch}
+.hnews .hnr{margin-top:auto;font-size:13px;font-weight:800;color:var(--acc2)}
+.hnews.noimg{grid-template-columns:minmax(0,1fr)}
+@media(max-width:560px){.hnews{grid-template-columns:minmax(0,1fr)}.hnews img{max-height:180px;border-right:0;border-bottom:3px solid var(--ink)}}
 .hbhd{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}.hbhd h2{text-transform:uppercase}
 .hflipall{background:var(--chip);color:var(--tx);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--sh)}
 .hbinder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
@@ -470,7 +480,7 @@ body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 11:00 AM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 11:25 AM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -1578,7 +1588,7 @@ function renderHome(){
   if(ME)bits.unshift(`Your team: <b>${esc(mname(ME))}</b>`);
   const mine=ME?homeMine():"",B=mine&&HM.bug;
   let h=B?homeBug(B):`<div class="hlead"><h2>${esc(lead)}</h2><p>${bits.join(". ")}${bits.length?". ":""}${ME?"":"Pick a section card below to dig in. "}Every panel has Copy image and Save image buttons for your newsletter, and How it works explains every number.</p></div>`;
-  h+=homeTicker();
+  h+=homeTicker()+homeNews();
   if(mine){const P=HM.p,wk=["hm-stakes","hm-lineup","hm-idea"].filter(id=>P[id]);
     if(!B&&P["hm-match"])h+=`<div class="hme">${P["hm-match"]}</div>`;
     if(wk.length)h+=`<div class="hbwk${wk.length===3&&P["hm-idea"]?" three":""}">${wk.map(id=>P[id]).join("")}</div>`;
@@ -1593,6 +1603,15 @@ function homeBug(B){
   const side=(x,cls)=>`<div class="hbt ${cls}">${hav(x.k,"xl")}<div><b class="hbn">${mlink(x.k)}</b><span>${esc(x.rec)}${x.sub?" · "+esc(x.sub):""}</span></div><b class="hbsc">${esc(x.sc)}</b></div>`;
   const p=B.pMe;
   return `<section class="hbug" aria-label="Your week ${B.w} matchup">${side(B.a,"me")}<div class="hbmid"><span class="hlive${B.state==="Live"?" on":""}">Week ${B.w} · ${B.state}</span>${p==null?"":`<div class="wp hwp"><b style="width:${clamp(p,0,1)*100}%"></b><i></i></div><div class="wpl"><span>${pctTxt(p)}</span><span>${pctTxt(1-p)}</span></div>`}<span class="mu">${B.state==="Final"?"Final score":p==null?"":B.state==="Live"?"Win chance right now":"Win chance before kickoff"}</span>${liveWeek()?`<button type="button" class="lnk" data-go="live">Open live scores</button>`:""}</div>${side(B.b,"op")}</section>`;
+}
+// The newest newsletter post, saved to data/newsletter.json by .github/workflows/newsletter.yml. Nothing shows if it's missing.
+let NEWS=null;
+fetch("data/newsletter.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(n=>{if(n&&n.title&&/^https:\/\//.test(n.link)){NEWS=n;if(S&&tab==="home")renderTab("home")}}).catch(()=>{});
+function homeNews(){
+  const n=NEWS;if(!n)return"";
+  const img=/^https:\/\//.test(n.image||"")?`<img src="${esc(n.image)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:"";
+  const d=n.date?new Date(n.date+"T12:00:00").toLocaleDateString(undefined,{month:"long",day:"numeric"}):"";
+  return `<a class="hnews${img?"":" noimg"}" href="${esc(n.link)}" target="_blank" rel="noopener">${img}<div><span class="hnk">Latest newsletter${n.publication?" · "+esc(n.publication):""}${d?" · "+esc(d):""}</span><b>${esc(n.title)}</b>${n.subtitle?`<p>${esc(n.subtitle)}</p>`:""}<span class="hnr">Read it on Substack ↗</span></div></a>`;
 }
 function homeTicker(){
   const items=TOOLS.flatMap(([,l])=>l).map(([k,n])=>[n,teaser(k)]).filter(([,t])=>t&&!/^(Loading|Build a deal|Search any|Luck, power)/.test(t)).map(([n,t])=>`<span><em>${esc(n)}</em>${esc(t)}</span>`).join("");
@@ -4063,6 +4082,7 @@ function renderHow(){
     <li><b>Regular season only.</b> Records, luck, power, lineups and player points count regular-season weeks, and only weeks that are finished. Playoff games show up in the bracket, the Rivalries tab, titles, the franchise record book and the series record in a Tankathon matchup.</li>
     <li><b>Managers, not roster slots.</b> History follows the person. When a team changes hands, the old manager keeps their record and appears as a former manager.</li>
     <li><b>Injuries.</b> Injury tags come from Sleeper's player list, which is kept for three hours. Projected return dates come from ESPN's injury report, and from ESPN's player pages for long-term injured players that report leaves out${S.espn?"":" (it couldn't be read just now, so the 4-week estimate stands in)"}.</li>
+    <li><b>Newsletter.</b> The card on Home shows the newest post from the league newsletter on Substack. The site checks the newsletter every two hours, so a new post appears within about two hours of publishing.</li>
     <li><b>NFL schedule.</b> Bye weeks and which games have kicked off come from Sleeper's NFL schedule${S.nfl?"":" (not available right now)"}.</li>
     <li><b>Saved in this browser.</b> Finished seasons are saved in this browser the first time they load and read from there afterwards, so the page opens faster. The season in progress and FantasyCalc's values are read fresh on every visit.</li>
     <li><b>Merged tabs.</b> Trade history holds Trade lab, Player trades and Pick trades; Next drafts holds Draft board, Tankathon and Pick capital; Past drafts holds Draft recap and Draft lab; Rivalries holds Head-to-head. These tabs show one section at a time, switched with the buttons at the top; old links open the right tab at that section.</li>

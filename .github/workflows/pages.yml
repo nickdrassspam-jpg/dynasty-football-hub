@@ -22,11 +22,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      # Only the page and its domain file are published; tests and notes stay in the repo.
+      # Only the page, its domain file and the data folder are published; tests and notes stay in the repo.
       - name: Collect site files
         run: |
           mkdir _site
           cp index.html CNAME _site/
+          if [ -d data ]; then cp -r data _site/; fi
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
