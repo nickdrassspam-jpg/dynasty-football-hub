@@ -89,6 +89,14 @@ const fc = [];
 Object.keys(players).filter(id => players[id].position !== "DEF" && players[id].position !== "K").forEach(id => { const p = players[id], b = base(id), youth = Math.max(.4, 1.6 - (p.age - 21) * .09); fc.push({ player: { sleeperId: id, name: p.full_name, position: p.position }, value: Math.max(0, Math.round(b * b * 18 * youth)), redraftValue: Math.max(0, Math.round(b * b * 20)) }) });
 [[CUR + 1, [6000, 2300, 900, 400]], [CUR + 2, [5600, 2100, 850, 380]], [CUR + 3, [5200, 2000, 800, 360]]].forEach(([y, v]) => v.forEach((x, i) => { const nm = `${y} ${["1st", "2nd", "3rd", "4th"][i]}`; fc.push({ player: { sleeperId: `FP_${y}_${i + 1}`, name: nm, position: "PICK" }, value: x, redraftValue: 0 }); if (!i) ["Early", "Mid", "Late"].forEach((t, j) => fc.push({ player: { sleeperId: `FP_${y}_1_${t}`, name: `${nm} (${t})`, position: "PICK" }, value: Math.round(x * [1.3, 1, .78][j]), redraftValue: 0 })) }));
 
+// Saved value history (data/fc/<format>.json, written daily by scripts/fc-snapshot.mjs): a day every 4 days back to
+// August of last season, values drifting around today's, with the first day marked as an estimate like a first run writes
+const fcHistory = (() => {
+  const dates = [];for (let t = Date.UTC(CUR - 1, 7, 1); t < Date.UTC(CUR, 9, 20); t += 4 * 864e5) dates.push(new Date(t).toISOString().slice(0, 10));
+  const v = {};fc.forEach((x, k) => { v[x.player.position === "PICK" ? x.player.name : x.player.sleeperId] = dates.map((d, i) => Math.round(x.value * (1 + .25 * Math.sin(i / 9 + k)))) });
+  return { format: "fixture", dates, est: [dates[0]], v };
+})();
+
 // NFL schedule: everyone plays weeks 1-18 except one bye each in weeks 5-14
 const nflSched = []; for (let w = 1; w <= 18; w++) { const playing = NFL.filter((t, i) => !(w >= 5 && w <= 14 && (i % 10) + 5 === w)); for (let i = 0; i + 1 < playing.length; i += 2) nflSched.push({ week: w, home: playing[i], away: playing[i + 1], status: w < DONE + 1 ? "complete" : w === DONE + 1 ? "in_game" : "pre_game" }) }
 
@@ -118,6 +126,7 @@ export function route(url) {
     if (p.startsWith("/projections/nfl/")) return [];
   }
   if (u.host === "api.fantasycalc.com") return fc;
+  if (/^\/data\/fc\/[\w.-]+\.json$/.test(p)) return fcHistory;
   if (u.host === "site.api.espn.com") return espnInjuries;
   return undefined;
 }

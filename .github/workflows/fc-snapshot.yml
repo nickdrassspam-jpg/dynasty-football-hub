@@ -1,0 +1,41 @@
+name: Save FantasyCalc values
+
+# Once a day, add today's FantasyCalc values to data/fc/ (see scripts/fc-snapshot.mjs), commit them,
+# then redeploy the site so the page can read them. A push made with GITHUB_TOKEN doesn't start other
+# workflows, so the deploy is started directly.
+on:
+  schedule:
+    - cron: "23 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: fc-snapshot
+
+env:
+  # Sleeper league ids whose FantasyCalc market is saved, separated by spaces
+  LEAGUES: "1312056868817891328"
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/fc-snapshot.mjs $LEAGUES
+      - name: Commit and redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add data/fc
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Save FantasyCalc values for $(date -u +%F)"
+          git push
+          gh workflow run pages.yml --ref main

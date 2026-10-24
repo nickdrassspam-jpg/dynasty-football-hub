@@ -22,7 +22,8 @@ page.on("console", m => { if (m.type() === "error" && !/Failed to load resource/
 await page.route("**/*", async r => {
   const url = r.request().url();
   // the page is served from a made-up web address, so browser storage (saved values, saved seasons, your team) works as it does online
-  if (url.startsWith(ORIGIN) && !url.startsWith(ORIGIN + "data/")) return r.fulfill({ status: 200, contentType: "text/html", body: fs.readFileSync(page0, "utf8") });
+  if (url.startsWith(ORIGIN + "data/")) { const body = route(url); return body === undefined ? r.fulfill({ status: 404, body: "not in fixture" }) : r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) }) }
+  if (url.startsWith(ORIGIN)) return r.fulfill({ status: 200, contentType: "text/html", body: fs.readFileSync(page0, "utf8") });
   if (noFc && url.includes("fantasycalc")) return r.fulfill({ status: 503, body: "down" });
   const body = route(url);
   if (body === undefined) return r.fulfill({ status: 404, body: "not in fixture" });

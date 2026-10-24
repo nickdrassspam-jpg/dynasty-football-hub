@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>League Hub</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#1b2d4e;--pan:#0f1b31;--pan2:#172744;--line:#2a3f66;--tx:#eef3fb;--mu:#98a9c6;--flag:#ff6b73;--me:#ffc93c;--mark:#b9c8e2;--avg:#7f91b0;
@@ -480,7 +483,7 @@ body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 11:25 AM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 11:30 AM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -864,6 +867,7 @@ async function loadDeep(my){
   const seas=S.seas,a=[],b=[];
   a.push(async()=>{players=await loadPlayers().catch(()=>({}))});
   a.push(async()=>{FC=await loadFantasyCalc().catch(()=>null);showValNote()});
+  a.push(async()=>{HV=await loadHist().catch(()=>null)});
   a.push(async()=>{S.nfl=await loadNflSchedule(S.seas[0].season).catch(()=>null)});
   a.push(async()=>{S.espn=await loadEspnInjuries().catch(()=>null)});
   seas.forEach(s=>{
@@ -2292,10 +2296,11 @@ const holders=()=>{if(S._hold)return S._hold;const h={};S.seas[0].rosters.forEac
 /* ---- value model: everything in first-round equivalents, from FantasyCalc only ---- */
 // FantasyCalc is read fresh on every visit. The last copy that loaded is kept in this browser and used,
 // with its date shown, only when the live request fails. With no copy at all, trade values are unavailable.
-let FC=null;
+let FC=null,HV=null;
+// The FantasyCalc market for this league: superflex or not, team count and PPR
+function fcFormat(){const rp=S.league.roster_positions||[],sf=rp.filter(x=>x==="QB"||x==="SUPER_FLEX").length>=2,rec=+(S.league.scoring_settings?.rec||0);return{qb:sf?2:1,nt:S.seas[0].rosters.length,ppr:rec>=1?1:rec>=.5?.5:0}}
 async function loadFantasyCalc(){
-  const rp=S.league.roster_positions||[],sf=rp.filter(x=>x==="QB"||x==="SUPER_FLEX").length>=2,ppr=+(S.league.scoring_settings?.rec||0),nt=S.seas[0].rosters.length;
-  const url=`https://api.fantasycalc.com/values/current?isDynasty=true&numQbs=${sf?2:1}&numTeams=${nt}&ppr=${ppr>=1?1:ppr>=.5?.5:0}`,ck="fcValsV2:"+url;
+  const{qb,nt,ppr}=fcFormat(),url=`https://api.fantasycalc.com/values/current?isDynasty=true&numQbs=${qb}&numTeams=${nt}&ppr=${ppr}`,ck="fcValsV2:"+url;
   let list=null,stale=null;
   try{const r=await fetch(url);if(r.ok){const raw=await r.json();if(Array.isArray(raw)){
     const l=raw.filter(x=>x&&x.player&&x.player.sleeperId).map(x=>[String(x.player.sleeperId),+x.value||0,+x.redraftValue||0,x.player.position==="PICK"?String(x.player.name||""):""]);
@@ -2321,6 +2326,19 @@ async function loadFantasyCalc(){
   return{d,r,p,unit,unitYear:raw[y0+"|1|"]!=null?y0:+gen[0].slice(0,4),n:Object.keys(d).length,dRank,stale};
 }
 const dynVal=pid=>FC?(FC.d[pid]||0):0;
+// Value history: FantasyCalc's dynasty values saved once a day by a scheduled job (scripts/fc-snapshot.mjs) into
+// data/fc/<format>.json next to this page. Players are keyed by Sleeper id and picks by FantasyCalc's name ("2027 1st").
+// Values are FantasyCalc's raw numbers. History only exists for days the job has run, so older dates have none.
+async function loadHist(){
+  const{qb,nt,ppr}=fcFormat(),r=await fetch(`data/fc/${qb}qb-${nt}t-${ppr}ppr.json`,{cache:"no-cache"});if(!r.ok)return null;
+  const h=await r.json();if(!h||!Array.isArray(h.dates)||!h.v)return null;
+  return{dates:h.dates,t:h.dates.map(d=>Date.parse(d+"T12:00:00Z")),est:new Set(h.est||[]),v:h.v};
+}
+// The saved day closest to a time, within four days of it (null when there is none)
+function histCol(when){if(!HV)return null;let best=null;HV.t.forEach((t,i)=>{const g=Math.abs(t-when);if(g<=4*864e5&&(best==null||g<Math.abs(HV.t[best]-when)))best=i});return best}
+// What a player or a pick was worth on a saved day, in firsts at today's scale so fv() shows FantasyCalc's number from that day
+const histVal=(id,i)=>{const a=HV?.v[id];return a&&a[i]!=null?a[i]/(FC?.unit||1):null};
+const histPick=(season,round,i)=>histVal(`${season} ${ord(round)}`,i);
 const nowVal=pid=>FC?(FC.r[pid]||0):0;
 // Where each team's own pick lands in the next draft: the simulation's expected slot while the season is being played,
 // otherwise the draft order from the standings of the season that sets that draft (the same season the Draft board uses)
@@ -3260,7 +3278,9 @@ const gradeChip=g=>g?`<span class="grade g${g[0]==="A"?"A":g==="B+"?"B":g[0]==="
 const FLEECE_SH=.72,FLEECE_VAL=.5,FRESH_DAYS=60;
 const isFleece=g=>!!(g&&g.graded&&g.twoWay&&g.sides[0].share>=FLEECE_SH&&g.total>=FLEECE_VAL);
 const fleeceAged=g=>Date.now()-g.when>FRESH_DAYS*864e5;
-const fleeceTag=g=>!isFleece(g)?"":fleeceAged(g)?`<span class="fleece aged" data-tip="${esc(`${mname(g.sides[0].k)} has ${Math.round(g.sides[0].share*100)}% of this deal at today's values. It wasn't necessarily lopsided when it was made`)}">Aged into a fleece</span>`:`<span class="fleece" data-tip="${esc(`${mname(g.sides[0].k)} has ${Math.round(g.sides[0].share*100)}% of this deal`)}">Fleece</span>`;
+// on the day it was made, from the saved value history when it reaches back that far
+const thenShare=g=>{const th=tradeThen(g);if(!th)return null;const v=g.sides.map(th.side),t=sumOf(v);return t>0?v[0]/t:null};
+const fleeceTag=g=>!isFleece(g)?"":fleeceAged(g)?`<span class="fleece aged" data-tip="${esc(`${mname(g.sides[0].k)} has ${Math.round(g.sides[0].share*100)}% of this deal at today's values. ${thenShare(g)!=null?`On the day it was made they had ${Math.round(thenShare(g)*100)}% of the value`:"It wasn't necessarily lopsided when it was made"}`)}">Aged into a fleece</span>`:`<span class="fleece" data-tip="${esc(`${mname(g.sides[0].k)} has ${Math.round(g.sides[0].share*100)}% of this deal`)}">Fleece</span>`;
 function tradeGrades(){
   if(S._tg)return S._tg;
   const ix=IX(),out=[],firstDraftYet=S.years[0];
@@ -3297,16 +3317,23 @@ function tradeGrades(){
   return S._tg=out;
 }
 // shot adds Copy and Save image buttons that capture just this card
+// What each side received was worth on the day of the trade, from the saved value history; null before the history starts
+function tradeThen(g){
+  const i=histCol(g.when);if(i==null)return null;
+  const of=a=>a.kind==="player"?histVal(a.pid,i)??0:a.kind==="pick"?histPick(a.season,a.round,i)??0:0;
+  return{i,est:HV.est.has(HV.dates[i]),of,side:s=>sumOf(s.assets,of)};
+}
 function tradeCard(g,shot){
+  const th=tradeThen(g),then=a=>th&&a.kind!=="faab"?`, ${fv2(th.of(a))} then`:"";
   const asset=a=>{
-    if(a.kind==="player")return`<li><span>${plink(a.pid)} ${pchip(posOf(a.pid))}<em>${a.gs?`${plural(a.gs,"start")} for them since`:"No starts for them since"}</em></span><span>${fmt(a.pts)} pts<em>worth ${fv2(a.val)} now</em></span></li>`;
+    if(a.kind==="player")return`<li><span>${plink(a.pid)} ${pchip(posOf(a.pid))}<em>${a.gs?`${plural(a.gs,"start")} for them since`:"No starts for them since"}</em></span><span>${fmt(a.pts)} pts<em>worth ${fv2(a.val)} now${then(a)}</em></span></li>`;
     if(a.kind==="faab")return`<li><span>$${a.amount} FAAB</span><span class="mu">not valued</span></li>`;
     const nm=`${a.season} ${ord(a.round)} <span class="pos">${esc(poss(tn(a.orig)))}</span>`;
-    if(a.became)return`<li><span>${nm}<em>Became ${plink(a.became.pid)} at ${a.became.label}${a.kept?"":", after the pick was moved again"}</em></span><span>${a.kept?fmt(a.pts)+" pts":'<span class="mu">0 pts</span>'}<em>worth ${fv2(a.val)} now</em></span></li>`;
-    return`<li><span>${nm}<em>${a.future?"Still to be used":"Draft result unavailable"}</em></span><span><span class="mu">0 pts</span><em>worth ${fv2(a.val)}</em></span></li>`};
+    if(a.became)return`<li><span>${nm}<em>Became ${plink(a.became.pid)} at ${a.became.label}${a.kept?"":", after the pick was moved again"}</em></span><span>${a.kept?fmt(a.pts)+" pts":'<span class="mu">0 pts</span>'}<em>worth ${fv2(a.val)} now${then(a)}</em></span></li>`;
+    return`<li><span>${nm}<em>${a.future?"Still to be used":"Draft result unavailable"}</em></span><span><span class="mu">0 pts</span><em>worth ${fv2(a.val)}${th?" now"+then(a):""}</em></span></li>`};
   const w=g.sides[0],verdict=!g.graded?"Nothing to grade yet":isFleece(g)?`${esc(mname(w.k))} fleeced ${esc(mname(g.sides.at(-1).k))}`:g.margin<.06?"About even so far":`${esc(mname(w.k))} ${g.margin>=.4?"is well ahead":g.margin>=.16?"is ahead":"has a slight edge"}${g.wP?"":" on value"}`,how=g.wP?`points count for ${Math.round(g.wP*100)}% of the grade`:g.hasPts?"graded on value alone: the deal's value sits in picks that cannot score yet":"graded on value, with no starter points on either side yet";
   const name=shot?`Trade: ${andList(g.sides.map(s=>mname(s.k)))}, ${fmtDate(g.when)}`:"";
-  return`<div class="trd"${shot?` data-name="${esc(name)}" data-w="760"`:""}><div class="trdh"><b>${verdict}${fleeceTag(g)}</b><span class="trdm"><time>${fmtDate(g.when)} · ${how}</time>${shot?'<span class="pact inline"><button type="button" class="pa" data-act="copy">Copy<span class="wi"> image</span></button><button type="button" class="pa" data-act="save">Save<span class="wi"> image</span></button></span>':""}</span></div><div class="trds">${g.sides.map(s=>`<div class="tside"><h4><span>${mlink(s.k)} <span class="fm">received</span></span>${gradeChip(s.grade)}</h4><ul>${s.assets.map(asset).join("")||"<li><span class=\"mu\">Nothing listed</span></li>"}</ul><div class="tot"><span>Starter points <b>${fmt(s.pts)}</b></span><span>Value now <b>${fv2(s.val)}</b></span></div></div>`).join("")}</div></div>`;
+  return`<div class="trd"${shot?` data-name="${esc(name)}" data-w="760"`:""}><div class="trdh"><b>${verdict}${fleeceTag(g)}</b><span class="trdm"><time>${fmtDate(g.when)} · ${how}</time>${shot?'<span class="pact inline"><button type="button" class="pa" data-act="copy">Copy<span class="wi"> image</span></button><button type="button" class="pa" data-act="save">Save<span class="wi"> image</span></button></span>':""}</span></div><div class="trds">${g.sides.map(s=>`<div class="tside"><h4><span>${mlink(s.k)} <span class="fm">received</span></span>${gradeChip(s.grade)}</h4><ul>${s.assets.map(asset).join("")||"<li><span class=\"mu\">Nothing listed</span></li>"}</ul><div class="tot"><span>Starter points <b>${fmt(s.pts)}</b></span><span>Value now <b>${fv2(s.val)}</b></span>${th?`<span${th.est?` data-tip="Estimated from FantasyCalc's 30-day trend"`:""}>Value then <b>${fv2(th.side(s))}</b></span>`:""}</div></div>`).join("")}</div></div>`;
 }
 function tradeNetwork(list,W){
   const cnt={},tot={};list.forEach(g=>{const ks=[...new Set(g.sides.map(s=>s.k))];ks.forEach(k=>tot[k]=(tot[k]||0)+1);for(let i=0;i<ks.length;i++)for(let j=i+1;j<ks.length;j++){const id=pkey(ks[i],ks[j]);cnt[id]=(cnt[id]||0)+1}});
@@ -3900,6 +3927,7 @@ function renderLookup(){
   const tot=totalPts(pid),sp=sumOf(st,x=>x.sp),gs=sumOf(st,x=>x.gs);
   let h=`<div class="hero"><span class="av" aria-hidden="true">${esc(posOf(pid))}</span><div><h2>${esc(pName(pid))}</h2><p>${esc([posOf(pid),pl?.[2]||"No NFL team",pl?.[3]?pl[3]+" years old":"",pl?.[5]||""].filter(Boolean).join(", "))}. ${hold!=null?`On ${mlink(cur.own[hold])} now.`:"Not on a roster right now."}</p></div></div>`;
   h+=`<div class="tiles">${[["Dynasty value",FC?fv2(dynVal(pid)):"–",!FC?"Unavailable right now":firstRank(pid)?`Firsts, ${ord(firstRank(pid))} in FantasyCalc`:"Not listed by FantasyCalc"],["Win-now value",FC?fv2(nowVal(pid)):"–",!FC?"Unavailable right now":nowVal(pid)?"Firsts, from FantasyCalc redraft":"Not listed by FantasyCalc"],["League points",fmt(tot),"Regular season, any roster"],["As a starter",fmt(sp),`${plural(gs,"start")}${gs?", "+fmt(sp/gs)+" per start":""}`],["Teams",new Set(st.map(x=>x.k)).size||(hold!=null?1:0),plural(st.length,"stint")],["Drafted",d?`${d.season} ${d.label}`:"–",d?(d.k?"By "+mname(d.k):"")+(d.dr.startup?" (startup)":""):"Not drafted in this league"]].map(([a,b,c])=>`<div class="tile"><span>${esc(a)}</span><b>${esc(b)}</b><small>${esc(c)}</small></div>`).join("")}</div>`;
+  if(FC)h+=panelX("Value over time",`His FantasyCalc dynasty value on each day it has been saved.${HV?` The history starts on ${fmtDate(HV.t[0])}.`:""}`,valueChart(pid),"lk-val");
   const latest=ix.weeks.at(-1)?.key,sm=Math.max(...st.map(x=>x.pts),1);
   h+=panelX("Every team he has been on","Unbroken runs on one roster, with what he scored there in the regular season. Values are FantasyCalc values.",
     st.length?tblX("lkst",`<th>Team</th><th>From</th><th>To</th><th class="n">Weeks</th><th>Points on the roster</th><th class="n">As a starter</th><th class="n">Starts</th><th>How he got there</th>`,
@@ -3910,6 +3938,24 @@ function renderLookup(){
       const txt=e.type==="trade"?`${from&&own[from[1]]?mlink(own[from[1]]):"A team"} <span class="mu">traded him to</span> ${to&&own[to[1]]?mlink(own[to[1]]):"another team"}`:`${to?`${own[to[1]]?mlink(own[to[1]]):"A team"} <span class="add">added</span> him${hasBid(e.bid)?` <span class="mu">for $${e.bid}</span>`:""}`:`${from&&own[from[1]]?mlink(own[from[1]]):"A team"} <span class="drop">dropped</span> him`}`;
       return`<div class="fd"><time>${fmtDate(e.when)}</time><span class="ty">${evName(e)}</span><div>${txt}</div></div>`}).join("")}</div>`:emptyX("No trades, claims or drops on record."));
   body.innerHTML=h;
+}
+// A player's dynasty value on every saved day, with today's live value as the last point
+function valueChart(pid){
+  if(!HV)return emptyX("Value history isn't available right now.");
+  const today=new Date().toISOString().slice(0,10),pts=HV.dates.map((d,i)=>({d,t:HV.t[i],v:HV.v[pid]?.[i],est:HV.est.has(d)})).filter(p=>p.v!=null&&p.d!==today);
+  pts.push({t:Date.now(),v:Math.round(dynVal(pid)*FC.unit),now:true});
+  if(pts.length<2)return emptyX("No saved values for him yet. A point is added every day.");
+  const W=Math.round(clamp(($("lkbody").clientWidth||900)-34,300,1100)),H=230,L=52,R=16,T=14,B=30,t0=pts[0].t,t1=pts.at(-1).t;
+  const[lo,hi,step]=niceRange(Math.min(...pts.map(p=>p.v)),Math.max(...pts.map(p=>p.v)),4),X=t=>L+(t1>t0?(t-t0)/(t1-t0):.5)*(W-L-R),Y=v=>T+(hi-v)/(hi-lo||1)*(H-T-B);
+  let g="";
+  for(let v=lo;v<=hi+1e-9;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" class="gl"/><text x="${L-8}" y="${Y(v)+4}" class="ax" text-anchor="end">${Math.round(v).toLocaleString()}</text>`;
+  const fd=t=>new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric",year:new Date(t).getFullYear()!==new Date().getFullYear()?"numeric":undefined});
+  g+=`<text x="${L}" y="${H-8}" class="ax" text-anchor="start">${fd(t0)}</text><text x="${W-R}" y="${H-8}" class="ax" text-anchor="end">Today</text>`;
+  g+=`<path d="${pts.map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+" "+Y(p.v).toFixed(1)).join("")}" class="ln-me"/>`;
+  const r=pts.length>60?0:4;
+  pts.forEach(p=>{if(r)g+=`<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${r}" class="${p.est?"dot-l":"dot-w"}"/>`;
+    g+=`<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="12" class="hit" data-tip="${esc(`${p.now?"Today":fmtDate(p.t)}: ${p.v.toLocaleString()}${p.est?", estimated from FantasyCalc's 30-day trend":""}`)}"/>`});
+  return`<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Dynasty value over time">${g}</svg>`;
 }
 // How a player arrived for one particular stint
 function acquiredHowAt(pid,st){
@@ -4167,6 +4213,7 @@ function renderHow(){
     `<p><b>Source right now: ${valSrc()}.</b> FantasyCalc is the only source of player and pick values. It prices players from real trades in dynasty leagues with your format (${S.seas[0].rosters.length} teams, superflex or not, your PPR setting, no tight end premium) and updates as the market moves. Each value is divided by FantasyCalc's value for one generic ${uy} first-round pick, so a player worth 1.00 costs about one first. <b>Win-now value</b> does the same with FantasyCalc's redraft value, so it measures who helps this season rather than who holds value for years. A player FantasyCalc doesn't list is worth zero. These are market values, so they don't know your scoring quirks beyond the format.</p>
     <ul><li><b>Fresh every visit.</b> Values are fetched each time the page loads, and the last good copy is saved in this browser.</li>
     <li><b>When FantasyCalc can't be reached</b>, the saved copy is used and the header says which date it is from. With no saved copy, the header and every value panel say trade values are unavailable right now.</li>
+    <li><b>Value history.</b> A scheduled job saves FantasyCalc's dynasty values for this league's format once a day, so the site can show what a player or pick was worth on an earlier day: Value over time in Player lookup, and Value then on trade cards. FantasyCalc doesn't publish its past values, so the history only covers days since the job started${HV?`, on ${fmtDate(HV.t[0])}`:""}. The first day is an estimate, today's value minus FantasyCalc's 30-day trend. These are FantasyCalc's raw numbers from that day, not rescaled.</li>
     <li><b>First-round players</b> (Contend or rebuild) are the top 12 players in FantasyCalc's whole list by dynasty value.</li>
     <li><b>Sell-high players</b> have a win-now value at least 25% above their dynasty value and worth at least 0.35 of a first, at any age.</li></ul>
     ${ex(()=>{if(!FC)return"";const hold=holders(),top=Object.keys(hold).filter(p=>dynVal(p)>0).sort((a,x)=>dynVal(x)-dynVal(a))[0];if(!top)return"";return`<b>${esc(pName(top))}</b> (${esc(mname(cur.own[hold[top]]))}): FantasyCalc has him at ${Math.round(dynVal(top)*FC.unit).toLocaleString()} and a generic ${uy} first at ${Math.round(FC.unit).toLocaleString()}, which makes him worth <b>${fmt(dynVal(top),2)}</b> of a first for the thresholds below. His redraft value is ${fv(nowVal(top))}.`})}`);
@@ -4193,7 +4240,9 @@ function renderHow(){
     <table><thead><tr><th>Share</th>${GRADES.map(([t],i)=>`<th class="n">${i===GRADES.length-1?"under 28%":Math.round(t*100)+"%+"}</th>`).join("")}</tr></thead><tbody><tr><td>Grade</td>${GRADES.map(([,g])=>`<td class="n">${g}</td>`).join("")}</tr></tbody></table>
     <p>On the <b>ledger</b>, a share of 53% or more is a win, under 47% is a loss, and anything between is even. <b>Net starter points</b> and <b>net value</b> are what came in minus what went out. FAAB dollars are listed but not valued.</p>
     <h4>Fleeces</h4>
-    <p>A trade is a <b>fleece</b> when one side has a share of ${Math.round(FLEECE_SH*100)}% or more and at least ${FLEECE_VAL} of a first's value (${fv(FLEECE_VAL)} today) changed hands, counting everything on both sides at today's values. Trades from the last ${FRESH_DAYS} days are tagged <b>Fleece</b>. Older ones are tagged <b>Aged into a fleece</b>: FantasyCalc only has today's values, so the deal may have looked fair when it was made.</p>
+    <p>A trade is a <b>fleece</b> when one side has a share of ${Math.round(FLEECE_SH*100)}% or more and at least ${FLEECE_VAL} of a first's value (${fv(FLEECE_VAL)} today) changed hands, counting everything on both sides at today's values. Trades from the last ${FRESH_DAYS} days are tagged <b>Fleece</b>. Older ones are tagged <b>Aged into a fleece</b>, since the deal may have looked fair when it was made; when the value history reaches back to that day, the tag says what share each side had then.</p>
+    <h4>Value then</h4>
+    <p>Grades always use today's values. Next to them, each side shows <b>Value then</b>: what it received was worth on the day of the trade, from the value history (see Player trade value). A pick counts at FantasyCalc's generic price for its year and round on that day. The closest saved day within four days of the trade is used; trades from before the history starts show no value then.</p>
     ${ex(()=>{const g=tradeGrades().filter(x=>x.graded&&x.twoWay&&x.sides.length===2&&x.wP>0&&x.sides[0].pShare!=null&&x.sides[0].vShare!=null).sort((a,x)=>x.margin-a.margin)[0];if(!g)return"";const[a,c]=g.sides;return`The ${fmtDate(g.when)} trade between <b>${esc(mname(a.k))}</b> and <b>${esc(mname(c.k))}</b>: ${esc(mname(a.k))} has ${fmt(a.pts)} starter points to ${fmt(c.pts)}, a ${Math.round(a.pShare*100)}% points share, and ${fv(a.val)} of value to ${fv(c.val)}, a ${Math.round(a.vShare*100)}% value share. With points weighted ${Math.round(g.wP*100)}%: ${fmt(g.wP,2)} × ${Math.round(a.pShare*100)}% + ${fmt(1-g.wP,2)} × ${Math.round(a.vShare*100)}% = <b>${Math.round(a.share*100)}%</b>. That is <b>${a.grade}</b> for ${esc(mname(a.k))} and <b>${c.grade}</b> for ${esc(mname(c.k))}.`})}`);
   b+=add("how-build","Contender score and Contend or rebuild",go("builds","Contend or rebuild")+", "+go("rivals","Rivalries")+", "+go("tcalc","Trade calculator")+", "+go("rosters","Roster strength"),
     `<p>Where each team sits between a full rebuild (0) and an all-in contender (100). Each input is turned into a z-score within the league, the weighted blend is standardized again, and the result is mapped onto 0 to 100 with a bell curve. Scores are relative: the league always averages 50.</p>
