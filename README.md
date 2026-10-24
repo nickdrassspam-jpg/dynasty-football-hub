@@ -9,7 +9,7 @@ League Hub for Swag League Dynasty: a single page (`index.html`) that reads the 
 `tests/smoke.mjs` opens the page against a made-up league (`tests/fixture.mjs`), visits every tab and reports any script error. It needs Playwright:
 
 ```
-NODE_PATH=$(npm root -g) node tests/smoke.mjs [--team <roster number>|skip] [--no-fc] [--width 390] [--shots <dir>]
+NODE_PATH=$(npm root -g) node tests/smoke.mjs [--team <roster number>|skip] [--no-fc] [--long-names] [--width 390] [--shots <dir>]
 ```
 
-`--team` picks "your team" as if chosen on a first visit, `--no-fc` makes FantasyCalc unreachable, and `--shots` saves a full-page screenshot of each tab. Netlify ignores the `tests` folder; it only serves `index.html`.
+`--team` picks "your team" as if chosen on a first visit, `--no-fc` makes FantasyCalc unreachable, `--long-names` swaps in long team names to check narrow screens, and `--shots` saves a full-page screenshot of each tab. Netlify ignores the `tests` folder; it only serves `index.html`.

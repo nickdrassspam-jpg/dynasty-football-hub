@@ -350,6 +350,22 @@ section.offstage{display:block!important;position:absolute!important;left:-99999
 .slot .pk{position:absolute;top:4px;left:7px;right:7px;line-height:1.1}
 .slot .ow{flex:1;display:flex;align-items:center;justify-content:center;margin:0;line-height:1.12}.slot.traded .ow{padding:12px 0 13px}
 .slot .og{position:absolute;bottom:4px;left:5px;right:5px;display:block;line-height:1.12;white-space:nowrap;text-overflow:ellipsis;-webkit-line-clamp:1}
+/* ---- phone-width fixes; the desktop layout is untouched ---- */
+.rvbar{width:200px}
+/* stacked boards: pick number, owner and 'From' sit in turn instead of being pinned on top of each other */
+.board.tall .slot .pk,.board.tall .slot .og{position:static}
+.board.tall .slot{gap:2px;padding:6px 7px}.board.tall .slot .ow,.board.tall .slot.traded .ow{padding:2px 0}
+.board.tall .slot .og{overflow:hidden}
+@media(max-width:700px){
+  /* the Back button scrolls away with the header instead of floating over the tabs below it */
+  body .backbtn{position:absolute}
+  /* long team names wrap in tables so the bars and numbers beside them stay on screen */
+  th,td{padding-left:8px;padding-right:8px}
+  td .tl,tbody th .tl{white-space:normal;overflow-wrap:break-word}td:has(>.tl),tbody th:has(>.tl){white-space:normal;min-width:8.5em;max-width:11em}
+  .rvbar{width:110px}
+  /* room to scroll the last rows clear of the host's floating badge */
+  body{padding-bottom:72px}
+}
 #tip{max-width:min(420px,92vw)}
 /* ---- tankathon ---- */
 .slx{margin-top:14px;padding:14px 16px;background:var(--bg);border-radius:8px;max-width:980px;font-size:14px;line-height:1.5}.slx h4{margin:0 0 8px;font-size:15px}.slx ol{margin:0 0 10px;padding-left:20px}.slx li{margin:4px 0}.slx p{margin:8px 0 0}.slx p.mu{font-size:13px}
@@ -628,7 +644,7 @@ let S=null,players={},picks=[],tab="home",token=0,pendingScope=null;
 const tn=rid=>(S&&S.names[rid])||"Team "+rid;
 const mname=k=>S.mgr[k]?.name||"Unknown team";
 const rn=(si,rid)=>{const k=S.seas[si]?.own[rid];return k?mname(k):tn(rid)};
-const mlink=k=>`<button type="button" class="tl" data-m="${esc(k)}">${esc(mname(k))}</button>${S.mgr[k]&&!S.mgr[k].current?' <span class="fm">former</span>':""}`;
+const mlink=k=>`<button type="button" class="tl" data-m="${esc(k)}">${softBreak(mname(k))}</button>${S.mgr[k]&&!S.mgr[k].current?' <span class="fm">former</span>':""}`;
 const hue=rid=>(S.seas[0].rosters.findIndex(r=>r.roster_id===rid)*137.5)%360;
 const setSt=(t,err)=>{$("status").className="st"+(err?" err":"");$("status").textContent=t};
 function setProg(f,label){const p=$("prog");p.hidden=f>=1;p.querySelector("b").style.width=(Math.min(1,f)*100).toFixed(1)+"%";if(label)p.querySelector("span").textContent=label}
@@ -3463,7 +3479,7 @@ function renderRosters(){
   const byDyn=[...vals].sort((a,b)=>b.dyn+b.picks-a.dyn-a.picks),mxT=Math.max(...vals.map(v=>v.dyn+v.picks),1);
   h+=panelX("Roster value",`Everything each team owns in FantasyCalc value: players valued from ${valSrc()}, plus future picks at FantasyCalc's pick prices. Win-now value uses redraft values instead, so it rewards players who help this season.`,
     tblX("rosval",`<th>Team</th><th>Players and picks</th><th class="n">Player value</th><th class="n">Pick value</th><th class="n">Total</th><th class="n">Win-now value</th><th class="n" data-tip="Average age of the roster, weighted by each player's value">Value-weighted age</th><th class="n" data-tip="Share of player value in players at or within a year of their position's drop-off age">Value near the age cliff</th>`,
-      byDyn.map(v=>`<tr><td>${mlink(v.k)}</td><td data-v="${v.dyn+v.picks}"><div class="sbar" style="width:200px" data-tip="${esc(`${mname(v.k)}\nPlayers ${fv(v.dyn)}\nPicks ${fv(v.picks)}`)}"><b style="width:calc(${v.dyn/mxT*100}% - 2px);background:var(--c1)"></b><b style="width:calc(${v.picks/mxT*100}% - 2px);background:var(--c4)"></b></div></td><td class="n">${fv(v.dyn)}</td><td class="n">${fv(v.picks)}</td><td class="n"><b>${fv(v.dyn+v.picks)}</b></td><td class="n">${fv(v.now)}</td><td class="n" data-v="${v.age??""}">${v.age?fmt(v.age):"–"}</td><td class="n" data-v="${v.dyn?v.risk/v.dyn:0}">${v.dyn?Math.round(v.risk/v.dyn*100)+"%":"–"}</td></tr>`).join(""))+`<div class="lg" style="margin:10px 0 0"><span><i class="sq" style="background:var(--c1)"></i>Players</span><span><i class="sq" style="background:var(--c4)"></i>Future picks</span></div>`,"ro-val");
+      byDyn.map(v=>`<tr><td>${mlink(v.k)}</td><td data-v="${v.dyn+v.picks}"><div class="sbar rvbar" data-tip="${esc(`${mname(v.k)}\nPlayers ${fv(v.dyn)}\nPicks ${fv(v.picks)}`)}"><b style="width:calc(${v.dyn/mxT*100}% - 2px);background:var(--c1)"></b><b style="width:calc(${v.picks/mxT*100}% - 2px);background:var(--c4)"></b></div></td><td class="n">${fv(v.dyn)}</td><td class="n">${fv(v.picks)}</td><td class="n"><b>${fv(v.dyn+v.picks)}</b></td><td class="n">${fv(v.now)}</td><td class="n" data-v="${v.age??""}">${v.age?fmt(v.age):"–"}</td><td class="n" data-v="${v.dyn?v.risk/v.dyn:0}">${v.dyn?Math.round(v.risk/v.dyn*100)+"%":"–"}</td></tr>`).join(""))+`<div class="lg" style="margin:10px 0 0"><span><i class="sq" style="background:var(--c1)"></i>Players</span><span><i class="sq" style="background:var(--c4)"></i>Future picks</span></div>`,"ro-val");
   // depth heatmap
   const metric=ROSDEPTH,ppg=S.deep?posStats("0"):null,played=S.deep&&cur.done.length;
   const mv=(v,p)=>metric==="pts"?(played?(ppg.P[v.k]?.[p]||0)/(ppg.G[v.k]||1):0):(v.byPos[p]?.[metric]||0);
