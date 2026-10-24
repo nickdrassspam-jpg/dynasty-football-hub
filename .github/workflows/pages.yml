@@ -29,6 +29,9 @@ jobs:
           cp index.html CNAME favicon.svg favicon-32.png apple-touch-icon.png _site/
           if [ -d data ]; then cp -r data _site/; fi
           touch _site/.nojekyll
+          # the page version under the title is the time of this deploy, in Eastern time
+          sed -i "s/Page version [^<]*/Page version $(TZ=America/New_York date '+%b %-d, %Y, %-I:%M %p') ET/" _site/index.html
+          grep -o 'Page version [^<]*' _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
