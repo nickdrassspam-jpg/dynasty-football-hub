@@ -17,3 +17,7 @@ NODE_PATH=$(npm root -g) node tests/smoke.mjs [--team <roster number>|skip] [--n
 ## Value history
 
 FantasyCalc only publishes today's values, so `.github/workflows/fc-snapshot.yml` runs `scripts/fc-snapshot.mjs` once a day. It adds the day's dynasty values to `data/fc/<format>.json`, commits it and redeploys. Edit `LEAGUES` in that workflow to save another league's format. Run it by hand from the Actions tab (Save FantasyCalc values, Run workflow) or locally with `node scripts/fc-snapshot.mjs <league id>`.
+
+## Newsletter
+
+`.github/workflows/newsletter.yml` checks the Substack feed every two hours (`scripts/newsletter.py`), saves the newest post to `data/newsletter.json` and redeploys when it changes, and the home page shows it as a card. The feed defaults to `https://piratenck.substack.com/feed`; to use another, set the repository variable `NEWSLETTER_FEED` (Settings, Secrets and variables, Actions, Variables). Run the workflow by hand from the Actions tab to pick up a post right away.

@@ -1,0 +1,37 @@
+name: Newsletter
+
+# Checks the Substack feed every two hours. When a new post is out, it saves it to data/newsletter.json
+# and redeploys the site so the home page shows it. Set the NEWSLETTER_FEED repository variable to change the feed.
+on:
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: newsletter
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the newest post
+        run: |
+          mkdir -p data
+          python3 scripts/newsletter.py "${{ vars.NEWSLETTER_FEED || 'https://piratenck.substack.com/feed' }}" data/newsletter.json
+      - name: Save it and redeploy if it changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add data/newsletter.json
+          if git diff --cached --quiet; then echo "No new post"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Newsletter: $(python3 -c 'import json;print(json.load(open("data/newsletter.json"))["title"])')"
+          git pull --rebase origin main && git push
+          # a push made with the workflow's own token doesn't start other workflows, so start the deploy directly
+          gh workflow run pages.yml --ref main

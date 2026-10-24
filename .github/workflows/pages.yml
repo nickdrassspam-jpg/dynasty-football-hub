@@ -22,7 +22,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      # Only the page, its icons and its domain file are published; tests and notes stay in the repo.
+      # Only the page, its icons, its domain file and the data folder are published; tests and notes stay in the repo.
       - name: Collect site files
         run: |
           mkdir _site
