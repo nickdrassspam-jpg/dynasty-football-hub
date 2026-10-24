@@ -1588,12 +1588,12 @@ function renderHome(){
   if(ME)bits.unshift(`Your team: <b>${esc(mname(ME))}</b>`);
   const mine=ME?homeMine():"",B=mine&&HM.bug;
   let h=B?homeBug(B):`<div class="hlead"><h2>${esc(lead)}</h2><p>${bits.join(". ")}${bits.length?". ":""}${ME?"":"Pick a section card below to dig in. "}Every panel has Copy image and Save image buttons for your newsletter, and How it works explains every number.</p></div>`;
-  h+=homeTicker()+homeNews();
+  h+=homeTicker();
   if(mine){const P=HM.p,wk=["hm-stakes","hm-lineup","hm-idea"].filter(id=>P[id]);
     if(!B&&P["hm-match"])h+=`<div class="hme">${P["hm-match"]}</div>`;
     if(wk.length)h+=`<div class="hbwk${wk.length===3&&P["hm-idea"]?" three":""}">${wk.map(id=>P[id]).join("")}</div>`;
     if(P["hm-buzz"])h+=`<div class="hme">${P["hm-buzz"]}</div>`}
-  h+=homeBinder();
+  h+=homeNews()+homeBinder();
   $("homebody").innerHTML=h;
 }
 /* ---- Home layout: a broadcast score bug, a headline ticker and a binder of flip cards, one per section ---- */
@@ -4089,7 +4089,7 @@ function renderHow(){
     <li><b>Long lists.</b> Tables and lists longer than 15 rows show their top 10, plus any rows for your team, with a Show all button. Sorting a shortened table sorts every row, so the 10 shown are always the top of the new order.</li></ul>`);
   b+=add("how-me","Your team",go("home","Home")+", and every tab",
     `<p>On the first visit the page asks which team is yours and saves the answer in this browser only. Change it any time from <b>Your team</b> in the header, or choose Just browsing.</p>
-    <ul><li><b>Home</b> opens with your week, in this order: this week's matchup as a score bug with its win chance (before kickoff, from each team's projected score with the starters set in Sleeper, as on Live scores; live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, a trade idea, and league buzz (last week's awards, the game of the week and the latest trades with their grades). A ticker of each tool's headline runs under the score bug. Home ends with a card for each section, showing one headline number; click a card to flip it and see that section's tools, each with a key stat. Without a team, Home is the ticker and the section cards.</li>
+    <ul><li><b>Home</b> opens with your week, in this order: this week's matchup as a score bug with its win chance (before kickoff, from each team's projected score with the starters set in Sleeper, as on Live scores; live once games start), the stakes (your playoff odds now, if you win and if you lose), lineup problems, a trade idea, and league buzz (last week's awards, the game of the week and the latest trades with their grades). A ticker of each tool's headline runs under the score bug. After league buzz comes a card for the latest newsletter post. Home ends with a card for each section, showing one headline number; click a card to flip it and see that section's tools, each with a key stat. Without a team, Home is the ticker, the newsletter card and the section cards.</li>
     <li><b>Lineup problems</b> checks your starters in Sleeper for the week, or the best lineup on paper when Sleeper has none set. A starter is flagged when he is on bye, expected to miss the week (the rules are under Playoff odds), questionable (he is expected to play, so nothing is at risk), or the slot is empty. Points at risk are each flagged player's usual score. The suggested swap is your best healthy bench player who fits the slot; nothing is suggested once a player's game has started.</li>
     <li><b>The trade idea</b> follows your label: a contender gets a player to buy, a rebuilder a player to sell, and a team in between one of each. When nothing fits fairly, it is left out.</li>
     <li><b>Everywhere else</b> your team's rows and cards are outlined, and your team is picked to start with in Team profile, Rivalries and the trade calculator.</li></ul>`);

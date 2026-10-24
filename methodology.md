@@ -20,8 +20,9 @@ The page is league-wide: any manager can open it, and it has some attitude (lops
   4. **Trade idea:** by label (see Trade calculator and finder). Hidden when nothing fits.
   5. **League buzz:** last week's top score, player of the week, upset of the week (or biggest blowout), lowest score; the game of the week; the three latest graded trades with grades and fleece tags.
 - Under the score bug, a headline ticker scrolls each tool's one-line teaser (paused on hover, and shown as a static list for anyone who prefers reduced motion).
+- After league buzz and before the section cards, a card shows the newest newsletter post (see Data sources).
 - Home ends with **Every section**: one flip card per section (This week, Season, Teams, Drafts, Trades, Players, History, How it works; the Trades & Players tab is split into two cards). The front shows one headline number: your win chance this week, your seed and playoff odds, your power rank, the 1.01 favorite's odds, trades graded, rostered players with an injury tag, the defending champion and the tool count. Without a team, or before the numbers exist, the front falls back to a league-wide number (last week's top score, the standings leader, the most valuable roster). Clicking a card flips it; the back lists the section's tools, each with a key stat read from its teaser, and opens that tool.
-- Without a team, Home is the lead, the ticker and the section cards.
+- Without a team, Home is the lead, the ticker, the newsletter card and the section cards.
 
 ## Layout
 
