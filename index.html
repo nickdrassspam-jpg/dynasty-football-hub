@@ -128,6 +128,8 @@ svg.chart{width:100%;height:auto;display:block;overflow:visible}
 .scale{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);margin-top:10px}.scale i{width:140px;height:10px;border-radius:3px}
 /* records */
 .recgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:10px}
+/* award grids: as many columns as fit, then evened out so no row is left with a stray card (11 cards at 5 wide becomes 4, 4 and 3), and short last rows stretch to the full width */
+.recgrid.bal{display:flex;flex-wrap:wrap}.recgrid.bal>*{flex:1 1 calc((100% - (var(--cols,1) - 1)*10px)/var(--cols,1))}
 .rc{background:var(--bg);border-radius:8px;padding:12px 14px;min-width:0}.rc>span{display:block;color:var(--mu);font-size:13px}.rc>b{display:block;font-size:28px;font-weight:800;line-height:1.15;margin:2px 0 4px;font-variant-numeric:tabular-nums}.rc .who{font-size:15px}.rc .fm{font-size:12px}.rc small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
 .rec{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .rec>b{font-size:22px;line-height:1.1;font-weight:800;font-variant-numeric:tabular-nums;text-align:right}
@@ -1571,7 +1573,7 @@ function homeMine(){
     const nx=cs===cur?nextWeekGames(cs,lw2,wa.ra):null,gw=nx?`<p style="margin:12px 0 0"><b>Game of the week ${nx.nw}:</b> ${mlink(cs.own[nx.gotw[0]])} <span class="mu">#${wa.ra(nx.gotw[0])}</span> vs ${mlink(cs.own[nx.gotw[1]])} <span class="mu">#${wa.ra(nx.gotw[1])}</span></p>`:"";
     const tg=S.txReady?tradeGrades().filter(g=>g.graded).sort((a,b)=>b.when-a.when).slice(0,3):[];
     const tl=tg.length?`<h4 style="margin:14px 0 2px">Latest trades</h4>`+tg.map(g=>`<div class="tline"><time>${fmtDate(g.when)}</time><div>${g.sides.map(s=>`${mlink(s.k)} ${gradeChip(s.grade)} <span class="mu">got ${esc(s.assets.map(assetTxt).slice(0,3).join(", ")+(s.assets.length>3?" and more":"")||"nothing listed")}</span>`).join("<br>")}${fleeceTag(g)?"<br>"+fleeceTag(g):""}</div></div>`).join("")+`<div class="btnrow" style="margin-top:8px"><button type="button" class="lnk" data-go="tradehist">Every trade</button></div>`:"";
-    out.push(hp("League buzz",`<p class="pcap">Week ${lw2} awards${cs===cur?"":` from ${esc(cs.season)}`}.</p><div class="recgrid">${cards.join("")}</div>${gw}${tl}`,"hm-buzz"));
+    out.push(hp("League buzz",`<p class="pcap">Week ${lw2} awards${cs===cur?"":` from ${esc(cs.season)}`}.</p><div class="recgrid bal">${cards.join("")}</div>${gw}${tl}`,"hm-buzz"));
   }
   // 5. a trade idea by your team's label: a buy for a contender, a sell for a rebuilder, one of each in between
   const ideas=ideasFor(ME),b=rivState().builds[ME];
@@ -1719,7 +1721,7 @@ function renderRecap(){
   let bench=null;Object.entries(s.pw).forEach(([pid,a])=>a.forEach(([w2,rid,x,isSt])=>{if(w2===w&&!isSt&&(!bench||x>bench.x))bench={pid,rid,x}}));
   if(bench&&bench.x>0)A.push(recCard(fmt(bench.x),"Bench MVP",K(bench.rid),esc(`${pName(bench.pid)} (${posOf(bench.pid)}) sat on the bench`)));
   if(before){const mv=after.map(x=>({x,d:rb(x.rid)-x.rank})).reduce((a,b)=>b.d>a.d?b:a);if(mv.d>0)A.push(recCard("▲ "+mv.d,"Power ranking climber",K(mv.x.rid),`Up to #${mv.x.rank} in the power rankings`))}
-  let h=`<div class="panel" style="margin-bottom:12px"><h3>Week ${w} awards</h3><p class="pcap">${esc(s.season)} season, regular-season week ${w}</p><div class="recgrid">${A.join("")}</div></div>`;
+  let h=`<div class="panel" style="margin-bottom:12px"><h3>Week ${w} awards</h3><p class="pcap">${esc(s.season)} season, regular-season week ${w}</p><div class="recgrid bal">${A.join("")}</div></div>`;
   // scoreboard
   const tags=x=>{const t=[];if(before&&rb(x.wr)>rb(x.lr))t.push("Upset");if(x.wp<med)t.push("Lucky win");if(x.lp>med)t.push("Unlucky loss");if(x.m<5)t.push("Nail-biter");if(x.m>=50)t.push("Blowout");return t};
   const row=(rid,p,win)=>`<div class="mrow${win?" w":""}"><span><i class="rk" title="Power rank after the week">#${ra(rid)}</i>${mlink(K(rid))} <span class="mu">${recAt(rid)}</span></span><b>${fmt(p,2)}</b></div>`;
@@ -1781,6 +1783,7 @@ async function renderPng(el,caption){
     if(el.dataset.w){el.style.width=el.dataset.w+"px";el.style.maxWidth="none"}
     const over=Math.max(0,...[...el.querySelectorAll(".tw")].map(t=>t.scrollWidth-t.clientWidth));
     if(over>0)el.style.width=(el.offsetWidth+over)+"px";
+    el.querySelectorAll(".recgrid.bal").forEach(fitBal);
     const r=el.getBoundingClientRect(),w=Math.ceil(r.width),hgt=Math.ceil(r.height);
     const clone=el.cloneNode(true),src=[el,...el.querySelectorAll("*")],dst=[clone,...clone.querySelectorAll("*")],rules=[];
     src.forEach((s2,i)=>{
@@ -3167,6 +3170,12 @@ const NAV={stack:[],cur:null,back:false};
 const navSnap=()=>({tab,team:$("pteam")?.value||"",scope:$("pseason")?.value||"",pid:typeof LK!=="undefined"?LK.pid:null});
 const navSame=(a,b)=>a.tab===b.tab&&(a.tab!=="profile"||a.team===b.team)&&(a.tab!=="lookup"||a.pid===b.pid);
 function navBtn(){const b=$("backbtn");if(!b)return;const p=NAV.stack.at(-1);b.hidden=!p;document.body.classList.toggle("hasback",!!p);if(p)b.querySelector("span").textContent=TABNAME[p.tab]||"Back"}
+// Award grids: pick the column count that gives evenly filled rows at the current width
+function fitBal(g){const n=g.children.length,w=g.clientWidth;if(!n||!w)return;const max=Math.max(1,Math.floor((w+10)/250)),rows=Math.ceil(n/max);g.style.setProperty("--cols",Math.ceil(n/rows))}
+{
+  const ro=new ResizeObserver(es=>es.forEach(e=>fitBal(e.target)));
+  new MutationObserver(()=>document.querySelectorAll(".recgrid.bal:not([data-bal])").forEach(g=>{g.dataset.bal="1";fitBal(g);ro.observe(g)})).observe(document.body,{childList:true,subtree:true});
+}
 // Wide tables: mark which edges can still scroll so the CSS can fade them as a hint
 {
   const edge=t=>{const r=t.scrollWidth-t.clientWidth-t.scrollLeft>2;t.classList.toggle("more-r",r);t.classList.toggle("more-l",t.scrollLeft>2)};
@@ -3879,7 +3888,7 @@ function seasonAwardsPanel(){
   let h="";
   const aw=seasonAwards(HS.aw),as=S.seas[HS.aw];
   h+=panelX(`${esc(as.season)} season awards${as.complete?"":" so far"}`,"End-of-season honors, worked out from the same numbers as the rest of the site",
-    (played.length?`<div class="inl"><label>Season ${sel("hsaw",played.map(([i,s])=>[i,s.season]),HS.aw)}</label></div>`:"")+(aw.length?`<div class="recgrid">${aw.join("")}</div>`:emptyX("No games played in this season yet.")),"hi-award");
+    (played.length?`<div class="inl"><label>Season ${sel("hsaw",played.map(([i,s])=>[i,s.season]),HS.aw)}</label></div>`:"")+(aw.length?`<div class="recgrid bal">${aw.join("")}</div>`:emptyX("No games played in this season yet.")),"hi-award");
   return h;
 }
 // Milestones and the weekly award tally, shown at the bottom of the Record book
