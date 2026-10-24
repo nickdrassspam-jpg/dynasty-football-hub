@@ -26,7 +26,10 @@ const base = id => { const p = players[id], i = byPos[p.position]?.indexOf(id) ?
 const rosterOf = Array.from({ length: N }, () => []);
 for (const pos of ["QB", "RB", "WR", "TE", "K"]) byPos[pos].forEach((id, i) => { if (i < N * { QB: 3, RB: 6, WR: 8, TE: 3, K: 1 }[pos]) rosterOf[i % N].push(id) });
 NFL.slice(0, N).forEach((t, i) => rosterOf[i].push(t));
-const users = Array.from({ length: N }, (_, i) => ({ user_id: String(900 + i), display_name: `manager${i + 1}`, metadata: { team_name: `Team ${String.fromCharCode(65 + i)}` }, avatar: null }));
+// --long-names gives the teams long real-world names, to check that narrow screens still fit them
+const LONG = ["SameShitDifferentToilet", "swag team mommy made it", "Kick Ya Ass and Win Team", "Langhorne Losers", "Soulja Goy Tell 'Em", "Coltraneeeeee", "Bum City Central", "Diamond dogs", "stevebuffardi", "Teezy215", "Team Hole", "tommy0717"];
+const longNames = process.argv.includes("--long-names");
+const users = Array.from({ length: N }, (_, i) => ({ user_id: String(900 + i), display_name: `manager${i + 1}`, metadata: { team_name: longNames ? LONG[i % LONG.length] : `Team ${String.fromCharCode(65 + i)}` }, avatar: null }));
 
 const SLOTS = ["QB", "RB", "RB", "WR", "WR", "WR", "TE", "FLEX", "SUPER_FLEX", "K", "DEF", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN", "BN"];
 const ELIG = { QB: ["QB"], RB: ["RB"], WR: ["WR"], TE: ["TE"], K: ["K"], DEF: ["DEF"], FLEX: ["RB", "WR", "TE"], SUPER_FLEX: ["QB", "RB", "WR", "TE"] };

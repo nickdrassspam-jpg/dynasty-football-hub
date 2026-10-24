@@ -1,5 +1,5 @@
 // Opens the page against the made-up league in fixture.mjs, visits every tab and reports any script error.
-// Usage: node tests/smoke.mjs [--team <roster number>] [--no-fc] [--shots <dir>]
+// Usage: node tests/smoke.mjs [--team <roster number>] [--no-fc] [--long-names] [--width 390] [--shots <dir>]
 // Needs Playwright. A global install works if NODE_PATH points at it: NODE_PATH=$(npm root -g) node tests/smoke.mjs
 import { createRequire } from "module";
 import { route } from "./fixture.mjs";
