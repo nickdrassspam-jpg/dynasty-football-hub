@@ -24,4 +24,4 @@ FantasyCalc only publishes today's values, so `.github/workflows/fc-snapshot.yml
 
 ## Newsletter
 
-The home page reads the newest post from the Substack feed (`NEWS_HOME` in `index.html`) through rss2json.com, falling back to Substack's own API and two public relays, since Substack blocks direct feed reads from a web page and all requests from GitHub's servers. The card always shows; until a post loads it links to the newsletter.
+`.github/workflows/newsletter.yml` reads the Substack feed every hour (`scripts/newsletter.py`, through feed2json.org, since Substack blocks GitHub's servers and browsers can't read the feed across sites), saves the newest post to `data/newsletter.json` and redeploys when it changes. Home shows it as a card. Set the repository variable `NEWSLETTER_FEED` to use another feed, and run the workflow from the Actions tab to pick up a post right away.

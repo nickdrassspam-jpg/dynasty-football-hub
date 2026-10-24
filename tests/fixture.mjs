@@ -103,11 +103,11 @@ const nflSched = []; for (let w = 1; w <= 18; w++) { const playing = NFL.filter(
 // ESPN injuries: return dates for some IR players
 const espnInjuries = { injuries: [{ injuries: Object.values(players).filter(p => p.injury_status === "IR" || p.injury_status === "Out").map((p, i) => ({ status: p.injury_status === "IR" ? "Injured Reserve" : "Out", athlete: { id: p.espn_id, displayName: p.full_name }, details: i % 2 ? { returnDate: new Date(Date.UTC(CUR, 10, 20 + i)).toISOString().slice(0, 10) } : {} })) }] };
 
-// the newsletter feed as rss2json.com returns it
-const newsletter = { status: "ok", feed: { title: "Swag League Weekly", link: "https://example.substack.com" }, items: [{ title: "Week 7: Chaos &amp; Carnage", description: "Three upsets, one fleece and a bench MVP", link: "https://example.substack.com/p/week-7", pubDate: "2026-10-21 14:02:11", thumbnail: "", enclosure: {} }] };
+// what .github/workflows/newsletter.yml saves from the Substack feed
+const newsletter = { publication: "Swag League Weekly", title: "Week 7: Chaos & Carnage", subtitle: "Three upsets, one fleece and a bench MVP", link: "https://example.substack.com/p/week-7", date: "2026-10-21", image: null };
 export function route(url) {
   const u = new URL(url), p = u.pathname;
-  if (u.host === "api.rss2json.com") return newsletter;
+  if (u.host === "hub.test" && p === "/data/newsletter.json") return newsletter;
   if (u.host === "api.sleeper.app") {
     let m;
     if (p === "/v1/state/nfl") return { season: String(CUR), season_type: "regular", week: DONE + 1 };
