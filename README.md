@@ -20,4 +20,4 @@ FantasyCalc only publishes today's values, so `.github/workflows/fc-snapshot.yml
 
 ## Newsletter
 
-`.github/workflows/newsletter.yml` checks the Substack feed every two hours (`scripts/newsletter.py`), saves the newest post to `data/newsletter.json` and redeploys when it changes, and the home page shows it as a card. The feed defaults to `https://piratenck.substack.com/feed`; to use another, set the repository variable `NEWSLETTER_FEED` (Settings, Secrets and variables, Actions, Variables). Run the workflow by hand from the Actions tab to pick up a post right away.
+The home page reads the newest post from the Substack feed (`NEWS_FEED` in `index.html`) through rss2json.com, since Substack blocks both direct reads from a web page and requests from GitHub's servers, and shows it as a card.
