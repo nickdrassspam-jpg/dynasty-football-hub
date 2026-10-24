@@ -386,6 +386,22 @@ section.offstage{display:block!important;position:absolute!important;left:-99999
 .tw.more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}
 .tw.more-l:not(.more-r){-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 24px),transparent)}
 .capturing .tw{-webkit-mask-image:none!important;mask-image:none!important}
+/* stacked rows: a phone-width table that would scroll sideways shows each row as a small card, name on top, then labelled values */
+body:not(.capturing) table.stack{display:block;width:100%;table-layout:auto}
+body:not(.capturing) table.stack thead{display:none}
+body:not(.capturing) table.stack :is(tbody,tfoot){display:block}
+body:not(.capturing) table.stack tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;padding:10px 6px;border-bottom:1px solid var(--line)}
+body:not(.capturing) table.stack tbody tr:last-child{border-bottom:0}
+body:not(.capturing) table.stack :is(td,th){display:block;padding:0;border:0;white-space:normal;overflow-wrap:anywhere;min-width:0;max-width:none;width:auto;text-align:left;position:static;background:none;box-shadow:none;font-size:14px;writing-mode:horizontal-tb;transform:none;height:auto}
+body:not(.capturing) table.stack :is(td,th)[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body:not(.capturing) table.stack :is(td,th):has(.tl,.pl){grid-column:1/-1;order:-1;font-size:15px}
+body:not(.capturing) table.stack :is(td,th).wrap,body:not(.capturing) table.stack :is(td,th) *{white-space:normal}
+body:not(.capturing) table.stack :is(td,th).wrap{grid-column:1/-1}
+body:not(.capturing) table.stack :is(td,th)[data-label]:has(.tl,.pl)::before{display:none}
+body:not(.capturing) table.stack :is(td,th):has(.pfbar,.minibar,.sbar,.dv,.cbar,.wtrack,.rng,.pts){grid-column:1/-1}
+body:not(.capturing) table.stack :is(.pfbar,.minibar,.sbar,.dv,.cbar,.wtrack,.rng){width:auto!important;min-width:0!important;max-width:none!important;flex:1!important}
+body:not(.capturing) table.stack .pts{display:flex;align-items:center;gap:8px}
+body:not(.capturing) table.stack tr.isme{background:color-mix(in oklab,var(--me) 20%,transparent);box-shadow:inset 4px 0 0 var(--me);padding-left:12px}
 #tip{max-width:min(420px,92vw)}
 /* ---- tankathon ---- */
 .slx{margin-top:14px;padding:14px 16px;background:var(--bg);border-radius:8px;max-width:980px;font-size:14px;line-height:1.5}.slx h4{margin:0 0 8px;font-size:15px}.slx ol{margin:0 0 10px;padding-left:20px}.slx li{margin:4px 0}.slx p{margin:8px 0 0}.slx p.mu{font-size:13px}
@@ -483,7 +499,7 @@ body .slot.traded{border-color:#fff}body .slot .pk i{color:#fff}
 </head>
 <body>
 <header>
-  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 11:30 AM ET</p></div>
+  <div><h1 id="title">League Hub</h1><p id="sub">Loading league…</p><p id="scoring" hidden></p><p id="valnote" hidden></p><p class="mu" style="margin:2px 0 0;font-size:12px">Page version Oct 24, 2026, 12:00 PM ET</p></div>
   <div class="lid">
     <label class="mesel" id="mewrap" hidden>Your team <select id="me" aria-label="Your team"></select></label>
     <input type="text" id="lid" value="1312056868817891328" aria-label="Sleeper league ID">
@@ -3167,13 +3183,23 @@ const NAV={stack:[],cur:null,back:false};
 const navSnap=()=>({tab,team:$("pteam")?.value||"",scope:$("pseason")?.value||"",pid:typeof LK!=="undefined"?LK.pid:null});
 const navSame=(a,b)=>a.tab===b.tab&&(a.tab!=="profile"||a.team===b.team)&&(a.tab!=="lookup"||a.pid===b.pid);
 function navBtn(){const b=$("backbtn");if(!b)return;const p=NAV.stack.at(-1);b.hidden=!p;document.body.classList.toggle("hasback",!!p);if(p)b.querySelector("span").textContent=TABNAME[p.tab]||"Back"}
-// Wide tables: mark which edges can still scroll so the CSS can fade them as a hint
+// Wide tables: on a phone a table too wide for its box is drawn as stacked rows (each cell labelled with its column),
+// anything else that still scrolls sideways gets its edges marked so the CSS can fade them as a hint
 {
+  const PHONE=700;
+  const label=tb=>{if(tb.dataset.lab)return;tb.dataset.lab="1";
+    const hr=tb.tHead?.rows[tb.tHead.rows.length-1],names=[];
+    if(hr)[...hr.cells].forEach(c=>{for(let i=0;i<(c.colSpan||1);i++)names.push((c.innerText||c.textContent).trim().replace(/\s+/g," "))});
+    [...tb.tBodies,tb.tFoot].filter(Boolean).forEach(b=>[...b.rows].forEach(r=>{let i=0;[...r.cells].forEach(c=>{c.dataset.label=names[i]||"";i+=c.colSpan||1})}))};
+  const stack=tb=>{const box=tb.parentElement;if(!box)return;
+    if(innerWidth>PHONE){tb.classList.remove("stack");return}
+    if(tb.classList.contains("stack")||!box.clientWidth)return;
+    if(tb.offsetWidth>box.clientWidth+2){label(tb);tb.classList.add("stack")}};
   const edge=t=>{const r=t.scrollWidth-t.clientWidth-t.scrollLeft>2;t.classList.toggle("more-r",r);t.classList.toggle("more-l",t.scrollLeft>2)};
-  let q=0;const all=()=>{q=0;document.querySelectorAll(".tw").forEach(edge)};
+  let q=0;const all=()=>{q=0;document.querySelectorAll("table").forEach(stack);document.querySelectorAll(".tw").forEach(edge)};
   const soon=()=>{if(!q)q=requestAnimationFrame(all)};
   document.addEventListener("scroll",e=>{if(e.target.classList?.contains("tw"))edge(e.target)},{capture:true,passive:true});
-  addEventListener("resize",soon);new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
+  addEventListener("resize",soon);new MutationObserver(soon).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
 }
 // Record the view being left. A profile with no team yet (the page opened on it before the league loaded) is not a real stop.
 function navNote(y=window.scrollY){
